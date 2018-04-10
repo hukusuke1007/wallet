@@ -52,8 +52,12 @@ self.__precacheManifest = [
     "revision": "e3d5a4fcb02aae692809929bdd177c50"
   },
   {
+    "url": "precache-manifest.f0960585907a1d38427d908be31c628e.js",
+    "revision": "f0960585907a1d38427d908be31c628e"
+  },
+  {
     "url": "service-worker.js",
-    "revision": "4d5bf558a9a05adeb7c5df8b87f4a190"
+    "revision": "ed2e1f3e2c343ca6c16dd4447beb81c7"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
