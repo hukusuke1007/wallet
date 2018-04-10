@@ -27,7 +27,7 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js PWA',
       todos: [
-        {text: 'vue-router', done: false, editing: false},
+        {text: 'vue-router-test', done: false, editing: false},
         {text: 'vuex', done: false, editing: false},
         {text: 'vue-loader', done: false, editing: false},
         {text: 'awesome-vue', done: true, editing: false}
