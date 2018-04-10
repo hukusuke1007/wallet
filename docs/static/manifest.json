@@ -1,6 +1,6 @@
 {
-  "name": "genio-wallet",
-  "short_name": "genio-wallet",
+  "name": "wallet",
+  "short_name": "wallet",
   "icons": [
     {
       "src": "/static/img/icons/android-chrome-192x192.png",

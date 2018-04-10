@@ -11,7 +11,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
-const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+// const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin')
+const workboxPlugin = require('workbox-webpack-plugin')
 const loadMinified = require('./load-minified')
 
 const env = process.env.NODE_ENV === 'testing'
@@ -103,12 +104,33 @@ const webpackConfig = merge(baseWebpackConfig, {
       }
     ]),
     // service worker caching
-    new SWPrecacheWebpackPlugin({
-      cacheId: 'genio-wallet',
-      filename: 'service-worker.js',
-      staticFileGlobs: ['dist/**/*.{js,html,css}'],
-      minify: true,
-      stripPrefix: 'dist/'
+    // new SWPrecacheWebpackPlugin({
+    //  cacheId: 'genio-wallet',
+    //  filename: 'service-worker.js',
+    //  staticFileGlobs: ['dist/**/*.{js,html,css}'],
+    // minify: true,
+    //  stripPrefix: 'dist/'
+    // })
+    new workboxPlugin.GenerateSW({
+      cacheId: 'wallet',
+      globDirectory: config.build.assetsRoot,
+      globPatterns: ['**/*.{html,js,css}'],
+      swDest: path.join(config.build.assetsRoot, 'service-worker.js'),
+      skipWaiting: false,
+      clientsClaim: true,
+      runtimeCaching: [
+       {
+         // APIのキャッシュ
+         urlPattern: /.*api.*/,
+         handler: 'networkFirst',
+         options: {
+           cacheName: 'api',
+           expiration: {
+             maxAgeSeconds: 60 * 60 * 24
+           }
+         }
+       }
+     ]
     })
   ]
 })
