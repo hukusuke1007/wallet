@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuetify": "^1.0.14"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.5",
@@ -34,7 +35,7 @@
     "copy-webpack-plugin": "^4.1.1",
     "cross-env": "^5.0.5",
     "cross-spawn": "^5.1.0",
-    "css-loader": "^0.28.7",
+    "css-loader": "^0.28.11",
     "cssnano": "^3.10.0",
     "eslint": "^4.9.0",
     "eslint-config-standard": "^10.2.1",

@@ -1,5 +1,9 @@
 <template>
   <div id="app">
+    <!-- <v-app>
+    <v-navigation-drawer></v-navigation-drawer>
+    <v-toolbar><v-toolbar-title>Wallet</v-toolbar-title></v-toolbar>
+    -->
     <header>
       <span>Vue.js PWA</span>
     </header>
@@ -9,6 +13,11 @@
       <hr />
       <router-view></router-view>
     </main>
+    <!--
+    <v-app>
+    <v-footer>Design by hoge.</v-footer>
+    </v-app>
+    -->
   </div>
 </template>
 
