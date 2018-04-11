@@ -22,6 +22,18 @@
           </v-list-tile>
         </router-link>
 
+        <!--  CREATE -->
+        <router-link to="/create">
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon>add_circle</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>CREATE</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </router-link>
+
         <!--  SETTING -->
         <router-link to="/setting">
           <v-list-tile>
@@ -33,6 +45,7 @@
             </v-list-tile-content>
           </v-list-tile>
         </router-link>
+
       </v-list>
      </v-navigation-drawer>
 
@@ -45,10 +58,10 @@
       app
      >
        <v-toolbar-side-icon @click.stop="naviBar = !naviBar"></v-toolbar-side-icon>
-       <v-toolbar-title class="white--text">Genio Wallet</v-toolbar-title>
+       <v-toolbar-title class="white--text">GENIO Wallet</v-toolbar-title>
        <v-spacer></v-spacer>
-       <v-btn icon><v-icon>search</v-icon></v-btn>
-       <v-btn icon><v-icon>apps</v-icon></v-btn>
+       <!-- <v-btn icon><v-icon>search</v-icon></v-btn> -->
+       <!--  <v-btn icon><v-icon>apps</v-icon></v-btn> -->
        <v-btn icon><v-icon>refresh</v-icon></v-btn>
        <v-btn icon><v-icon>more_vert</v-icon></v-btn>
      </v-toolbar>
