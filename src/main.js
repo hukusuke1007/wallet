@@ -3,13 +3,15 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import 'vuetify/dist/vuetify.min.css'
+import 'vuetify/dist/vuetify.css'
+// import 'vuetify/dist/vuetify.min.css'
 
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  // render: h => h(App),
   router,
   template: '<App/>',
   components: { App }
