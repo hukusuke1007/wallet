@@ -58,7 +58,7 @@
       app
      >
        <v-toolbar-side-icon @click.stop="naviBar = !naviBar"></v-toolbar-side-icon>
-       <v-toolbar-title class="white--text">GENIO Wallet</v-toolbar-title>
+       <v-toolbar-title class="white--text">SUPER GENIO Wallet</v-toolbar-title>
        <v-spacer></v-spacer>
        <!-- <v-btn icon><v-icon>search</v-icon></v-btn> -->
        <v-btn icon><v-icon>apps</v-icon></v-btn>
