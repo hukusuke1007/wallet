@@ -55,14 +55,15 @@
     <v-dialog v-model="dialog_readQR" max-width="500px">
       <v-card>
         <v-card-title class="pink--text">QRコード読み取り</v-card-title>
-        <qrcode-reader @init="onInit" @decode="onDecode" :paused="paused">
+        <qrcode-reader @init="onInit" @decode="onDecode">
+
         </qrcode-reader>
         <v-card-action>
           <v-btn color="primary" flat @click.stop="dialog_readQR = false">閉じる</v-btn>
         </v-card-action>
       </v-card>
     </v-dialog>
-    
+
   </v-container>
 </template>
 
@@ -117,7 +118,7 @@
        }
      },
      onDecode (content) {
-       this.paused = true
+       // this.paused = true
        this.privateKey = content
        this.dialog_readQR = false
      },
