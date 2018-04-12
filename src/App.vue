@@ -14,10 +14,10 @@
         <router-link to="/">
           <v-list-tile>
             <v-list-tile-action>
-              <v-icon>dashboard</v-icon>
+              <v-icon color="black">dashboard</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>DASHBOARD</v-list-tile-title>
+              <v-list-tile-title>ダッシュボード</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </router-link>
@@ -26,10 +26,22 @@
         <router-link to="/create">
           <v-list-tile>
             <v-list-tile-action>
-              <v-icon>add_circle</v-icon>
+              <v-icon color="black">add_circle</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>CREATE</v-list-tile-title>
+              <v-list-tile-title>ウォレット作成</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </router-link>
+
+        <!--  Wallet list -->
+        <router-link to="/walletlist">
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon color="black">credit_card</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>ウォレット一覧</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </router-link>
@@ -38,10 +50,10 @@
         <router-link to="/setting">
           <v-list-tile>
             <v-list-tile-action>
-              <v-icon>settings</v-icon>
+              <v-icon color="black">settings</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>SETTING</v-list-tile-title>
+              <v-list-tile-title>設定</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
         </router-link>
