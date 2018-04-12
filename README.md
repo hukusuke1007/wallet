@@ -8,6 +8,16 @@
 # install dependencies
 npm install
 
+# install for library
+npm uninstall sw-precache-webpack-plugin
+npm install --save-dev workbox-webpack-plugin
+# -> ref:https://qiita.com/gyarasu/items/2f18edc4ae251180d89e
+
+npm install --save node-sass sass-loader
+npm install vue-router vuetify --save
+npm install axios --save
+npm install vue-qrcode-reader --save
+
 # serve with hot reload at localhost:8080
 npm run dev
 
