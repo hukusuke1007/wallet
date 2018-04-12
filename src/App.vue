@@ -11,52 +11,54 @@
       <v-list dense class="pt-0">
 
         <!--  DASHBOARD -->
-        <router-link to="/">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon color="black">dashboard</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>ダッシュボード</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">dashboard</v-icon>
+          </v-list-tile-action>
+          <router-link to="/">
+          <v-list-tile-content>
+            <v-list-tile-title>ダッシュボード</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+        
 
-        <!--  CREATE -->
-        <router-link to="/create">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon color="black">add_circle</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>ウォレット作成</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
-
+        <!--  CREATE -->      
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">add_circle</v-icon>
+          </v-list-tile-action>
+          <router-link to="/create">
+          <v-list-tile-content>
+            <v-list-tile-title>ウォレット作成</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+        
         <!--  Wallet list -->
-        <router-link to="/walletlist">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon color="black">credit_card</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>ウォレット一覧</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
-
-        <!--  SETTING -->
-        <router-link to="/setting">
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon color="black">settings</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>設定</v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
-        </router-link>
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">credit_card</v-icon>
+          </v-list-tile-action>
+          <router-link to="/walletlist">
+          <v-list-tile-content>
+            <v-list-tile-title>ウォレット一覧</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+        
+        <!--  SETTING -->       
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">settings</v-icon>
+          </v-list-tile-action>
+          <router-link to="/setting">
+          <v-list-tile-content>
+            <v-list-tile-title>設定</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+        
 
       </v-list>
      </v-navigation-drawer>
@@ -70,7 +72,7 @@
       app
      >
        <v-toolbar-side-icon @click.stop="naviBar = !naviBar"></v-toolbar-side-icon>
-       <v-toolbar-title class="white--text">SUPER GENIO Wallet</v-toolbar-title>
+       <v-toolbar-title class="white--text">GENIO Wallet</v-toolbar-title>
        <v-spacer></v-spacer>
        <!-- <v-btn icon><v-icon>search</v-icon></v-btn> -->
        <v-btn icon><v-icon>apps</v-icon></v-btn>

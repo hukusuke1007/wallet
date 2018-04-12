@@ -10,6 +10,7 @@ import TopPage from '@/components/TopPage'
 import Create from '@/components/Create'
 import WalletCreate from '@/components/create_wallet/WalletCreate'
 import WalletImport from '@/components/create_wallet/WalletImport'
+import VueQrcodeReader from 'vue-qrcode-reader'
 
 import WalletList from '@/components/WalletList'
 import Setting from '@/components/Setting'
@@ -23,6 +24,7 @@ Vue.use(Vuetify, {
     themeVariations: ['original', 'secondary']
   }
 })
+Vue.use(VueQrcodeReader)
 
 export default new Router({
   routes: [

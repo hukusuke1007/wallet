@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-form v-model="valid" ref="form" lazy-validation>
-      <v-flex xs12>
+      <v-flex>
       <v-text-field
         box
         label="ウォレット名"
@@ -12,7 +12,7 @@
       ></v-text-field>
       </v-flex>
 
-      <v-flex xs12>
+      <v-flex>
         <v-text-field
           box
           multi-line
@@ -22,9 +22,14 @@
           :counter="1024"
         ></v-text-field>
       </v-flex>
+      <v-flex>
       <v-btn color="info" @click="submit" :disabled="!valid">作成</v-btn>
       <v-btn @click="clear">クリア</v-btn>
-
+      </v-flex>
+      <br>
+      <v-flex>
+      <v-btn color="grey" class="white--text" @click="back">戻る</v-btn>
+      </v-flex>
     </v-form>
   </v-container>
 </template>
@@ -56,6 +61,9 @@
      },
      clear () {
        this.$refs.form.reset()
+     },
+     back () {
+       history.go(-1)
      }
    }
  }
