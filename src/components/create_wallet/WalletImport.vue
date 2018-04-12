@@ -59,7 +59,7 @@
 
         </qrcode-reader>
         <v-card-action>
-          <v-btn color="primary" flat @click.stop="dialog_readQR = false">閉じる</v-btn>
+          <v-btn color="primary" flat @click.stop="dialog_readQR = false" block>閉じる</v-btn>
         </v-card-action>
       </v-card>
     </v-dialog>
