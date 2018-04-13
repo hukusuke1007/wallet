@@ -60,6 +60,7 @@
            <v-btn color="primary" flat @click.stop="dialog_readQR = false">閉じる</v-btn>
           </v-flex>
           <qrcode-reader @init="onInit" @decode="onDecode" style="margin: 0px 8px 0px 8px">
+           <div class="decoded-content">{{ content }}</div>
           </qrcode-reader>
           <br>
         </v-card>
@@ -75,6 +76,7 @@
      valid: true,
      paused: false,
      dialog_readQR: false,
+     content: '',
      name: '',
      description: '',
      privateKey: '',
@@ -120,10 +122,16 @@
        }
      },
      onDecode (content) {
-       // this.paused = true
-       console.log('qr_reader:' + content)
-       this.privateKey = content
-       this.dialog_readQR = false
+       if (!content) {
+         this.content = '不正なQRコードです'
+         console.log('qr_reader is empty content')
+       } else {
+         this.content = '読み取り成功'
+         console.log('qr_reader:' + content)
+         this.privateKey = content
+         this.dialog_readQR = false
+         // this.paused = true
+       }
      },
      submit () {
        if (this.$refs.form.validate()) {
@@ -144,6 +152,17 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
-
+<style scoped>
+.decoded-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  max-width: 100%;
+  padding: 0px 20px;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px;
+  background-color: rgba(0,0,0,.5);
+}
 </style>
