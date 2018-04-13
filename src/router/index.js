@@ -1,19 +1,29 @@
-// Library
 import Vue from 'vue'
 import Router from 'vue-router'
+
+// Library
+import VueQrcodeReader from 'vue-qrcode-reader'
+import VueLocalForage from 'vue-localforage'
+// import LocalForage from 'localforage'
 import Vuetify from 'vuetify'
 import colors from 'vuetify/es5/util/colors'
-// import Hello from '@/components/Hello'
 
 // CreatePage
+// import Hello from '@/components/Hello'
+/*
 import TopPage from '@/components/TopPage'
 import Create from '@/components/Create'
 import WalletCreate from '@/components/create_wallet/WalletCreate'
 import WalletImport from '@/components/create_wallet/WalletImport'
-import VueQrcodeReader from 'vue-qrcode-reader'
-
 import WalletList from '@/components/WalletList'
 import Setting from '@/components/Setting'
+*/
+import TopPage from '@/pages/TopPage'
+import Create from '@/pages/Create'
+import WalletCreate from '@/pages/create_wallet/WalletCreate'
+import WalletImport from '@/pages/create_wallet/WalletImport'
+import WalletList from '@/pages/WalletList'
+import Setting from '@/pages/Setting'
 
 Vue.use(Router)
 Vue.use(Vuetify, {
@@ -25,6 +35,7 @@ Vue.use(Vuetify, {
   }
 })
 Vue.use(VueQrcodeReader)
+Vue.use(VueLocalForage)
 
 export default new Router({
   routes: [
