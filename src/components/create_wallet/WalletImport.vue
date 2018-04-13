@@ -32,10 +32,10 @@
         :counter="64"
         required
       ></v-text-field>
-      <v-btn 
-       color="orange darken-1" 
-       class="white--text" 
-       @click.stop="dialog_readQR = true" 
+      <v-btn
+       color="orange darken-1"
+       class="white--text"
+       @click.stop="dialog_readQR = true"
        block
       >QRコード読み取り</v-btn>
       </v-flex>
@@ -53,17 +53,18 @@
 
     <!-- ダイアログ -->
     <v-dialog v-model="dialog_readQR" max-width="500px">
-      <v-card>
-        <v-card-title class="pink--text">QRコード読み取り</v-card-title>
-        <qrcode-reader @init="onInit" @decode="onDecode">
-
-        </qrcode-reader>
-        <v-card-action>
-          <v-btn color="primary" flat @click.stop="dialog_readQR = false" block>閉じる</v-btn>
-        </v-card-action>
-      </v-card>
+      <v-flex>
+        <v-card>
+          <v-flex>
+           <label class="pink--text">QRコード読み取り</label>
+           <v-btn color="primary" flat @click.stop="dialog_readQR = false">閉じる</v-btn>
+          </v-flex>
+          <qrcode-reader @init="onInit" @decode="onDecode" style="margin: 0px 8px 0px 8px">
+          </qrcode-reader>
+          <br>
+        </v-card>
+      </v-flex>
     </v-dialog>
-
   </v-container>
 </template>
 
@@ -72,6 +73,7 @@
  export default {
    data: () => ({
      valid: true,
+     paused: false,
      dialog_readQR: false,
      name: '',
      description: '',
@@ -119,6 +121,7 @@
      },
      onDecode (content) {
        // this.paused = true
+       console.log('qr_reader:' + content)
        this.privateKey = content
        this.dialog_readQR = false
      },
@@ -142,7 +145,5 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-
-
 
 </style>
