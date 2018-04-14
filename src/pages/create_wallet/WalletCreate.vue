@@ -43,9 +43,8 @@
      valid: true,
      name: '',
      description: '',
-     private_key: '',
      localforage_key: 'key_wallet_info',
-     localforage_data: {id: '0', name: '', description: '', private_key: ''},
+     localforage_data: {id: '0', name: '', description: '', address: '', publicKey: '', privateKey: ''},
      nameRules: [
        value => !!value || '名前を入力してください',
        value => (value && value.length <= 16) || '最大文字数を超えています。'
@@ -63,7 +62,7 @@
          // This code runs if there were any errors
          console.log(err)
        })
-     nemWrapper.getAccount('aaaaa')
+     // nemWrapper.getAccount('NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC')
    },
    methods: {
      submit () {
@@ -74,9 +73,8 @@
            description: this.description
          })
          */
-         // let transferTx = nem.model.objects.get('transferTransaction')
-         // console.log(transferTx)
-         this.localforage_data = {id: '0', name: this.name, description: this.description, private_key: this.private_key}
+         const data = nemWrapper.createWallet(this.name)
+         this.localforage_data = {id: '0', name: this.name, description: this.description, address: data.address, publicKey: data.publicKey, privateKey: data.privateKey}
          this.$getItem(this.localforage_key)
            .then((result) => {
              console.log('got value:', result)
