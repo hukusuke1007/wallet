@@ -20,11 +20,6 @@ const env = process.env.NODE_ENV === 'testing'
   : config.build.env
 
 const webpackConfig = merge(baseWebpackConfig, {
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
-  },
   module: {
     rules: utils.styleLoaders({
       sourceMap: config.build.productionSourceMap,
