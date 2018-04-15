@@ -30,6 +30,12 @@
       <v-flex>
       <v-btn color="grey" class="white--text" @click="back">戻る</v-btn>
       </v-flex>
+
+      <!-- ダイアログ -->
+      <dialogConfirm v-bind:dialogVal="isShowDialog"
+                     titleVal="ウォレット作成"
+                     v-bind:messageVal="dialogMsg"
+                     v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
     </v-form>
   </v-container>
 </template>
@@ -38,9 +44,13 @@
  // import axios from 'axios'
  import localForage from 'localforage'
  import nemWrapper from '@/js/nem_wrapper'
+ import DialogConfirm from '@/components/DialogConfirm'
+
  export default {
    data: () => ({
      valid: true,
+     isShowDialog: false,
+     dialogMsg: '',
      name: '',
      description: '',
      localforage_key: 'key_wallet_info',
@@ -53,8 +63,12 @@
        value => (value.length <= 1024) || '最大文字数を超えています。'
      ]
    }),
+   components: {
+     'dialogConfirm': DialogConfirm
+   },
    mounted () {
      this.$setStorageDriver(localForage.LOCALSTORAGE)
+     /*
      this.$getItem(this.localforage_key)
        .then((result) => {
          console.log('got value:', result)
@@ -62,6 +76,7 @@
          // This code runs if there were any errors
          console.log(err)
        })
+     */
      // nemWrapper.getAccount('NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC')
    },
    methods: {
@@ -87,12 +102,18 @@
              this.$setItem(this.localforage_key, storeData)
                .then((result) => {
                  console.log('set array value:', result)
+                 this.isShowDialog = true
+                 this.dialogMsg = 'ウォレットを作成しました。'
                }).catch((err) => {
                  console.log('localforage set item is failed. error:' + err)
+                 this.isShowDialog = true
+                 this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
                })
            }).catch((err) => {
              // This code runs if there were any errors
              console.log(err)
+             this.isShowDialog = true
+             this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
            })
        }
      },
@@ -101,6 +122,11 @@
      },
      back () {
        history.go(-1)
+     },
+     tapPositive (message) {
+       console.log(message)
+       this.isShowDialog = false
+       this.$router.push({ path: '/walletlist' }) // 画面遷移
      }
    }
  }

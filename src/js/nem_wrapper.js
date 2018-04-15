@@ -21,6 +21,7 @@ exports.getAccount = (addr) => {
   })
 }
 
+// accountを保存する方が良い
 exports.createWallet = (name) => {
   const password = new Password('password')
   const account = SimpleWallet.create(name, password)

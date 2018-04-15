@@ -1,0 +1,63 @@
+<template>
+  <!-- <v-layout row justify-center> -->
+	<v-dialog v-model="dialog" max-width="290">
+	  <v-card>
+	    <v-card-title class="headline">{{ titleVal }}</v-card-title>
+	    <v-card-text>{{ messageVal }}</v-card-text>
+	    <v-card-actions>
+	      <v-spacer></v-spacer>
+	      <!-- <v-btn color="green darken-1" flat="flat" @click.native="dialog = false">Disagree</v-btn> -->
+	      <v-btn color="green darken-1" flat="flat" @click.native="tapNotify(true, 'OK')">OK</v-btn>
+	    </v-card-actions>
+	  </v-card>
+	</v-dialog>
+  <!-- </v-layout> -->
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+        dialog: false,
+        dummy: ''
+      }
+    },
+    props: {
+      dialogVal: {
+        type: Boolean,
+        default: false
+      },
+      titleVal: {
+        type: String,
+        default: ''
+      },
+      messageVal: {
+        type: String,
+        default: ''
+      }
+    },
+    watch: {
+      dialog (val) {
+        if (val === false) { this.$emit('dialog-confirm-event-tap-positive', 'outside tap end') }
+      },
+      dialogVal (val) {
+        this.dialog = val
+      }
+    },
+    methods: {
+      tapNotify (isPositive, message) {
+        console.log(isPositive)
+        if (isPositive) {
+          this.$emit('dialog-confirm-event-tap-positive', message)
+        } else {
+          this.$emit('dialog-confirm-event-tap-positive', message)
+        }
+      }
+    }
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style lang="scss" scoped>
+
+</style>

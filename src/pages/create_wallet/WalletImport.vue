@@ -35,7 +35,7 @@
       <v-btn
        color="orange darken-1"
        class="white--text"
-       @click.stop="dialog_readQR = true"
+       @click.stop="showQRreader"
        block
       >QRコード読み取り</v-btn>
       </v-flex>
@@ -52,30 +52,22 @@
     </v-form>
 
     <!-- ダイアログ -->
-    <v-dialog v-model="dialog_readQR" max-width="500px">
-      <v-flex>
-        <v-card>
-          <v-flex>
-           <label class="pink--text">QRコード読み取り</label>
-           <v-btn color="primary" flat @click.stop="dialog_readQR = false">閉じる</v-btn>
-          </v-flex>
-          <qrcode-reader @init="onInit" @decode="onDecode" style="margin: 0px 8px 0px 8px">
-           <div class="decoded-content">{{ content }}</div>
-          </qrcode-reader>
-          <br>
-        </v-card>
-      </v-flex>
-    </v-dialog>
+    <dialogQRreader v-bind:dialogVal="isShowDialogQRreader"
+                    v-bind:pauseVal="paused"
+                    typeVal="privateKey"
+                    v-on:qr-reader-event-scan-success="getContent"
+                    v-on:qr-reader-event-tap-close="tapClose"></dialogQRreader>
   </v-container>
 </template>
 
 <script>
- import axios from 'axios'
+ // import axios from 'axios'
+ import DialogQRreader from '@/components/QRreader'
  export default {
    data: () => ({
      valid: true,
      paused: false,
-     dialog_readQR: false,
+     isShowDialogQRreader: false,
      content: '',
      name: '',
      description: '',
@@ -92,60 +84,33 @@
        value => (value && value.length === 64) || '秘密鍵は64文字です。'
      ]
    }),
-
+   components: {
+     'dialogQRreader': DialogQRreader
+   },
    methods: {
-     async onInit (promise) {
-       // show loading indicator
-       try {
-         await promise
-
-         // successfully initialized
-       } catch (error) {
-         if (error.name === 'NotAllowedError') {
-           console.log('user denied camera access permisson')
-         } else if (error.name === 'NotFoundError') {
-           console.log('no suitable camera device installed')
-         } else if (error.name === 'NotSupportedError') {
-           console.log('page is not served over HTTPS (or localhost)')
-         } else if (error.name === 'NotReadableError') {
-           console.log('maybe camera is already in use')
-         } else if (error.name === 'OverconstrainedError') {
-           console.log('Did you requested the front camera although there is none?')
-         // passed constraints don't match any camera. Did you requested the front camera although there is none?
-         } else {
-           console.log('browser is probably lacking features (WebRTC, Canvas)')
-         // browser is probably lacking features (WebRTC, Canvas)
-         }
-       } finally {
-         console.log('hide loading indicator')
-         // hide loading indicator
-       }
-     },
-     onDecode (content) {
-       if (!content) {
-         this.content = '不正なQRコードです'
-         console.log('qr_reader is empty content')
-       } else {
-         this.content = '読み取り成功'
-         console.log('qr_reader:' + content)
-         this.privateKey = content
-         this.dialog_readQR = false
-         // this.paused = true
-       }
-     },
      submit () {
-       if (this.$refs.form.validate()) {
-         axios.post('/api/submit', {
-           name: this.name,
-           description: this.description
-         })
-       }
+       console.log('submit')
      },
      clear () {
        this.$refs.form.reset()
      },
      back () {
        history.go(-1)
+     },
+     showQRreader () {
+       this.paused = false
+       this.isShowDialogQRreader = true
+     },
+     getContent (content) {
+       console.log(content)
+       this.privateKey = content
+       this.paused = true
+       this.isShowDialogQRreader = false
+     },
+     tapClose (message) {
+       console.log(message)
+       this.paused = true
+       this.isShowDialogQRreader = false
      }
    }
  }
@@ -153,16 +118,4 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.decoded-content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  max-width: 100%;
-  padding: 0px 20px;
-  color: #fff;
-  font-weight: bold;
-  padding: 10px;
-  background-color: rgba(0,0,0,.5);
-}
 </style>
