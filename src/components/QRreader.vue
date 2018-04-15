@@ -39,7 +39,7 @@
     },
     watch: {
       dialog (val) {
-        if ((val === false) && (this.pauseVal === false)) { this.$emit('qr-reader-event-tap-close', 'outside tap end') }
+        if (val === false) { this.$emit('qr-reader-event-tap-close', 'outside tap end') }
       },
       dialogVal (val) {
         // warning対策.

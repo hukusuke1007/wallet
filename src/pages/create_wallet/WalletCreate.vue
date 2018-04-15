@@ -125,8 +125,10 @@
      },
      tapPositive (message) {
        console.log(message)
-       this.isShowDialog = false
-       this.$router.push({ path: '/walletlist' }) // 画面遷移
+       if (this.isShowDialog === true) {
+         this.isShowDialog = false
+         this.$router.push({ path: '/walletlist' }) // 画面遷移
+       }
      }
    }
  }

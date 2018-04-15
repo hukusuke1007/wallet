@@ -108,9 +108,11 @@
        this.isShowDialogQRreader = false
      },
      tapClose (message) {
-       console.log(message)
-       this.paused = true
-       this.isShowDialogQRreader = false
+       if (this.isShowDialogQRreader === true) {
+         console.log(message)
+         this.paused = true
+         this.isShowDialogQRreader = false
+       }
      }
    }
  }
