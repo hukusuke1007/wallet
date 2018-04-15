@@ -18,8 +18,7 @@
   export default {
     data () {
       return {
-        dialog: false,
-        dummy: ''
+        dialog: false
       }
     },
     props: {
