@@ -69,29 +69,11 @@
      'dialogConfirm': DialogConfirm
    },
    mounted () {
-     // this.$setStorageDriver(localForage.LOCALSTORAGE)
-     /*
-     this.$getItem(this.localforage_key)
-       .then((result) => {
-         console.log('got value:', result)
-       }).catch((err) => {
-         // This code runs if there were any errors
-         console.log(err)
-       })
-     */
-     // nemWrapper.getAccount('NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC')
    },
    methods: {
      submit () {
        if (this.$refs.form.validate()) {
-         /*
-         axios.post('/api/submit', {
-           name: this.name,
-           description: this.description
-         })
-         */
          let data = nemWrapper.createWallet(this.name)
-         // this.localforage_data = {id: '0', name: this.name, description: this.description, address: data.address, publicKey: data.publicKey, privateKey: data.privateKey}
          localDatabaseWrapper.setItem(this.localforage_key, data)
            .then((result) => {
              console.log(result)
@@ -104,32 +86,6 @@
              this.isShowDialog = true
              this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
            })
-         /*
-         this.$getItem(this.localforage_key)
-           .then((result) => {
-             console.log('got value:', result)
-             var storeData = [this.localforage_data]
-             if (result) {
-               storeData = result
-               storeData.push(this.localforage_data)
-             }
-             this.$setItem(this.localforage_key, storeData)
-               .then((result) => {
-                 console.log('set array value:', result)
-                 this.isShowDialog = true
-                 this.dialogMsg = 'ウォレットを作成しました。'
-               }).catch((err) => {
-                 console.log('localforage set item is failed. error:' + err)
-                 this.isShowDialog = true
-                 this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
-               })
-           }).catch((err) => {
-             // This code runs if there were any errors
-             console.log(err)
-             this.isShowDialog = true
-             this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
-           })
-          */
        }
      },
      clear () {
