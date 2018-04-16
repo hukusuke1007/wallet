@@ -42,19 +42,21 @@
 
 <script>
  // import axios from 'axios'
- import localForage from 'localforage'
+ // import localForage from 'localforage'
  import nemWrapper from '@/js/nem_wrapper'
+ import localDatabaseWrapper from '@/js/local_database_wrapper'
  import DialogConfirm from '@/components/DialogConfirm'
 
  export default {
    data: () => ({
      valid: true,
      isShowDialog: false,
+     isError: false,
      dialogMsg: '',
      name: '',
      description: '',
      localforage_key: 'key_wallet_info',
-     localforage_data: {id: '0', name: '', description: '', address: '', publicKey: '', privateKey: ''},
+     localforage_data: {},
      nameRules: [
        value => !!value || '名前を入力してください',
        value => (value && value.length <= 16) || '最大文字数を超えています。'
@@ -67,7 +69,7 @@
      'dialogConfirm': DialogConfirm
    },
    mounted () {
-     this.$setStorageDriver(localForage.LOCALSTORAGE)
+     // this.$setStorageDriver(localForage.LOCALSTORAGE)
      /*
      this.$getItem(this.localforage_key)
        .then((result) => {
@@ -88,8 +90,21 @@
            description: this.description
          })
          */
-         const data = nemWrapper.createWallet(this.name)
-         this.localforage_data = {id: '0', name: this.name, description: this.description, address: data.address, publicKey: data.publicKey, privateKey: data.privateKey}
+         let data = nemWrapper.createWallet(this.name)
+         // this.localforage_data = {id: '0', name: this.name, description: this.description, address: data.address, publicKey: data.publicKey, privateKey: data.privateKey}
+         localDatabaseWrapper.setItem(this.localforage_key, data)
+           .then((result) => {
+             console.log(result)
+             this.isError = false
+             this.isShowDialog = true
+             this.dialogMsg = 'ウォレットを作成しました。'
+           }).catch((err) => {
+             console.log(err)
+             this.isError = true
+             this.isShowDialog = true
+             this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
+           })
+         /*
          this.$getItem(this.localforage_key)
            .then((result) => {
              console.log('got value:', result)
@@ -98,7 +113,6 @@
                storeData = result
                storeData.push(this.localforage_data)
              }
-
              this.$setItem(this.localforage_key, storeData)
                .then((result) => {
                  console.log('set array value:', result)
@@ -115,6 +129,7 @@
              this.isShowDialog = true
              this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
            })
+          */
        }
      },
      clear () {
@@ -127,7 +142,8 @@
        console.log(message)
        if (this.isShowDialog === true) {
          this.isShowDialog = false
-         this.$router.push({ path: '/walletlist' }) // 画面遷移
+         // 画面遷移.
+         if (this.isError !== true) { this.$router.push({ path: '/walletlist' }) }
        }
      }
    }

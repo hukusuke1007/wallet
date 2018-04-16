@@ -26,6 +26,7 @@ exports.createWallet = (name) => {
   const password = new Password('password')
   const account = SimpleWallet.create(name, password)
   console.log(account)
+  /*
   const wallet = account.open(password)
   console.log(wallet)
 
@@ -36,6 +37,8 @@ exports.createWallet = (name) => {
   console.log(publicKey)
   console.log(privateKey)
   return {address: address, publicKey: publicKey, privateKey: privateKey}
+  */
+  return account
 }
 
 exports.createWalletWithPrivateKey = (name, privateKey) => {
