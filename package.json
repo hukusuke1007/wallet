@@ -1,7 +1,7 @@
 {
-  "name": "genio-wallet",
+  "name": "wallet",
   "version": "1.0.0",
-  "description": "genio-wallet",
+  "description": "wallet",
   "author": "hobbydevelop",
   "private": true,
   "scripts": {

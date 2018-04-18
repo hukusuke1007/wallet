@@ -55,7 +55,6 @@
      dialogMsg: '',
      name: '',
      description: '',
-     localforage_key: 'key_wallet_info',
      localforage_data: {},
      nameRules: [
        value => !!value || '名前を入力してください',
@@ -73,8 +72,11 @@
    methods: {
      submit () {
        if (this.$refs.form.validate()) {
-         let data = nemWrapper.createWallet(this.name)
-         localDatabaseWrapper.setItem(this.localforage_key, data)
+         let storeData = {}
+         storeData[localDatabaseWrapper.VALUE_NAME] = this.name
+         storeData[localDatabaseWrapper.VALUE_DESCRIPTION] = this.description
+         storeData[localDatabaseWrapper.VALUE_WALLET_ACCOUNT] = nemWrapper.createWallet(this.name)
+         localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, false, -1)
            .then((result) => {
              console.log(result)
              this.isError = false
