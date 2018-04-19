@@ -21,9 +21,8 @@
           </v-list-tile-content>
           </router-link>
         </v-list-tile>
-        
 
-        <!--  CREATE -->      
+        <!--  CREATE -->
         <v-list-tile>
           <v-list-tile-action>
             <v-icon color="black">add_circle</v-icon>
@@ -34,7 +33,7 @@
           </v-list-tile-content>
           </router-link>
         </v-list-tile>
-        
+
         <!--  Wallet list -->
         <v-list-tile>
           <v-list-tile-action>
@@ -46,8 +45,8 @@
           </v-list-tile-content>
           </router-link>
         </v-list-tile>
-        
-        <!--  SETTING -->       
+
+        <!--  SETTING -->
         <v-list-tile>
           <v-list-tile-action>
             <v-icon color="black">settings</v-icon>
@@ -58,7 +57,7 @@
           </v-list-tile-content>
           </router-link>
         </v-list-tile>
-        
+
 
       </v-list>
      </v-navigation-drawer>
@@ -88,6 +87,24 @@
         </v-fade-transition>
       </v-container>
      </v-content>
+
+     <!-- フッター -->
+     <v-footer height="auto" class="pink accent-1">
+       <v-layout row wrap justify-center>
+        <v-btn
+          color="white"
+          flat
+          v-for="link in links"
+          :key="link"
+          @click="tapFooter(link)"
+        >
+          {{ link }}
+        </v-btn>
+        <v-flex xs12 py-3 text-xs-center white--text>
+          &copy;2018 — <strong>Office WALLET</strong>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-app>
   <!-- </div> -->
 </template>
@@ -97,7 +114,8 @@ export default {
   name: 'app',
   data () {
     return {
-      naviBar: null
+      links: ['Home', 'About Us', 'Services', 'Github', 'Contact Us'],
+      naviBar: false
     }
   },
   mounted: function () {
@@ -105,6 +123,33 @@ export default {
   },
   destroyed: function () {
 
+  },
+  methods: {
+    tapFooter (link) {
+      console.log(link)
+      switch (link) {
+        case 'Home':
+          this.$router.push({ path: '/' })
+          break
+        case 'About Us':
+          this.$router.push({ path: '/' })
+          break
+        case 'Services':
+          this.$router.push({ path: '/' })
+          break
+        case 'Github':
+          // location.href = 'https://github.com/hukusuke1007/wallet/'
+          open('https://github.com/hukusuke1007/wallet/', '_blank')
+          break
+        case 'Contact Us':
+          let address = 'cryptowalking.app@gmail.com'
+          let subject = 'お問い合わせ'
+          let body = ''
+          let message = 'mailto:' + address + '?subject=' + subject + '&body=' + body
+          open(message, '_blank')
+          break
+      }
+    }
   }
 }
 </script>
