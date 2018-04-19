@@ -89,7 +89,7 @@
      </v-content>
 
      <!-- フッター -->
-     <v-content>
+     <!-- <v-content> -->
        <!-- <v-fade-transition mode="out-in"> -->
        <v-footer height="auto" class="pink accent-1">
          <v-layout row wrap justify-center>
@@ -108,7 +108,7 @@
         </v-layout>
       </v-footer>
       <!--  </v-fade-transition> -->
-    </v-content>
+    <!-- </v-content> -->
   </v-app>
   <!-- </div> -->
 </template>
