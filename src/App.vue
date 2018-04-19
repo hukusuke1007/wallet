@@ -89,22 +89,26 @@
      </v-content>
 
      <!-- フッター -->
-     <v-footer height="auto" class="pink accent-1">
-       <v-layout row wrap justify-center>
-        <v-btn
-          color="white"
-          flat
-          v-for="link in links"
-          :key="link"
-          @click="tapFooter(link)"
-        >
-          {{ link }}
-        </v-btn>
-        <v-flex xs12 py-3 text-xs-center white--text>
-          &copy;2018 — <strong>Office WALLET</strong>
-        </v-flex>
-      </v-layout>
-    </v-footer>
+     <v-content>
+       <!-- <v-fade-transition mode="out-in"> -->
+       <v-footer height="auto" class="pink accent-1">
+         <v-layout row wrap justify-center>
+          <v-btn
+            color="white"
+            flat
+            v-for="link in links"
+            :key="link"
+            @click="tapFooter(link)"
+          >
+            {{ link }}
+          </v-btn>
+          <v-flex xs12 py-3 text-xs-center white--text>
+            &copy;2018 — <strong>Office WALLET</strong>
+          </v-flex>
+        </v-layout>
+      </v-footer>
+      <!--  </v-fade-transition> -->
+    </v-content>
   </v-app>
   <!-- </div> -->
 </template>
