@@ -78,20 +78,15 @@
        <!-- <v-btn icon><v-icon>refresh</v-icon></v-btn> -->
        <!-- <v-btn icon><v-icon>more_vert</v-icon></v-btn> -->
      </v-toolbar>
-
-     <!-- 真ん中のView -->
      <v-content>
+      <!-- 真ん中のView -->
       <v-container fluid fill-height>
         <v-fade-transition mode="out-in">
           <router-view></router-view>
         </v-fade-transition>
       </v-container>
-     </v-content>
-
-     <!-- フッター -->
-     <!-- <v-content> -->
-       <!-- <v-fade-transition mode="out-in"> -->
-       <v-footer height="auto" class="pink accent-1">
+       <!-- フッター -->
+      <v-footer height="auto" class="pink accent-1">
          <v-layout row wrap justify-center>
           <v-btn
             color="white"
@@ -107,8 +102,7 @@
           </v-flex>
         </v-layout>
       </v-footer>
-      <!--  </v-fade-transition> -->
-    <!-- </v-content> -->
+     </v-content>
   </v-app>
   <!-- </div> -->
 </template>
