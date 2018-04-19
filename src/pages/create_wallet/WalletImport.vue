@@ -63,6 +63,8 @@
 <script>
  // import axios from 'axios'
  import DialogQRreader from '@/components/QRreader'
+ import nemWrapper from '@/js/nem_wrapper'
+
  export default {
    data: () => ({
      valid: true,
@@ -90,6 +92,8 @@
    methods: {
      submit () {
        console.log('submit')
+       let account = nemWrapper.createWalletWithPrivateKey(this.name, this.privateKey)
+       console.log(account)
      },
      clear () {
        this.$refs.form.reset()

@@ -11,6 +11,8 @@ const VALUE_NAME = 'name'
 const VALUE_DESCRIPTION = 'description'
 const VALUE_WALLET_ACCOUNT = 'walletAccount'
 const VALUE_CRYPTO_KIND = 'cryptoKind'
+const VALUE_ADDRESS = 'address'
+const VALUE_CREATION_DATE = 'creationDate'
 // const VALUE_DATA = 'data'
 
 // メッセージ.
@@ -19,11 +21,14 @@ const MESSAGE_ERROR = 'error'
 
 // 外部公開.
 exports.KEY_WALLET_INFO = KEY_WALLET_INFO
+exports.VALUE_PRIMARY_ID = VALUE_PRIMARY_ID
 exports.VALUE_ALL = VALUE_ALL
 exports.VALUE_NAME = VALUE_NAME
 exports.VALUE_DESCRIPTION = VALUE_DESCRIPTION
 exports.VALUE_WALLET_ACCOUNT = VALUE_WALLET_ACCOUNT
 exports.VALUE_CRYPTO_KIND = VALUE_CRYPTO_KIND
+exports.VALUE_ADDRESS = VALUE_ADDRESS
+exports.VALUE_CREATION_DATE = VALUE_CREATION_DATE
 
 // KeyNameの最大値を取得.
 var getKeyMaxNumber = (dataList, keyName) => {
@@ -41,7 +46,7 @@ var getDataFromKey = (dataList, keyName, keyId) => {
   let result = null
   if (dataList === null) return result
   dataList.forEach((element, index, array) => {
-    if (keyId === element[keyName]) { return element }
+    if (keyId === element[keyName]) { result = element }
   })
   return result
 }
@@ -139,7 +144,8 @@ exports.getItemArray = (key, id) => {
         if (id === VALUE_ALL) {
           resolve(result)
         } else {
-          resolve(getDataFromKey(result, VALUE_PRIMARY_ID, id))
+          let data = getDataFromKey(result, VALUE_PRIMARY_ID, id)
+          resolve(data)
         }
       }).catch((err) => {
         console.log('getItemArray err:' + err)

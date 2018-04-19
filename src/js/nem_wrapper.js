@@ -1,7 +1,12 @@
-import {AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password} from 'nem-library'
+import {AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey} from 'nem-library'
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
 const PASSWORD = 'password'
+const PUBLICK_KEY = 'publicKey'
+const PRIVATE_KEY = 'privateKey'
+
+exports.PUBLICK_KEY = PUBLICK_KEY
+exports.PRIVATE_KEY = PRIVATE_KEY
 
 // Using custom NIS Node
 const accountHttp = new AccountHttp([
@@ -25,15 +30,20 @@ exports.getAccount = (addr) => {
   return promise
 }
 
-// 秘密鍵を取得.
-exports.getPrivateKey = (account) => {
+// 公開鍵と秘密鍵を取得.
+exports.getPairKey = (account) => {
+  const address = new Address(account.address.value)
+  const encryptedPrivateKey = new EncryptedPrivateKey(account.encryptedPrivateKey.encryptedKey, account.encryptedPrivateKey.iv)
+  const simpleWallet = new SimpleWallet(account.name, account.network, address, account.creationDate, encryptedPrivateKey)
+
   const password = new Password(PASSWORD)
-  const wallet = account.open(password)
-  console.log(wallet)
-  // const address = wallet['address']['value']
-  // const publicKey = wallet['publicKey']
-  const privateKey = wallet['privateKey']
-  return privateKey
+  const wallet = simpleWallet.open(password)
+  // console.log(wallet)
+  let pairKey = {}
+  pairKey[PUBLICK_KEY] = wallet[PUBLICK_KEY]
+  pairKey[PRIVATE_KEY] = wallet[PRIVATE_KEY]
+  console.log(pairKey)
+  return pairKey
 }
 
 // accountを保存する方が良い
@@ -48,12 +58,5 @@ exports.createWalletWithPrivateKey = (name, privateKey) => {
   const password = new Password(PASSWORD)
   const account = SimpleWallet.createWithPrivateKey(name, password, privateKey)
   console.log(account)
-  const wallet = account.open(password)
-  console.log(wallet)
-
-  const address = wallet['address']['value']
-  const publicKey = wallet['publicKey']
-  console.log(address)
-  console.log(publicKey)
-  console.log(privateKey)
+  return account
 }
