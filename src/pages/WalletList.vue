@@ -20,29 +20,33 @@
             </template>
           </v-list>
         </v-card>
-        <!-- ウォレットダイアログ -->
-        <dialogWallet  v-bind:dialogVal="isShowDialog"
-                       v-bind:idVal="selectId"
-                       v-on:dialog-wallet-detail-event-close="close()"></dialogWallet>
+        <v-card>
+        <v-card-text style="height: 20px; position: relative">
+            <v-btn
+              absolute
+              dark
+              fab
+              bottom
+              right
+              color="pink"
+              @click="tapAdd()"
+            >
+              <v-icon>add</v-icon>
+            </v-btn>
+            </v-card-text>
+          </v-card>
       </v-flex>
     </v-layout>
 </template>
 
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
-  import DialogWallet from '@/components/DialogWalletDetail'
-
   export default {
     data: () => ({
-      isShowDialog: false,
-      selectId: -1,
       items: [
         { header: 'ウォレット一覧' }
       ]
     }),
-    components: {
-      'dialogWallet': DialogWallet
-    },
     mounted () {
       console.log('mounted')
       this.reloadItems()
@@ -72,12 +76,11 @@
           })
       },
       tapItem (index) {
-        this.selectId = this.items[index].id
-        this.isShowDialog = true
-        console.log('tap:' + index + ' id:' + this.selectId)
+        console.log('tap:' + index + ' id:' + this.items[index].id)
+        this.$router.push({ name: 'WalletDetail', params: {id: Number.parseInt(this.items[index].id)} })
       },
-      close (message) {
-        this.isShowDialog = false
+      tapAdd () {
+        this.$router.push({ name: 'Create' })
       }
     }
   }

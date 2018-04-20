@@ -46,7 +46,7 @@ exports.getPairKey = (account) => {
   return pairKey
 }
 
-// accountを保存する方が良い
+// ウォレット作成.
 exports.createWallet = (name) => {
   const password = new Password(PASSWORD)
   const account = SimpleWallet.create(name, password)
@@ -54,9 +54,25 @@ exports.createWallet = (name) => {
   return account
 }
 
+// 秘密鍵からウォレット作成.
 exports.createWalletWithPrivateKey = (name, privateKey) => {
   const password = new Password(PASSWORD)
   const account = SimpleWallet.createWithPrivateKey(name, password, privateKey)
   console.log(account)
   return account
+}
+
+// QRコード用のJSONデータを取得.
+exports.getJSONInvoiceForQRcode = (v, type, name, addr, amount, msg) => {
+  let json = {
+    v: v,
+    type: type,
+    data: {
+      name: name,
+      addr: addr,
+      amount: amount,
+      msg: msg
+    }
+  }
+  return json
 }

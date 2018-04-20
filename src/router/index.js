@@ -7,22 +7,14 @@ import VueLocalForage from 'vue-localforage'
 // import LocalForage from 'localforage'
 import Vuetify from 'vuetify'
 import colors from 'vuetify/es5/util/colors'
-
+import VueQriously from 'vue-qriously'
 // CreatePage
-// import Hello from '@/components/Hello'
-/*
-import TopPage from '@/components/TopPage'
-import Create from '@/components/Create'
-import WalletCreate from '@/components/create_wallet/WalletCreate'
-import WalletImport from '@/components/create_wallet/WalletImport'
-import WalletList from '@/components/WalletList'
-import Setting from '@/components/Setting'
-*/
 import TopPage from '@/pages/TopPage'
 import Create from '@/pages/Create'
 import WalletCreate from '@/pages/create_wallet/WalletCreate'
 import WalletImport from '@/pages/create_wallet/WalletImport'
 import WalletList from '@/pages/WalletList'
+import WalletDetail from '@/pages/WalletDetail'
 import Setting from '@/pages/Setting'
 
 Vue.use(Router)
@@ -36,6 +28,7 @@ Vue.use(Vuetify, {
 })
 Vue.use(VueQrcodeReader)
 Vue.use(VueLocalForage)
+Vue.use(VueQriously)
 
 export default new Router({
   routes: [
@@ -63,6 +56,12 @@ export default new Router({
       path: '/walletlist',
       name: 'WalletList',
       component: WalletList
+    },
+    {
+      path: '/walletDetail/:id',
+      name: 'WalletDetail',
+      component: WalletDetail,
+      props: true
     },
     {
       path: '/setting',

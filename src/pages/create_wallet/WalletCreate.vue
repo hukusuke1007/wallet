@@ -42,7 +42,6 @@
 
 <script>
  // import axios from 'axios'
- // import localForage from 'localforage'
  import nemWrapper from '@/js/nem_wrapper'
  import localDatabaseWrapper from '@/js/local_database_wrapper'
  import DialogConfirm from '@/components/DialogConfirm'
@@ -55,7 +54,6 @@
      dialogMsg: '',
      name: '',
      description: '',
-     localforage_data: {},
      nameRules: [
        value => !!value || '名前を入力してください',
        value => (value && value.length <= 16) || '最大文字数を超えています。'

@@ -1,17 +1,17 @@
 <template>
-  <!-- <v-layout row justify-center> -->
-	<v-dialog v-model="dialog" max-width="290">
-	  <v-card>
-	    <v-card-title class="headline">{{ titleVal }}</v-card-title>
-	    <v-card-text>{{ messageVal }}</v-card-text>
-	    <v-card-actions>
-	      <v-spacer></v-spacer>
-	      <!-- <v-btn color="green darken-1" flat="flat" @click.native="dialog = false">Disagree</v-btn> -->
-	      <v-btn color="green darken-1" flat="flat" @click.native="tapNotify(true, 'OK')">OK</v-btn>
-	    </v-card-actions>
-	  </v-card>
-	</v-dialog>
-  <!-- </v-layout> -->
+  <v-layout row justify-center>
+  <v-dialog v-model="dialog" scrollable max-width="500px">
+   <v-card>
+     <v-card-title class="headline">{{ titleVal }}</v-card-title>
+     <v-card-text>{{ messageVal }}</v-card-text>
+     <v-card-actions>
+       <v-spacer></v-spacer>
+       <!-- <v-btn color="green darken-1" flat="flat" @click.native="dialog = false">Disagree</v-btn> -->
+       <v-btn color="green darken-1" flat="flat" @click.native="tapNotify(true, 'OK')">OK</v-btn>
+     </v-card-actions>
+   </v-card>
+  </v-dialog>
+  </v-layout>
 </template>
 
 <script>

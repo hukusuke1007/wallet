@@ -27,6 +27,7 @@
     "vue": "^2.5.2",
     "vue-localforage": "^0.2.5",
     "vue-qrcode-reader": "^0.7.2",
+    "vue-qriously": "^1.1.1",
     "vue-router": "^3.0.1",
     "vuetify": "^1.0.14",
     "yarn": "^1.5.1"
