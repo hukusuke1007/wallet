@@ -11,9 +11,16 @@
         <v-btn icon @click.native="close()" dark>
           <v-icon>close</v-icon>
         </v-btn>
-        <v-toolbar-title>ウォレット</v-toolbar-title>
+        <v-toolbar-title>ウォレット {{ name }}</v-toolbar-title>
       </v-toolbar>
       <v-flex>
+        <p>{{ idVal }}</p>
+        <p>{{ date }}</p>
+        <p>{{ name }}</p>
+        <p>{{ address }}</p>
+        <p>{{ publicKey }}</p>
+        <p>{{ privateKey }}</p>
+        <!--
         <p>{{ message }}</p>
         <p>{{ item.id }}</p>
         <p>{{ item.date }}</p>
@@ -21,6 +28,7 @@
         <p>{{ item.address }}</p>
         <p>{{ item.publicKey }}</p>
         <p>{{ item.privateKey }}</p>
+        -->
       </v-flex>
     </v-card>
   </v-dialog>
@@ -34,8 +42,12 @@
   export default {
     data: () => ({
       dialog: false,
-      message: 'first',
-      item: {}
+      date: '',
+      name: '',
+      description: '',
+      address: '',
+      publicKey: '',
+      privateKey: ''
     }),
     mounted () {
       console.log('mounted')
@@ -56,7 +68,12 @@
         if (this.dialog === true) {
           this.reloadItem()
         } else {
-          this.item = {}
+          this.date = ''
+          this.name = ''
+          this.description = ''
+          this.address = ''
+          this.publicKey = ''
+          this.privateKey = ''
         }
       }
     },
@@ -65,17 +82,13 @@
         console.log('reloadItem:' + this.idVal)
         dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.idVal)
           .then((result) => {
-            this.item.id = result[dbWrapper.VALUE_PRIMARY_ID]
-            this.item.date = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
-            this.item.name = result[dbWrapper.VALUE_NAME]
-            this.item.description = result[dbWrapper.VALUE_DESCRIPTION]
-            this.item.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-
+            this.date = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
+            this.name = result[dbWrapper.VALUE_NAME]
+            this.description = result[dbWrapper.VALUE_DESCRIPTION]
+            this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
             let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-            this.item[nemWrapper.PUBLICK_KEY] = pairKey[nemWrapper.PUBLICK_KEY]
-            this.item[nemWrapper.PRIVATE_KEY] = pairKey[nemWrapper.PRIVATE_KEY]
-            console.log(this.item)
-            this.message = this.idVal
+            this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
+            this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
           }).catch((err) => {
             console.log(err)
             this.message = err

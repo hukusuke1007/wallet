@@ -79,13 +79,18 @@
        <!-- <v-btn icon><v-icon>more_vert</v-icon></v-btn> -->
      </v-toolbar>
      <v-content>
+
       <!-- 真ん中のView -->
-      <v-container fluid fill-height>
+      <!-- <v-container fluid fill-height> -->
+        <v-container fluid>
         <v-fade-transition mode="out-in">
           <router-view></router-view>
         </v-fade-transition>
-      </v-container>
-       <!-- フッター -->
+        </v-container>
+      <!-- </v-container> -->
+     </v-content>
+
+      <!-- フッター -->
       <v-footer height="auto" class="pink accent-1">
          <v-layout row wrap justify-center>
           <v-btn
@@ -102,7 +107,6 @@
           </v-flex>
         </v-layout>
       </v-footer>
-     </v-content>
   </v-app>
   <!-- </div> -->
 </template>

@@ -20,12 +20,11 @@
             </template>
           </v-list>
         </v-card>
+        <!-- ウォレットダイアログ -->
+        <dialogWallet  v-bind:dialogVal="isShowDialog"
+                       v-bind:idVal="selectId"
+                       v-on:dialog-wallet-detail-event-close="close()"></dialogWallet>
       </v-flex>
-
-      <!-- ウォレットダイアログ -->
-      <dialogWallet  v-bind:dialogVal="isShowDialog"
-                     v-bind:idVal="selectId"
-                     v-on:dialog-wallet-detail-event-close="close()"></dialogWallet>
     </v-layout>
 </template>
 
