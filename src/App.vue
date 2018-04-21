@@ -170,6 +170,8 @@ export default {
   word-break: break-all;
 }
 
+.font-color-shamrock { color: #2FCDB4; }
+
  /*
 a {
   text-decoration: none;

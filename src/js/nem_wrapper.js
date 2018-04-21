@@ -1,33 +1,56 @@
-import {AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey} from 'nem-library'
+import {AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, Message} from 'nem-library'
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
 const PASSWORD = 'password'
 const PUBLICK_KEY = 'publicKey'
 const PRIVATE_KEY = 'privateKey'
+const NEM_UNIT = 1000000
 
 exports.PUBLICK_KEY = PUBLICK_KEY
 exports.PRIVATE_KEY = PRIVATE_KEY
+exports.NEM_UNIT = NEM_UNIT
 
 // Using custom NIS Node
 const accountHttp = new AccountHttp([
   {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
   {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'thomas1.supernode.me.supernode.me', port: 7891},
+  // {protocol: 'https', domain: 'thomas1.supernode.me.supernode.me', port: 7891}, 死んだ？
   {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
   {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
   {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
 ])
 // const accountHttp = new AccountHttp()
 
+// アカウント取得.
 exports.getAccount = (addr) => {
   let promise = new Promise((resolve, reject) => {
+    console.log(addr)
     const address = new Address(addr)
     accountHttp.getFromAddress(address).subscribe(accountInfoWithMetaData => {
-      console.log(accountInfoWithMetaData)
+      // console.log(accountInfoWithMetaData)
       resolve(accountInfoWithMetaData)
     })
   })
   return promise
+}
+
+// トランザクション履歴を取得
+exports.getTransaction = (addr, pageSize, hash, id) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log(addr)
+    const address = new Address(addr)
+    let params = { pageSize: pageSize, hash: hash, id: id }
+    accountHttp.allTransactions(address, params).subscribe(transaction => {
+      // console.log(transaction)
+      resolve(transaction)
+    })
+  })
+  return promise
+}
+
+// メッセージ取得.
+exports.getMessageFromPlain = (hex) => {
+  return Message.decodeHex(hex)
 }
 
 // 公開鍵と秘密鍵を取得.
@@ -42,7 +65,7 @@ exports.getPairKey = (account) => {
   let pairKey = {}
   pairKey[PUBLICK_KEY] = wallet[PUBLICK_KEY]
   pairKey[PRIVATE_KEY] = wallet[PRIVATE_KEY]
-  console.log(pairKey)
+  // console.log(pairKey)
   return pairKey
 }
 

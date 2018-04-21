@@ -24,49 +24,15 @@
           <v-tab-item v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :id="`tab-${tabItem.id}`">
               <!-- アカウント -->
               <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-0`">
-                <v-form v-model="valid" ref="form" lazy-validation>
-                  <v-text-field
-                    box
-                    label="ウォレット名"
-                    v-model="name"
-                    :rules="nameRules"
-                    :counter="16"
-                    required
-                  ></v-text-field>
-                  <v-text-field
-                    box
-                    multi-line
-                    label="ウォレットの説明"
-                    v-model="description"
-                    :rules="descriptionRules"
-                    :counter="1024"
-                  ></v-text-field>
-                </v-form>
-                <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ address }}</v-card-text>
-                <v-subheader>公開鍵</v-subheader><v-card-text>{{ publicKey }}</v-card-text>
-                <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
-                <v-subheader>アカウントのQRコード</v-subheader>
-                <qriously v-model="qrValue" :size="300"></qriously>
-                <br>
-                <!-- ダイアログ -->
-                <dialogConfirm v-bind:dialogVal="isShowDialog"
-                               titleVal="秘密鍵"
-                               v-bind:messageVal="privateKey"
-                               v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
+                <nemAccount v-bind:id="id"></nemAccount>
               </v-flex>
               <!-- 送金履歴 -->
               <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-1`">
-                <v-card-text>{{ tabItem.data }}</v-card-text>
+                <nemTransactionHistory v-bind:id="id"></nemTransactionHistory>
               </v-flex>
               <!-- 送金 -->
               <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-2`">
-                <v-card-text>{{ tabItem.data }}</v-card-text>
-                <p>{{ id }}</p>
-                <p>{{ date }}</p>
-                <p>{{ name }}</p>
-                <p>{{ address }}</p>
-                <p>{{ publicKey }}</p>
-                <p>{{ privateKey }}</p>
+                <nemTransactionCreate v-bind:id="id"></nemTransactionCreate>
               </v-flex>
           </v-tab-item>
         </v-tabs-items>
@@ -74,89 +40,42 @@
     </v-card>
   </v-flex>
 </template>
-
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
-  import nemWrapper from '@/js/nem_wrapper'
-  import DialogConfirm from '@/components/DialogConfirm'
-
+  import NemAccount from '@/components/NemAccount'
+  import NemTransactionHistory from '@/components/NemTransactionHistory'
+  import NemTransactionCreate from '@/components/NemTransactionCreate'
   export default {
     data: () => ({
       tab: 'tab-0',
       tabItems: [ {id: 0, data: 'アカウント'}, {id: 1, data: '送金履歴'}, {id: 2, data: '送金'} ],
-      valid: true,
-      date: '',
-      name: '',
-      description: '',
-      address: '',
-      publicKey: '',
-      privateKey: '',
-      qrValue: '',
-      isShowDialog: false,
-      nameRules: [
-        value => !!value || '名前を入力してください',
-        value => (value && value.length <= 16) || '最大文字数を超えています。'
-      ],
-      descriptionRules: [
-        value => (value.length <= 1024) || '最大文字数を超えています。'
-      ],
-      addressRules: [
-        value => (value.length <= 1024) || '最大文字数を超えています。'
-      ]
+      name: ''
     }),
     components: {
-      'dialogConfirm': DialogConfirm
+      'nemAccount': NemAccount,
+      'nemTransactionHistory': NemTransactionHistory,
+      'nemTransactionCreate': NemTransactionCreate
     },
     mounted () {
-      console.log('mounted')
       this.reloadItem()
     },
     props: {
       id: {
-        type: Number,
+        type: String,
         default: -1
       }
     },
-    /*
-    watch: {
-      dialogVal (val) {
-        this.dialog = val
-        if (this.dialog === true) {
-          this.reloadItem()
-        } else {
-          this.date = ''
-          this.name = ''
-          this.description = ''
-          this.address = ''
-          this.publicKey = ''
-          this.privateKey = ''
-        }
-      }
-    },
-    */
     methods: {
       reloadItem () {
-        console.log('reloadItem:' + this.id)
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
+        let id = Number.parseInt(this.id)
+        // console.log('reloadItem:' + id)
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
           .then((result) => {
-            this.date = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
             this.name = result[dbWrapper.VALUE_NAME]
-            this.description = result[dbWrapper.VALUE_DESCRIPTION]
-            this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-            let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-            this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
-            this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
-            this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description))
           }).catch((err) => {
             console.log(err)
             this.message = err
           })
-      },
-      showPrivateKey () {
-        this.isShowDialog = true
-      },
-      tapPositive (message) {
-        this.isShowDialog = false
       },
       deleteWallet () {
         console.log('delete')

@@ -50,8 +50,12 @@
       <v-btn color="grey" class="white--text" @click="back">戻る</v-btn>
       </v-flex>
     </v-form>
-
     <!-- ダイアログ -->
+    <dialogConfirm v-bind:dialogVal="isShowDialog"
+                   titleVal="ウォレット作成"
+                   v-bind:messageVal="dialogMsg"
+                   v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
+    <!-- QRダイアログ -->
     <dialogQRreader v-bind:dialogVal="isShowDialogQRreader"
                     v-bind:pauseVal="paused"
                     typeVal="privateKey"
@@ -62,8 +66,10 @@
 
 <script>
  // import axios from 'axios'
- import DialogQRreader from '@/components/QRreader'
  import nemWrapper from '@/js/nem_wrapper'
+ import localDatabaseWrapper from '@/js/local_database_wrapper'
+ import DialogConfirm from '@/components/DialogConfirm'
+ import DialogQRreader from '@/components/QRreader'
 
  export default {
    data: () => ({
@@ -74,6 +80,9 @@
      name: '',
      description: '',
      privateKey: '',
+     isShowDialog: false,
+     isError: false,
+     dialogMsg: '',
      nameRules: [
        value => !!value || '名前を入力してください',
        value => (value && value.length <= 16) || '最大文字数を超えています。'
@@ -87,13 +96,32 @@
      ]
    }),
    components: {
+     'dialogConfirm': DialogConfirm,
      'dialogQRreader': DialogQRreader
    },
    methods: {
      submit () {
-       console.log('submit')
-       let account = nemWrapper.createWalletWithPrivateKey(this.name, this.privateKey)
-       console.log(account)
+       if (this.$refs.form.validate()) {
+         console.log('submit')
+         // let account = nemWrapper.createWalletWithPrivateKey(this.name, this.privateKey)
+         // console.log(account)
+         let storeData = {}
+         storeData[localDatabaseWrapper.VALUE_NAME] = this.name
+         storeData[localDatabaseWrapper.VALUE_DESCRIPTION] = this.description
+         storeData[localDatabaseWrapper.VALUE_WALLET_ACCOUNT] = nemWrapper.createWalletWithPrivateKey(this.name, this.privateKey)
+         localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, false, -1)
+           .then((result) => {
+             console.log(result)
+             this.isError = false
+             this.isShowDialog = true
+             this.dialogMsg = 'ウォレットを作成しました。'
+           }).catch((err) => {
+             console.log(err)
+             this.isError = true
+             this.isShowDialog = true
+             this.dialogMsg = 'ERROR:ウォレットのデータ保存に失敗しました。'
+           })
+       }
      },
      clear () {
        this.$refs.form.reset()
@@ -116,6 +144,14 @@
          console.log(message)
          this.paused = true
          this.isShowDialogQRreader = false
+       }
+     },
+     tapPositive (message) {
+       console.log(message)
+       if (this.isShowDialog === true) {
+         this.isShowDialog = false
+         // 画面遷移.
+         if (this.isError !== true) { this.$router.push({ path: '/walletlist' }) }
        }
      }
    }

@@ -81,7 +81,7 @@ exports.setItem = (key, data) => {
         console.log('setItem result', result)
         resolve(MESSAGE_SUCCESS)
       }).catch((err) => {
-        console.log('err' + err)
+        console.error('err' + err)
         reject(err)
       })
   })
@@ -109,11 +109,11 @@ exports.setItemArray = (key, data, isUpdate, updateId) => {
             console.log('setItemArray set result', result)
             resolve(MESSAGE_SUCCESS)
           }).catch((err) => {
-            console.log('err:' + err)
+            console.error('err:' + err)
             reject(err)
           })
       }).catch((err) => {
-        console.log('err:' + err)
+        console.error('err:' + err)
         reject(err)
       })
   })
@@ -128,7 +128,7 @@ exports.getItem = (key) => {
         console.log('getItem result:', result)
         resolve(result)
       }).catch((err) => {
-        console.log('getItem err:' + err)
+        console.error('getItem err:' + err)
         reject(err)
       })
   })
@@ -140,7 +140,7 @@ exports.getItemArray = (key, id) => {
   let promise = new Promise((resolve, reject) => {
     localForage.getItem(key)
       .then((result) => {
-        console.log('getItemArray result:', result)
+        // console.log('getItemArray result:', result)
         if (id === VALUE_ALL) {
           resolve(result)
         } else {
@@ -148,7 +148,7 @@ exports.getItemArray = (key, id) => {
           resolve(data)
         }
       }).catch((err) => {
-        console.log('getItemArray err:' + err)
+        console.error('getItemArray err:' + err)
         reject(err)
       })
   })
@@ -163,7 +163,7 @@ exports.removeItem = (key) => {
         console.log('removeItem result:', result)
         resolve(MESSAGE_SUCCESS)
       }).catch((err) => {
-        console.log('err:' + err)
+        console.error('err:' + err)
         reject(err)
       })
   })
@@ -179,7 +179,7 @@ exports.removeItemArray = (key, id) => {
           console.log('removeItemArray result:', result)
           resolve(MESSAGE_SUCCESS)
         }).catch((err) => {
-          console.log('err:' + err)
+          console.error('err:' + err)
           reject(err)
         })
     } else {
@@ -193,14 +193,14 @@ exports.removeItemArray = (key, id) => {
                 console.log('removeItemArray set result', result)
                 resolve(MESSAGE_SUCCESS)
               }).catch((err) => {
-                console.log('err:' + err)
+                console.error('err:' + err)
                 reject(err)
               })
           } else {
             resolve(MESSAGE_ERROR)
           }
         }).catch((err) => {
-          console.log('err:' + err)
+          console.error('err:' + err)
           reject(err)
         })
     }
