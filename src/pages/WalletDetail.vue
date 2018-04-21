@@ -19,58 +19,58 @@
         </v-tabs>
        </v-toolbar>
       <!-- 各タブの内容 -->
-      <v-tabs-items v-model="tab">
-        <v-tab-item v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :id="`tab-${tabItem.id}`">
-          <v-card flat>
-            <!-- アカウント -->
-            <v-flex sm10 offset-sm1 v-if="tab === `tab-0`">
-              <v-form v-model="valid" ref="form" lazy-validation>
-                <v-text-field
-                  box
-                  label="ウォレット名"
-                  v-model="name"
-                  :rules="nameRules"
-                  :counter="16"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  box
-                  multi-line
-                  label="ウォレットの説明"
-                  v-model="description"
-                  :rules="descriptionRules"
-                  :counter="1024"
-                ></v-text-field>
-              </v-form>
-              <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ address }}</v-card-text>
-              <v-subheader>公開鍵</v-subheader><v-card-text>{{ publicKey }}</v-card-text>
-              <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
-              <v-subheader>アカウントのQRコード</v-subheader>
-              <qriously v-model="qrValue" :size="300" />
-              <br>
-              <!-- ダイアログ -->
-              <dialogConfirm v-bind:dialogVal="isShowDialog"
-                             titleVal="秘密鍵"
-                             v-bind:messageVal="privateKey"
-                             v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
-            </v-flex>
-            <!-- 送金履歴 -->
-            <v-flex sm10 offset-sm1 v-if="tab === `tab-1`">
-              <v-card-text>{{ tabItem.data }}</v-card-text>
-            </v-flex>
-            <!-- 送金 -->
-            <v-flex sm10 offset-sm1 v-if="tab === `tab-2`">
-              <v-card-text>{{ tabItem.data }}</v-card-text>
-              <p>{{ id }}</p>
-              <p>{{ date }}</p>
-              <p>{{ name }}</p>
-              <p>{{ address }}</p>
-              <p>{{ publicKey }}</p>
-              <p>{{ privateKey }}</p>
-            </v-flex>
-          </v-card>
-        </v-tab-item>
-      </v-tabs-items>
+      <div class="w-break">
+        <v-tabs-items v-model="tab">
+          <v-tab-item v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :id="`tab-${tabItem.id}`">
+              <!-- アカウント -->
+              <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-0`">
+                <v-form v-model="valid" ref="form" lazy-validation>
+                  <v-text-field
+                    box
+                    label="ウォレット名"
+                    v-model="name"
+                    :rules="nameRules"
+                    :counter="16"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    box
+                    multi-line
+                    label="ウォレットの説明"
+                    v-model="description"
+                    :rules="descriptionRules"
+                    :counter="1024"
+                  ></v-text-field>
+                </v-form>
+                <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ address }}</v-card-text>
+                <v-subheader>公開鍵</v-subheader><v-card-text>{{ publicKey }}</v-card-text>
+                <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
+                <v-subheader>アカウントのQRコード</v-subheader>
+                <qriously v-model="qrValue" :size="300"></qriously>
+                <br>
+                <!-- ダイアログ -->
+                <dialogConfirm v-bind:dialogVal="isShowDialog"
+                               titleVal="秘密鍵"
+                               v-bind:messageVal="privateKey"
+                               v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
+              </v-flex>
+              <!-- 送金履歴 -->
+              <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-1`">
+                <v-card-text>{{ tabItem.data }}</v-card-text>
+              </v-flex>
+              <!-- 送金 -->
+              <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-2`">
+                <v-card-text>{{ tabItem.data }}</v-card-text>
+                <p>{{ id }}</p>
+                <p>{{ date }}</p>
+                <p>{{ name }}</p>
+                <p>{{ address }}</p>
+                <p>{{ publicKey }}</p>
+                <p>{{ privateKey }}</p>
+              </v-flex>
+          </v-tab-item>
+        </v-tabs-items>
+      </div>
     </v-card>
   </v-flex>
 </template>
@@ -169,6 +169,5 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
-
+<style scoped>
 </style>

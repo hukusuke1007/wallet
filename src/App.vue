@@ -82,11 +82,11 @@
 
       <!-- 真ん中のView -->
       <!-- <v-container fluid fill-height> -->
-        <v-container fluid>
+      <v-container fluid>
         <v-fade-transition mode="out-in">
           <router-view></router-view>
         </v-fade-transition>
-        </v-container>
+      </v-container>
       <!-- </v-container> -->
      </v-content>
 
@@ -157,8 +157,6 @@ export default {
 </script>
 
 <style>
-
-
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -166,6 +164,10 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.w-break {
+  word-break: break-all;
 }
 
  /*
