@@ -2,7 +2,7 @@
     <v-card flat>
       <div class="w-break">
         <v-subheader>ウォレット</v-subheader><v-card-text><h3>{{ name }}</h3></v-card-text>
-        <v-subheader>残高</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }}</h2></v-card-text>
+        <v-subheader>残高</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
         <v-form v-model="valid" ref="form" lazy-validation>
           <v-text-field
             box

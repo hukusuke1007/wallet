@@ -4,7 +4,7 @@
      <v-card>
        <div class="w-break">
          <v-card-title class="headline">{{ titleVal }}</v-card-title>
-         <v-card-text>{{ messageVal }}</v-card-text>
+         <v-card-text v-html="messageVal"></v-card-text>
        </div>
        <v-card-actions>
          <v-spacer></v-spacer>

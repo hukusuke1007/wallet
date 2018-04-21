@@ -6,7 +6,7 @@
               <v-list-tile v-else ripple :key="index" @click="tapItem(index)">
                 <v-list-tile-content v-show="item.type === `TransferTransaction`">
                   <v-list-tile-title>通貨: {{ item.name }}:{{ item.namespace }}</v-list-tile-title>
-                  <v-list-tile-sub-title>受取先: {{ item.recipientAddr }}</v-list-tile-sub-title>
+                  <!-- <v-list-tile-sub-title>受取先: {{ item.recipientAddr }}</v-list-tile-sub-title> -->
                   <v-list-tile-sub-title>送金量: {{ item.amount }}</v-list-tile-sub-title>
                   <v-list-tile-sub-title>メッセージ: {{ item.message }}</v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -125,7 +125,13 @@
           })
       },
       tapItem (index) {
-        this.title = '送金履歴: ' + index
+        let item = this.items[index]
+        this.title = item.timeStamp
+        this.dialogMessage = '送金量:<br>' + item.amount + ' ' + item.name + '<br><br>' +
+                             '手数量:<br>' + item.fee + ' xem<br><br>' +
+                             '送金先:<br>「' + item.senderAddr + '」から<br>' + '「' + item.recipientAddr + '」へ<br><br>' +
+                             'ハッシュ:<br>' + item.hash + '<br><br>' +
+                             'メッセージ:<br>' + item.message
         this.isShowDialog = true
       },
       tapPositive (message) {
