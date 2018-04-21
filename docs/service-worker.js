@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.0.1/workbox-sw.js");
 
 importScripts(
-  "./precache-manifest.7cab12a94e04ec13b938f1f236a8746f.js"
+  "./precache-manifest.7f580945559253e189ead11144fe54c6.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "wallet"});
@@ -232,6 +232,10 @@ self.__precacheManifest = [
     "revision": "799bcf1ffd53e5d415ca082d8e157c04"
   },
   {
+    "url": "precache-manifest.7cab12a94e04ec13b938f1f236a8746f.js",
+    "revision": "7cab12a94e04ec13b938f1f236a8746f"
+  },
+  {
     "url": "precache-manifest.892731b093129274fc96e6c2b00ec1a7.js",
     "revision": "892731b093129274fc96e6c2b00ec1a7"
   },
@@ -425,10 +429,10 @@ self.__precacheManifest = [
   },
   {
     "url": "service-worker.js",
-    "revision": "e1bc1d2cf987e40199725e1307d468a4"
+    "revision": "f507c773653389675fb7b9e5cbae9e66"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerRoute(/.*api.*/, workbox.strategies.networkFirst({ cacheName: "api", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":3})] }), 'GET');
+workbox.routing.registerRoute(/.*api.*/, workbox.strategies.networkFirst({ cacheName: "api", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400})] }), 'GET');
