@@ -126,7 +126,8 @@ const webpackConfig = merge(baseWebpackConfig, {
          options: {
            cacheName: 'api',
            expiration: {
-             maxAgeSeconds: 60 * 60 * 24
+             maxAgeSeconds: 3
+             // maxAgeSeconds: 60 * 60 * 24
            }
          }
        }
