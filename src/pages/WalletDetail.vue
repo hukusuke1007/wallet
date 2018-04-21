@@ -22,19 +22,12 @@
       <div class="w-break">
         <v-tabs-items v-model="tab">
           <v-tab-item v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :id="`tab-${tabItem.id}`">
-              <!-- アカウント -->
-              <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-0`">
-                <nemAccount v-bind:id="id"></nemAccount>
-              </v-flex>
-              <!-- 送金履歴 -->
-              <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-1`">
-                <nemTransactionHistory v-bind:id="id"></nemTransactionHistory>
-              </v-flex>
-              <!-- 送金 -->
-              <v-flex xs12 sm10 offset-sm1 v-show="tab === `tab-2`">
-                <nemTransactionCreate v-bind:id="id"></nemTransactionCreate>
-              </v-flex>
           </v-tab-item>
+          <v-flex xs12 sm10 offset-sm1>
+            <nemAccount v-bind:id="id" v-show="tab === `tab-0`"></nemAccount>
+            <nemTransactionHistory v-bind:id="id" v-show="tab === `tab-1`"></nemTransactionHistory>
+            <nemTransactionCreate v-bind:id="id" v-show="tab === `tab-2`"></nemTransactionCreate>
+          </v-flex>
         </v-tabs-items>
       </div>
     </v-card>
