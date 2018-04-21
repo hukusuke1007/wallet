@@ -11,7 +11,7 @@
           <v-icon>delete</v-icon>
         </v-btn>
         <!-- タブツールバー -->
-        <v-tabs color="primary" slot="extension" v-model="tab" grow>
+        <v-tabs color="primary" slot="extension" v-model="tab" centered>
           <v-tabs-slider color="yellow"></v-tabs-slider>
             <v-tab v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :href="`#tab-${tabItem.id}`">
               {{ tabItem.data }}

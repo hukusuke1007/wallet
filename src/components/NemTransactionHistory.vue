@@ -116,7 +116,8 @@
                     */
                   }
                 })
-                this.header = '送金履歴一覧 (' + this.items.length + '件）'
+                let count = this.items.length - 1
+                this.header = '送金履歴一覧 (' + count + '件）'
               })
           }).catch((err) => {
             console.log(err)
