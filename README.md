@@ -1,6 +1,6 @@
-# genio-wallet
+# wallet
 
-> genio-wallet
+> wallet
 
 ## Build Setup
 
