@@ -1,4 +1,4 @@
-import {Account, AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM, TransactionHttp, TransferTransaction} from 'nem-library'
+import {Account, AccountHttp, MosaicHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM, TransactionHttp, TransferTransaction, AccountOwnedMosaicsService} from 'nem-library'
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
 const PASSWORD = 'password'
@@ -20,6 +20,7 @@ const accountHttp = new AccountHttp([
   {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
 ])
 // const accountHttp = new AccountHttp()
+const mosaicHttp = new MosaicHttp()
 
 // アカウント取得.
 exports.getAccount = (addr) => {
@@ -53,6 +54,19 @@ exports.getTransaction = (addr, pageSize, hash, id) => {
     let params = { pageSize: pageSize, hash: hash, id: id }
     accountHttp.allTransactions(address, params).subscribe(
       transaction => { resolve(transaction) },
+      error => { reject(error) }
+    )
+  })
+  return promise
+}
+
+// 所有モザイクを取得
+exports.getMosaics = (addr) => {
+  let promise = new Promise((resolve, reject) => {
+    let address = new Address(addr)
+    let accountOwnedMosaics = new AccountOwnedMosaicsService(accountHttp, mosaicHttp)
+    accountOwnedMosaics.fromAddress(address).subscribe(
+      mosaics => { resolve(mosaics) },
       error => { reject(error) }
     )
   })

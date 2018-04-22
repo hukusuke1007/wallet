@@ -2,7 +2,20 @@
     <v-card flat>
       <v-container fluid>
         <div class="w-break">
-          <v-subheader>残高</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
+          <v-subheader>残高 (nem)</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
+          <div v-if="selectMosaic">
+            <v-subheader>モザイク残高 ({{ selectMosaic.namespaceId }})</v-subheader>
+            <v-card-text>
+              <h2 class="font-color-shamrock">{{ selectMosaic.amount }} {{ selectMosaic.name }}</h2>
+            </v-card-text>
+          </div>
+            <v-flex justify-center>
+            <v-select
+              :items="mosaics"
+              label="モザイク"
+              v-model="selectMosaic"
+              prepend-icon="view_quilt"></v-select>
+          </v-flex>
           <v-form v-model="valid" ref="form" lazy-validation>
             <v-text-field
               box
@@ -42,12 +55,15 @@
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import DialogConfirm from '@/components/DialogConfirm'
+  // import {XEM, MosaicTransferable} from 'nem-library'
 
   export default {
     data: () => ({
       valid: true,
       date: '',
       balance: 0,
+      selectMosaic: null,
+      mosaics: [],
       name: '',
       description: '',
       address: '',
@@ -89,11 +105,32 @@
             this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
             this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
             this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description))
+            // 残高取得.
             nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
                 this.balance = result.balance.balance / nemWrapper.NEM_UNIT
               }).catch((err) => {
                 console.log(err)
+              })
+            // モザイク取得.
+            nemWrapper.getMosaics(this.address)
+              .then((result) => {
+                console.log(result)
+                result.forEach((element) => {
+                  let mosaic = {}
+                  mosaic.text = element.mosaicId.namespaceId + ':' + element.mosaicId.name
+                  mosaic.namespaceId = element.mosaicId.namespaceId
+                  mosaic.name = element.mosaicId.name
+                  mosaic.amount = element.amount
+                  mosaic.divisibility = element.properties.divisibility
+                  mosaic.initialSupply = element.properties.initialSupply
+                  mosaic.supplyMutable = element.properties.supplyMutable
+                  mosaic.transferable = element.properties.transferable
+                  this.mosaics.push(mosaic)
+                })
+                this.selectMosaic = this.mosaics[0]
+              }).catch((err) => {
+                console.log('get_mosaic_error: ' + err)
               })
           }).catch((err) => {
             console.error(err)

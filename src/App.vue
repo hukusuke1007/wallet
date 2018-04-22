@@ -34,18 +34,6 @@
           </router-link>
         </v-list-tile>
 
-        <!--  CREATE -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">add_circle</v-icon>
-          </v-list-tile-action>
-          <router-link to="/create">
-          <v-list-tile-content>
-            <v-list-tile-title>ウォレット作成</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
-
         <!--  Wallet list -->
         <v-list-tile>
           <v-list-tile-action>
@@ -54,6 +42,18 @@
           <router-link to="/walletlist">
           <v-list-tile-content>
             <v-list-tile-title>ウォレット一覧</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+
+        <!--  CREATE -->
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">add_circle</v-icon>
+          </v-list-tile-action>
+          <router-link to="/create">
+          <v-list-tile-content>
+            <v-list-tile-title>ウォレット作成</v-list-tile-title>
           </v-list-tile-content>
           </router-link>
         </v-list-tile>

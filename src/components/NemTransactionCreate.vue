@@ -3,7 +3,27 @@
       <v-container fluid>
         <div class="w-break">
           <v-subheader>ウォレット</v-subheader><v-card-text><h3>{{ name }}</h3></v-card-text>
-          <v-subheader>残高</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
+          <v-subheader>残高 (nem)</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
+          <div v-if="selectMosaic">
+            <v-subheader>モザイク残高 ({{ selectMosaic.namespaceId }})</v-subheader>
+            <v-card-text>
+              <h2 class="font-color-shamrock">{{ selectMosaic.amount }} {{ selectMosaic.name }}</h2>
+            </v-card-text>
+            <v-flex xs12 sm4 md4>
+              <v-checkbox
+                label="譲渡許可"
+                v-model="selectMosaic.transferable"
+                color="success"
+                disabled
+              ></v-checkbox>
+              <v-checkbox
+                label="徴収要求"
+                v-model="selectMosaic.supplyMutable"
+                color="success"
+                disabled
+              ></v-checkbox>
+            </v-flex>
+          </div>
           <v-flex justify-center>
             <v-select
               :items="mosaics"
@@ -23,7 +43,7 @@
             ></v-text-field>
             <v-text-field
               box
-              label="送金量"
+              :label="amountLabel"
               v-model="amount"
               :rules="[rules.amountLimit, rules.amountInput]"
               required
@@ -35,7 +55,7 @@
               v-model="message"
               :rules="[rules.messageRules]"
               :counter="1024"
-              placeholder="メッセージは手数料が別途かかります"
+              placeholder="メッセージを付与すると手数料が加算されます"
             ></v-text-field>
             <v-text-field
               label="手数料(xem)"
@@ -90,8 +110,9 @@
       date: '',
       balance: 0,
       name: '',
-      mosaics: [ 'nem:xem', 'testMosaic' ],
-      selectMosaic: 'nem:xem',
+      mosaics: [],
+      selectMosaic: null,
+      amountLabel: '送金量 (xem)',
       amount: 0,
       fee: 0,
       message: '',
@@ -142,6 +163,9 @@
       },
       message (val) {
         this.showFee()
+      },
+      selectMosaic (val) {
+        this.amountLabel = '送金量 (' + val.name + ')'
       }
     },
     methods: {
@@ -186,9 +210,30 @@
             let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
             this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
             this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
+            // 残高取得
             nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
                 this.balance = result.balance.balance / nemWrapper.NEM_UNIT
+              })
+            // モザイク取得.
+            nemWrapper.getMosaics(this.address)
+              .then((result) => {
+                console.log(result)
+                result.forEach((element) => {
+                  let mosaic = {}
+                  mosaic.text = element.mosaicId.namespaceId + ':' + element.mosaicId.name
+                  mosaic.namespaceId = element.mosaicId.namespaceId
+                  mosaic.name = element.mosaicId.name
+                  mosaic.amount = element.amount
+                  mosaic.divisibility = element.properties.divisibility
+                  mosaic.initialSupply = element.properties.initialSupply
+                  mosaic.supplyMutable = element.properties.supplyMutable
+                  mosaic.transferable = element.properties.transferable
+                  this.mosaics.push(mosaic)
+                })
+                this.selectMosaic = this.mosaics[0]
+              }).catch((err) => {
+                console.log('get_mosaic_error: ' + err)
               })
           }).catch((err) => {
             console.log(err)
