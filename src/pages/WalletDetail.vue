@@ -5,7 +5,7 @@
         <v-btn icon @click.native="back()" dark>
           <v-icon>keyboard_arrow_left</v-icon>
         </v-btn>
-        <v-toolbar-title>ウォレット {{ name }}</v-toolbar-title>
+        <v-toolbar-title>{{ name }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click.native="deleteWallet()">
           <v-icon>delete</v-icon>

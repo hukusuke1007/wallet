@@ -114,7 +114,7 @@
         amountLimit: (value) => !!value || '金額を入力してください',
         amountInput: (value) => {
           const pattern = /^[0-9.]+$/
-          return pattern.test(value) || '入力が不正です'
+          return (pattern.test(value) && !isNaN(Number(value))) || '入力が不正です'
         },
         messageRules: (value) => (value.length <= 1024) || '最大文字数を超えています。'
       }
@@ -244,6 +244,12 @@
               this.dialogMessage = '送金エラー' + '<br><br>' +
                 'メッセージ:<br>' + result.message + '<br>'
             }
+            this.isShowDialogConfirm = true
+          }).catch((err) => {
+            console.error(err)
+            let error = err.error.message
+            this.dialogMessage = '送金エラー' + '<br><br>' +
+                'メッセージ:<br>' + error + '<br>'
             this.isShowDialogConfirm = true
           })
       }

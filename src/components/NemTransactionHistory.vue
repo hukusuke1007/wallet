@@ -118,6 +118,8 @@
                 })
                 let count = this.items.length - 1
                 this.header = '送金履歴一覧 (' + count + '件）'
+              }).catch((err) => {
+                console.error(err)
               })
           }).catch((err) => {
             console.log(err)

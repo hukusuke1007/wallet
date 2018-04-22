@@ -24,34 +24,23 @@ const accountHttp = new AccountHttp([
 // アカウント取得.
 exports.getAccount = (addr) => {
   let promise = new Promise((resolve, reject) => {
-    try {
-      console.log(addr)
-      const address = new Address(addr)
-      accountHttp.getFromAddress(address).subscribe(accountInfoWithMetaData => {
-        resolve(accountInfoWithMetaData)
-      })
-    } catch (e) {
-      console.log(e)
-      let message = 'error'
-      reject(message)
-    }
+    console.log(addr)
+    const address = new Address(addr)
+    accountHttp.getFromAddress(address).subscribe(
+      accountInfoWithMetaData => { resolve(accountInfoWithMetaData) },
+      error => { reject(error) }
+    )
   })
   return promise
 }
 
-// アカウント取得.
+// アカウント取得(公開鍵).
 exports.getAccountFromPublicKey = (publicKey) => {
   let promise = new Promise((resolve, reject) => {
-    try {
-      console.log(publicKey)
-      accountHttp.getFromPublicKey(publicKey).subscribe(accountInfoWithMetaData => {
-        resolve(accountInfoWithMetaData)
-      })
-    } catch (e) {
-      console.log(e)
-      let message = 'error'
-      reject(message)
-    }
+    accountHttp.getFromPublicKey(publicKey).subscribe(
+      accountInfoWithMetaData => { resolve(accountInfoWithMetaData) },
+      error => { reject(error) }
+    )
   })
   return promise
 }
@@ -62,10 +51,10 @@ exports.getTransaction = (addr, pageSize, hash, id) => {
     console.log(addr)
     const address = new Address(addr)
     let params = { pageSize: pageSize, hash: hash, id: id }
-    accountHttp.allTransactions(address, params).subscribe(transaction => {
-      // console.log(transaction)
-      resolve(transaction)
-    })
+    accountHttp.allTransactions(address, params).subscribe(
+      transaction => { resolve(transaction) },
+      error => { reject(error) }
+    )
   })
   return promise
 }
@@ -134,10 +123,10 @@ exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
     )
     let signedTransaction = account.signTransaction(tx)
     let transactionHttp = new TransactionHttp()
-    transactionHttp.announceTransaction(signedTransaction).subscribe(result => {
-      console.log(result)
-      resolve(result)
-    })
+    transactionHttp.announceTransaction(signedTransaction).subscribe(
+      result => { resolve(result) },
+      error => { reject(error) }
+    )
   })
   return promise
 }

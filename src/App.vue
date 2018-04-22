@@ -22,6 +22,18 @@
           </router-link>
         </v-list-tile>
 
+        <!--  SEND -->
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">send</v-icon>
+          </v-list-tile-action>
+          <router-link to="/">
+          <v-list-tile-content>
+            <v-list-tile-title>送金</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+
         <!--  CREATE -->
         <v-list-tile>
           <v-list-tile-action>
@@ -47,6 +59,7 @@
         </v-list-tile>
 
         <!--  SETTING -->
+        <!--
         <v-list-tile>
           <v-list-tile-action>
             <v-icon color="black">settings</v-icon>
@@ -57,8 +70,7 @@
           </v-list-tile-content>
           </router-link>
         </v-list-tile>
-
-
+        -->
       </v-list>
      </v-navigation-drawer>
 
@@ -71,7 +83,7 @@
       app
      >
        <v-toolbar-side-icon @click.stop="naviBar = !naviBar"></v-toolbar-side-icon>
-       <v-toolbar-title class="white--text">Office WALLET</v-toolbar-title>
+       <v-toolbar-title class="white--text">Office NEM wallet</v-toolbar-title>
        <v-spacer></v-spacer>
        <!-- <v-btn icon><v-icon>search</v-icon></v-btn> -->
        <v-btn icon><v-icon>apps</v-icon></v-btn>
@@ -103,7 +115,7 @@
             {{ link }}
           </v-btn>
           <v-flex xs12 py-3 text-xs-center white--text>
-            &copy;2018 — <strong>Office WALLET</strong>
+            &copy;2018. <strong>hobbydevelop</strong>
           </v-flex>
         </v-layout>
       </v-footer>

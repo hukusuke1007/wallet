@@ -92,9 +92,11 @@
             nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
                 this.balance = result.balance.balance / nemWrapper.NEM_UNIT
+              }).catch((err) => {
+                console.log(err)
               })
           }).catch((err) => {
-            console.log(err)
+            console.error(err)
             this.message = err
           })
       },

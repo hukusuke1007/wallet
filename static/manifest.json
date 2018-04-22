@@ -1,6 +1,6 @@
 {
-  "name": "wallet",
-  "short_name": "wallet",
+  "name": "Office NEM wallet",
+  "short_name": "Office NEM",
   "icons": [
     {
       // "src": "/static/img/icons/android-chrome-192x192.png",
