@@ -53,11 +53,18 @@
             <v-btn @click="clear">クリア</v-btn>
           </v-flex>
           <br>
-          <!-- ダイアログ -->
-          <dialogConfirm v-bind:dialogVal="isShowDialog"
+          <!-- 送金確認ダイアログ -->
+          <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
+                         titleVal="送金確認"
+                         v-bind:messageVal="dialogPositiveNegativeMessage"
+                         positiveVal="送金する"
+                         negativeVal="いいえ"
+                         v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
+          <!-- 完了ダイアログ -->
+          <dialogConfirm v-bind:dialogVal="isShowDialogConfirm"
                          titleVal="送金"
                          v-bind:messageVal="dialogMessage"
-                         v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
+                         v-on:dialog-confirm-event-tap-positive="tapConfirm"></dialogConfirm>
           <!-- QRコードダイアログ -->
           <dialogQRreader v-bind:dialogVal="isShowDialogQRreader"
                           v-bind:pauseVal="paused"
@@ -73,6 +80,7 @@
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
+  import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
 
@@ -90,7 +98,9 @@
       senderAddr: '',
       publicKey: '',
       privateKey: '',
-      isShowDialog: false,
+      isShowDialogPositiveNegative: false,
+      dialogPositiveNegativeMessage: '',
+      isShowDialogConfirm: false,
       dialogMessage: '送金しました。',
       isShowDialogQRreader: false,
       paused: false,
@@ -110,6 +120,7 @@
       }
     }),
     components: {
+      'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm,
       'dialogQRreader': DialogQRreader
     },
@@ -139,6 +150,21 @@
           console.log('submit')
           this.senderAddr = this.senderAddr.replace(/-/g, '')
           console.log(this.senderAddr)
+          let total = Number(this.amount) + Number(this.fee)
+          let n = 6 // 下6桁まで残す.
+          total = Math.floor(total * Math.pow(10, n)) / Math.pow(10, n)
+          if (Number(this.balance) < total) {
+            this.dialogMessage = '残高が足りません。'
+            this.isShowDialogConfirm = true
+          } else {
+            this.dialogPositiveNegativeMessage = '送金しますか？<br><br>' +
+              '送金量:<br>' + this.amount + ' xem' + '<br>' +
+              '手数量:<br>' + this.fee + ' xem' + '<br>' +
+              '合計:<br>' + total + ' xem' + '<br><br>' +
+              '送金先:<br>' + this.senderAddr + '<br><br>' +
+              'メッセージ:<br>' + this.message
+            this.isShowDialogPositiveNegative = true
+          }
         }
       },
       clear () {
@@ -160,7 +186,7 @@
             let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
             this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
             this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
-            nemWrapper.getAccount(this.address)
+            nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
                 this.balance = result.balance.balance / nemWrapper.NEM_UNIT
               })
@@ -175,11 +201,21 @@
           this.fee = nemWrapper.getFeeTransferXem(this.senderAddr, this.amount, this.message)
         }
       },
-      showPrivateKey () {
-        this.isShowDialog = true
+      tapSendPositiveNegative (isPositive, message) {
+        if (this.isShowDialogPositiveNegative === true) {
+          if (isPositive) {
+            console.log(message)
+            this.sendTransaction()
+          } else {
+            console.log(message)
+          }
+          this.isShowDialogPositiveNegative = false
+        }
       },
-      tapPositive (message) {
-        this.isShowDialog = false
+      tapConfirm (message) {
+        if (this.isShowDialogConfirm === true) {
+          this.isShowDialogConfirm = false
+        }
       },
       showQRreader () {
         this.paused = false
@@ -196,6 +232,20 @@
           this.paused = true
           this.isShowDialogQRreader = false
         }
+      },
+      sendTransaction () {
+        nemWrapper.transferTransaction(this.senderAddr, this.amount, this.message, this.privateKey)
+          .then((result) => {
+            console.log(result)
+            if (result.message === 'SUCCESS') {
+              this.dialogMessage = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>' +
+                'Hash:<br>' + result.transactionHash.data + '<br>'
+            } else {
+              this.dialogMessage = '送金エラー' + '<br><br>' +
+                'メッセージ:<br>' + result.message + '<br>'
+            }
+            this.isShowDialogConfirm = true
+          })
       }
     }
   }

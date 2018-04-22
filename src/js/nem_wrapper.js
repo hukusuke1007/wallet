@@ -24,12 +24,34 @@ const accountHttp = new AccountHttp([
 // アカウント取得.
 exports.getAccount = (addr) => {
   let promise = new Promise((resolve, reject) => {
-    console.log(addr)
-    const address = new Address(addr)
-    accountHttp.getFromAddress(address).subscribe(accountInfoWithMetaData => {
-      // console.log(accountInfoWithMetaData)
-      resolve(accountInfoWithMetaData)
-    })
+    try {
+      console.log(addr)
+      const address = new Address(addr)
+      accountHttp.getFromAddress(address).subscribe(accountInfoWithMetaData => {
+        resolve(accountInfoWithMetaData)
+      })
+    } catch (e) {
+      console.log(e)
+      let message = 'error'
+      reject(message)
+    }
+  })
+  return promise
+}
+
+// アカウント取得.
+exports.getAccountFromPublicKey = (publicKey) => {
+  let promise = new Promise((resolve, reject) => {
+    try {
+      console.log(publicKey)
+      accountHttp.getFromPublicKey(publicKey).subscribe(accountInfoWithMetaData => {
+        resolve(accountInfoWithMetaData)
+      })
+    } catch (e) {
+      console.log(e)
+      let message = 'error'
+      reject(message)
+    }
   })
   return promise
 }

@@ -89,8 +89,7 @@
             this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
             this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
             this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description))
-
-            nemWrapper.getAccount(this.address)
+            nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
                 this.balance = result.balance.balance / nemWrapper.NEM_UNIT
               })
