@@ -1,4 +1,4 @@
-import {AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, Message} from 'nem-library'
+import {Account, AccountHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM, TransactionHttp, TransferTransaction} from 'nem-library'
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
 const PASSWORD = 'password'
@@ -83,6 +83,41 @@ exports.createWalletWithPrivateKey = (name, privateKey) => {
   const account = SimpleWallet.createWithPrivateKey(name, password, privateKey)
   console.log(account)
   return account
+}
+
+// XEM送信の手数料を取得.
+exports.getFeeTransferXem = (senderAddr, amount, message) => {
+  let address = new Address(senderAddr)
+  let xem = new XEM(amount)
+  let tx = TransferTransaction.create(
+    TimeWindow.createWithDeadline(),
+    address,
+    xem,
+    PlainMessage.create(message)
+  )
+  return tx.fee / NEM_UNIT
+}
+
+// 送金(nem)
+exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
+  let promise = new Promise((resolve, reject) => {
+    let account = Account.createWithPrivateKey(privateKey)
+    let address = new Address(senderAddr)
+    let xem = new XEM(amount)
+    let tx = TransferTransaction.create(
+      TimeWindow.createWithDeadline(),
+      address,
+      xem,
+      PlainMessage.create(message)
+    )
+    let signedTransaction = account.signTransaction(tx)
+    let transactionHttp = new TransactionHttp()
+    transactionHttp.announceTransaction(signedTransaction).subscribe(result => {
+      console.log(result)
+      resolve(result)
+    })
+  })
+  return promise
 }
 
 // QRコード用のJSONデータを取得.
