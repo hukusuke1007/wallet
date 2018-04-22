@@ -73,6 +73,17 @@ exports.getMosaics = (addr) => {
   return promise
 }
 
+// 所有モザイクを取得
+exports.getMosaicDefinition = (mosaic) => {
+  let promise = new Promise((resolve, reject) => {
+    mosaicHttp.getMosaicDefinition(mosaic).subscribe(
+      mosaicDefinition => { resolve(mosaicDefinition) },
+      error => { reject(error) }
+    )
+  })
+  return promise
+}
+
 // メッセージ取得.
 exports.getMessageFromPlain = (hex) => {
   return Message.decodeHex(hex)

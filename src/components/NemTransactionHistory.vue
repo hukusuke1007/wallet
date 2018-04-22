@@ -5,9 +5,14 @@
               <v-subheader v-if="item.header" :key="item.header">{{ header }}</v-subheader>
               <v-list-tile v-else ripple :key="index" @click="tapItem(index)">
                 <v-list-tile-content v-show="item.type === `TransferTransaction`">
-                  <v-list-tile-title>通貨: {{ item.name }}:{{ item.namespace }}</v-list-tile-title>
+                  <v-list-tile-title>通貨: {{ item.namespace }}:{{ item.name }}</v-list-tile-title>
                   <!-- <v-list-tile-sub-title>受取先: {{ item.recipientAddr }}</v-list-tile-sub-title> -->
-                  <v-list-tile-sub-title>送金量: {{ item.amount }}</v-list-tile-sub-title>
+                  <div v-if="!item.mosaics || item.mosaics.length === 0">
+                    <v-list-tile-sub-title>送金量: {{ item.amount }}</v-list-tile-sub-title>
+                  </div>
+                  <div v-else>
+                    <v-list-tile-sub-title><font color="blue">モザイク送金はタップして確認</font></v-list-tile-sub-title>
+                  </div>
                   <v-list-tile-sub-title>メッセージ: {{ item.message }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
@@ -94,6 +99,8 @@
                       name: nameVal,
                       namespace: namespaceVal,
                       amount: element._xem.amount,
+                      mosaics: element._mosaics,
+                      mosaicsAddInfos: [],
                       deposit: depositMsg,
                       depositColor: depositMsgColor
                     }
@@ -116,6 +123,43 @@
                     */
                   }
                 })
+                // モザイク送金履歴を確認.
+                this.items.map((element, index, array) => {
+                  if (element.mosaics && element.mosaics.length > 0) {
+                    // console.log('mosaics_item: ' + element.timeStamp)
+                    element.mosaics.forEach((mosaic) => {
+                      // console.log(mosaic)
+                      if ((mosaic.mosaicId.name !== 'xem') && (mosaic.mosaicId.namespaceId !== 'nem')) {
+                        nemWrapper.getMosaicDefinition(mosaic.mosaicId)
+                          .then((result) => {
+                            console.log(result)
+                            let mosaicsAddInfo = {
+                              name: result.id.name,
+                              namespaceId: result.id.namespaceId,
+                              quantity: mosaic.quantity,
+                              divisibility: result.properties.divisibility
+                            }
+                            element.mosaicsAddInfos.push(mosaicsAddInfo)
+                            array[index] = element
+                          }).catch((error) => {
+                            console.error(error)
+                            array[index] = element
+                          })
+                      } else {
+                        let mosaicsAddInfo = {
+                          name: 'xem',
+                          namespaceId: 'nem',
+                          quantity: mosaic.quantity,
+                          divisibility: 6
+                        }
+                        element.mosaicsAddInfos.push(mosaicsAddInfo)
+                        array[index] = element
+                      }
+                    })
+                  } else {
+                    array[index] = element
+                  }
+                })
                 let count = this.items.length - 1
                 this.header = '送金履歴一覧 (' + count + '件）'
               }).catch((err) => {
@@ -128,12 +172,30 @@
       },
       tapItem (index) {
         let item = this.items[index]
+        // console.log(item)
         this.title = item.timeStamp
-        this.dialogMessage = '送金量:<br>' + item.amount + ' ' + item.name + '<br><br>' +
-                             '手数量:<br>' + item.fee + ' xem<br><br>' +
-                             '送金先:<br>「' + item.senderAddr + '」から<br>' + '「' + item.recipientAddr + '」へ<br><br>' +
-                             'ハッシュ:<br>' + item.hash + '<br><br>' +
-                             'メッセージ:<br>' + item.message
+        if (item.mosaicsAddInfos.length > 0) {
+          let mosaicMessage = '【モザイク】<br><br>'
+          item.mosaicsAddInfos.forEach((element) => {
+            let amount = element.quantity
+            if (element.divisibility > 0) {
+              amount = element.quantity / Math.pow(10, element.divisibility)
+            }
+            mosaicMessage += '[' + element.namespaceId + ':' + element.name + ']' + '<br>' +
+                     '送金量:<br>' + amount + ' ' + element.name + '<br><br>'
+          })
+          this.dialogMessage = mosaicMessage +
+                     '手数量:<br>' + item.fee + ' xem<br><br>' +
+                     '送金先:<br>「' + item.senderAddr + '」から<br>' + '「' + item.recipientAddr + '」へ<br><br>' +
+                     'ハッシュ:<br>' + item.hash + '<br><br>' +
+                     'メッセージ:<br>' + item.message
+        } else {
+          this.dialogMessage = '送金量:<br>' + item.amount + ' ' + item.name + '<br><br>' +
+                     '手数量:<br>' + item.fee + ' xem<br><br>' +
+                     '送金先:<br>「' + item.senderAddr + '」から<br>' + '「' + item.recipientAddr + '」へ<br><br>' +
+                     'ハッシュ:<br>' + item.hash + '<br><br>' +
+                     'メッセージ:<br>' + item.message
+        }
         this.isShowDialog = true
       },
       tapPositive (message) {
