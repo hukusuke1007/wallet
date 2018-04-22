@@ -8,6 +8,18 @@
             <v-card-text>
               <h2 class="font-color-shamrock">{{ selectMosaic.amount }} {{ selectMosaic.name }}</h2>
             </v-card-text>
+            <v-card-actions>
+              <v-checkbox
+                label="譲渡許可"
+                :input-value="selectMosaic.transferable"
+                color="success"
+              ></v-checkbox>
+              <v-checkbox
+                label="徴収要求"
+                :input-value="selectMosaic.supplyMutable"
+                color="success"
+              ></v-checkbox>
+            </v-card-actions>
           </div>
             <v-flex justify-center>
             <v-select
