@@ -20,7 +20,15 @@ const accountHttp = new AccountHttp([
   {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
 ])
 // const accountHttp = new AccountHttp()
-const mosaicHttp = new MosaicHttp()
+const mosaicHttp = new MosaicHttp([
+  {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
+  // {protocol: 'https', domain: 'thomas1.supernode.me.supernode.me', port: 7891}, 死んだ？
+  {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
+])
+// const mosaicHttp = new MosaicHttp()
 
 // アカウント取得.
 exports.getAccount = (addr) => {
