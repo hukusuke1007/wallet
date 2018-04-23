@@ -27,7 +27,7 @@
           <v-list-tile-action>
             <v-icon color="black">send</v-icon>
           </v-list-tile-action>
-          <router-link to="/">
+          <router-link to="/walletTransfer">
           <v-list-tile-content>
             <v-list-tile-title>送金</v-list-tile-title>
           </v-list-tile-content>

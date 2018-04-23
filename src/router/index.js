@@ -13,6 +13,7 @@ import TopPage from '@/pages/TopPage'
 import Create from '@/pages/Create'
 import WalletCreate from '@/pages/create_wallet/WalletCreate'
 import WalletImport from '@/pages/create_wallet/WalletImport'
+import WalletTransfer from '@/pages/WalletTransfer'
 import WalletList from '@/pages/WalletList'
 import WalletDetail from '@/pages/WalletDetail'
 import Setting from '@/pages/Setting'
@@ -51,6 +52,11 @@ export default new Router({
       path: '/wallet_import',
       name: 'WalletImport',
       component: WalletImport
+    },
+    {
+      path: '/walletTransfer',
+      name: 'WalletTransfer',
+      component: WalletTransfer
     },
     {
       path: '/walletlist',

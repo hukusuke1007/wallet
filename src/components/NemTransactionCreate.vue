@@ -164,6 +164,9 @@
       },
       selectMosaic (val) {
         this.amountLabel = '送金量 (' + val.name + ')'
+      },
+      id (val) {
+        this.reloadItem()
       }
     },
     methods: {
@@ -198,6 +201,7 @@
         // this.$refs.form.reset()
       },
       reloadItem () {
+        this.mosaics = []
         let id = Number.parseInt(this.id)
         // console.log('reloadItem:' + id)
         dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
