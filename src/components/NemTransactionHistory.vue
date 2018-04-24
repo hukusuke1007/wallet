@@ -11,7 +11,7 @@
                     <v-list-tile-sub-title>送金量: {{ item.amount }}</v-list-tile-sub-title>
                   </div>
                   <div v-else>
-                    <v-list-tile-sub-title><font color="blue">モザイク送金はタップして確認</font></v-list-tile-sub-title>
+                    <v-list-tile-sub-title><font color="blue">モザイクはタップして確認</font></v-list-tile-sub-title>
                   </div>
                   <v-list-tile-sub-title>メッセージ: {{ item.message }}</v-list-tile-sub-title>
                 </v-list-tile-content>
@@ -61,114 +61,131 @@
       id: {
         type: String,
         default: -1
+      },
+      accountAddress: {
+        type: String,
+        default: ''
       }
     },
     methods: {
       reloadItem () {
-        let id = Number.parseInt(this.id)
-        // console.log('reloadItem:' + id)
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
-          .then((result) => {
-            this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-            let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-            this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
-            nemWrapper.getTransaction(this.address, 100, undefined, undefined)
-              .then((result) => {
-                result.forEach((element, index) => {
-                  // console.log(element)
-                  if (element instanceof TransferTransaction) {
-                    let convMessage = nemWrapper.getMessageFromPlain(element.message.payload)
-                    let dateString = element.timeWindow.timeStamp.toString().replace('T', ' ')
-                    let feeVal = element.fee / nemWrapper.NEM_UNIT
-                    let nameVal = element._xem.mosaicId.name
-                    let namespaceVal = element._xem.mosaicId.namespaceId
-                    let depositMsg = '入金'
-                    let depositMsgColor = 'example2'
-                    if (element.signer.address.value === this.address) {
-                      depositMsg = '出金'
-                      depositMsgColor = 'example1'
-                    }
-                    let item = {
-                      type: 'TransferTransaction',
-                      message: convMessage,
-                      fee: feeVal,
-                      recipientAddr: element.recipient.value,
-                      senderAddr: element.signer.address.value,
-                      timeStamp: dateString,
-                      hash: element.transactionInfo.hash.data,
-                      name: nameVal,
-                      namespace: namespaceVal,
-                      amount: element._xem.amount,
-                      mosaics: element._mosaics,
-                      mosaicsAddInfos: [],
-                      deposit: depositMsg,
-                      depositColor: depositMsgColor
-                    }
-                    this.items.push(item)
-                  } else if (element instanceof MultisigTransaction) {
-                    /*
-                    console.log(element)
-                    let item = {
-                      type: 'MultisigTransaction'
-                      message: element.message.payload,
-                      fee: element.fee,
-                      recipientAddr: element.recipient.value,
-                      senderAddr: element.signer.address.value,
-                      timeStamp: element.timeStamp,
-                      hash: element.transactionInfo.hash.data,
-                      mosaics: element._mosaics,
-                      xemAmount: element._xem.amount
-                    }
-                    this.items.push(item)
-                    */
-                  }
+        if (this.id !== '-1') {
+          let id = Number.parseInt(this.id)
+          // console.log('reloadItem:' + id)
+          dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
+            .then((result) => {
+              this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
+              let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
+              this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
+              nemWrapper.getTransaction(this.address, 100, undefined, undefined)
+                .then((result) => {
+                  this.setItemsForTransaction(result)
+                }).catch((err) => {
+                  console.error(err)
                 })
-                // モザイク送金履歴を確認.
-                this.items.map((element, index, array) => {
-                  if (element.mosaics && element.mosaics.length > 0) {
-                    // console.log('mosaics_item: ' + element.timeStamp)
-                    element.mosaics.forEach((mosaic) => {
-                      // console.log(mosaic)
-                      if ((mosaic.mosaicId.name !== 'xem') && (mosaic.mosaicId.namespaceId !== 'nem')) {
-                        nemWrapper.getMosaicDefinition(mosaic.mosaicId)
-                          .then((result) => {
-                            console.log(result)
-                            let mosaicsAddInfo = {
-                              name: result.id.name,
-                              namespaceId: result.id.namespaceId,
-                              quantity: mosaic.quantity,
-                              divisibility: result.properties.divisibility
-                            }
-                            element.mosaicsAddInfos.push(mosaicsAddInfo)
-                            array[index] = element
-                          }).catch((error) => {
-                            console.error(error)
-                            array[index] = element
-                          })
-                      } else {
-                        let mosaicsAddInfo = {
-                          name: 'xem',
-                          namespaceId: 'nem',
-                          quantity: mosaic.quantity,
-                          divisibility: 6
-                        }
-                        element.mosaicsAddInfos.push(mosaicsAddInfo)
-                        array[index] = element
-                      }
-                    })
-                  } else {
+            }).catch((err) => {
+              console.log(err)
+              this.message = err
+            })
+        } else if (this.accountAddress.length === 40) {
+          this.address = this.accountAddress
+          nemWrapper.getTransaction(this.address, 100, undefined, undefined)
+            .then((result) => {
+              this.setItemsForTransaction(result)
+            }).catch((err) => {
+              console.error(err)
+            })
+        }
+      },
+      setItemsForTransaction (transactions) {
+        transactions.forEach((element, index) => {
+          // console.log(element)
+          if (element instanceof TransferTransaction) {
+            let convMessage = nemWrapper.getMessageFromPlain(element.message.payload)
+            let dateString = element.timeWindow.timeStamp.toString().replace('T', ' ')
+            let feeVal = element.fee / nemWrapper.NEM_UNIT
+            let nameVal = element._xem.mosaicId.name
+            let namespaceVal = element._xem.mosaicId.namespaceId
+            let depositMsg = '入金'
+            let depositMsgColor = 'example2'
+            if (element.signer.address.value === this.address) {
+              depositMsg = '出金'
+              depositMsgColor = 'example1'
+            }
+            let item = {
+              type: 'TransferTransaction',
+              message: convMessage,
+              fee: feeVal,
+              recipientAddr: element.recipient.value,
+              senderAddr: element.signer.address.value,
+              timeStamp: dateString,
+              hash: element.transactionInfo.hash.data,
+              name: nameVal,
+              namespace: namespaceVal,
+              amount: element._xem.amount,
+              mosaics: element._mosaics,
+              mosaicsAddInfos: [],
+              deposit: depositMsg,
+              depositColor: depositMsgColor
+            }
+            this.items.push(item)
+          } else if (element instanceof MultisigTransaction) {
+            /*
+            console.log(element)
+            let item = {
+              type: 'MultisigTransaction'
+              message: element.message.payload,
+              fee: element.fee,
+              recipientAddr: element.recipient.value,
+              senderAddr: element.signer.address.value,
+              timeStamp: element.timeStamp,
+              hash: element.transactionInfo.hash.data,
+              mosaics: element._mosaics,
+              xemAmount: element._xem.amount
+            }
+            this.items.push(item)
+            */
+          }
+        })
+        // モザイク送金履歴を確認.
+        this.items.map((element, index, array) => {
+          if (element.mosaics && element.mosaics.length > 0) {
+            // console.log('mosaics_item: ' + element.timeStamp)
+            element.mosaics.forEach((mosaic) => {
+              // console.log(mosaic)
+              if ((mosaic.mosaicId.name !== 'xem') && (mosaic.mosaicId.namespaceId !== 'nem')) {
+                nemWrapper.getMosaicDefinition(mosaic.mosaicId)
+                  .then((result) => {
+                    console.log(result)
+                    let mosaicsAddInfo = {
+                      name: result.id.name,
+                      namespaceId: result.id.namespaceId,
+                      quantity: mosaic.quantity,
+                      divisibility: result.properties.divisibility
+                    }
+                    element.mosaicsAddInfos.push(mosaicsAddInfo)
                     array[index] = element
-                  }
-                })
-                let count = this.items.length - 1
-                this.header = '送金履歴一覧 (' + count + '件）'
-              }).catch((err) => {
-                console.error(err)
-              })
-          }).catch((err) => {
-            console.log(err)
-            this.message = err
-          })
+                  }).catch((error) => {
+                    console.error(error)
+                    array[index] = element
+                  })
+              } else {
+                let mosaicsAddInfo = {
+                  name: 'xem',
+                  namespaceId: 'nem',
+                  quantity: mosaic.quantity,
+                  divisibility: 6
+                }
+                element.mosaicsAddInfos.push(mosaicsAddInfo)
+                array[index] = element
+              }
+            })
+          } else {
+            array[index] = element
+          }
+        })
+        let count = this.items.length - 1
+        this.header = '送金履歴一覧 (' + count + '件）'
       },
       tapItem (index) {
         let item = this.items[index]

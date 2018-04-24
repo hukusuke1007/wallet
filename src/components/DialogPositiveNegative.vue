@@ -3,7 +3,7 @@
     <v-dialog v-model="dialog" max-width="500px">
      <v-card>
        <div class="w-break">
-         <v-card-title class="headline">{{ titleVal }}</v-card-title>
+         <v-card-title class="headline"><font color="blue">{{ titleVal }}</font></v-card-title>
          <v-card-text v-html="messageVal"></v-card-text>
        </div>
        <v-card-actions>

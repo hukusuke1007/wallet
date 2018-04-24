@@ -13,7 +13,6 @@ const VALUE_WALLET_ACCOUNT = 'account'
 const VALUE_CRYPTO_KIND = 'cryptoKind'
 const VALUE_ADDRESS = 'address'
 const VALUE_CREATION_DATE = 'creationDate'
-// const VALUE_DATA = 'data'
 
 // メッセージ.
 const MESSAGE_SUCCESS = 'success'

@@ -7,7 +7,7 @@
         </v-btn>
         <v-toolbar-title>{{ name }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon @click.native="deleteWallet()">
+        <v-btn icon @click.native="showDeleteWallet()">
           <v-icon>delete</v-icon>
         </v-btn>
         <!-- タブツールバー -->
@@ -31,6 +31,19 @@
         </v-tabs-items>
       </div>
     </v-card>
+
+    <!-- 確認ダイアログ -->
+    <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
+                   titleVal="ウォレット削除"
+                   v-bind:messageVal="dialogPositiveNegativeMessage"
+                   positiveVal="削除する"
+                   negativeVal="いいえ"
+                   v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
+    <!-- 完了ダイアログ -->
+    <dialogConfirm v-bind:dialogVal="isShowDialogConfirm"
+                   titleVal="ウォレット削除"
+                   v-bind:messageVal="dialogMessage"
+                   v-on:dialog-confirm-event-tap-positive="tapConfirm"></dialogConfirm>
   </v-flex>
 </template>
 <script>
@@ -38,16 +51,25 @@
   import NemAccount from '@/components/NemAccount'
   import NemTransactionHistory from '@/components/NemTransactionHistory'
   import NemTransactionCreate from '@/components/NemTransactionCreate'
+  import DialogPositiveNegative from '@/components/DialogPositiveNegative'
+  import DialogConfirm from '@/components/DialogConfirm'
+
   export default {
     data: () => ({
       tab: 'tab-0',
       tabItems: [ {id: 0, data: 'アカウント'}, {id: 1, data: '送金履歴'}, {id: 2, data: '送金'} ],
-      name: ''
+      name: '',
+      isShowDialogPositiveNegative: false,
+      dialogPositiveNegativeMessage: 'ウォレットを削除しますか？',
+      isShowDialogConfirm: false,
+      dialogMessage: '削除しました。'
     }),
     components: {
       'nemAccount': NemAccount,
       'nemTransactionHistory': NemTransactionHistory,
-      'nemTransactionCreate': NemTransactionCreate
+      'nemTransactionCreate': NemTransactionCreate,
+      'dialogPositiveNegative': DialogPositiveNegative,
+      'dialogConfirm': DialogConfirm
     },
     mounted () {
       this.reloadItem()
@@ -71,7 +93,30 @@
           })
       },
       deleteWallet () {
+        dbWrapper.removeItemArray(dbWrapper.KEY_WALLET_INFO, Number.parseInt(this.id))
+          .then((result) => {
+            this.dialogMessage = '削除しました'
+          }).catch((err) => {
+            console.log(err)
+            this.dialogMessage = 'ERROR：削除に失敗しました'
+          })
+      },
+      showDeleteWallet () {
         console.log('delete')
+        this.isShowDialogPositiveNegative = true
+      },
+      tapSendPositiveNegative (isPositive, message) {
+        this.isShowDialogPositiveNegative = false
+        if (isPositive) {
+          this.deleteWallet()
+          this.isShowDialogConfirm = true
+        }
+      },
+      tapConfirm (message) {
+        if (this.isShowDialogConfirm === true) {
+          this.isShowDialogConfirm = false
+          this.$router.push({ name: 'WalletList' })
+        }
       },
       back () {
         history.go(-1)

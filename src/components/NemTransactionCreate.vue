@@ -1,9 +1,99 @@
 <template>
-    <v-card flat>
-      <v-container fluid>
+  <v-card flat>
+      <v-container
+        fluid
+        style="min-height: 0;"
+        grid-list-lg
+        >
         <div class="w-break">
-          <v-subheader>ウォレット</v-subheader><v-card-text><h3>{{ name }}</h3></v-card-text>
-          <v-subheader>残高 (nem)</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
+          <v-layout row wrap column>
+            <v-flex>
+              <v-card>
+              <div class="sideOffset">
+                <v-form v-model="valid" ref="form" lazy-validation>
+                  <v-text-field
+                    box
+                    label="送金先"
+                    v-model="senderAddr"
+                    :rules="[rules.senderAddrLimit, rules.senderAddrInput]"
+                    :counter="40"
+                    required
+                    placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
+                  ></v-text-field>
+                  <v-text-field
+                    box
+                    multi-line
+                    label="メッセージ"
+                    v-model="message"
+                    :rules="[rules.messageRules]"
+                    :counter="1024"
+                    placeholder="メッセージを付与すると手数料が加算されます"
+                  ></v-text-field>
+                </v-form>
+              </div>
+              </v-card>
+            </v-flex>
+
+           <!--  NEM -->
+           <v-flex>
+            <v-card>
+              <div class="sideOffset">
+              <v-card-title primary-title><h2 style="color: green">NEM</h2></v-card-title>
+              <v-subheader>残高</v-subheader><v-card-text><h3 class="font-color-shamrock">{{ balance }} xem</h3></v-card-text>
+              <v-form v-model="validNem" ref="formNem" lazy-validation>
+                <v-text-field
+                  box
+                  :label="amountLabel"
+                  v-model="amount"
+                  :rules="[rules.amountLimit, rules.amountInput]"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  label="手数料(xem)"
+                  v-model="fee"
+                  required
+                  disabled
+                ></v-text-field>
+              </v-form>
+              <v-btn color="orange darken-1" class="white--text" @click.stop="showQRreader" block>QRコード読み取り</v-btn>
+              <br>
+              <v-btn color="info" @click="submit" :disabled="!valid">送金</v-btn>
+              <v-btn @click="clear">クリア</v-btn>
+            </div>
+            </v-card>
+          </v-flex>
+
+          <!--  モザイク -->
+          <v-flex>
+            <v-card>
+            <div class="sideOffset">
+              <v-card-title primary-title><h2 style="color: blue">モザイク</h2></v-card-title>
+              <v-form v-model="validMosaic" ref="formMosaic" lazy-validation>
+                <div v-for="item in mosaics" :key="`mosaic-${item.index}`">
+                   <v-card-title >{{ item.text }}</v-card-title>
+                   <v-subheader>残高 ({{ item.namespaceId }})</v-subheader>
+                   <v-card-text><h3 class="font-color-shamrock">{{ item.amount }} {{ item.name }}</h3></v-card-text>
+                   <v-text-field
+                   box
+                    :label="`送金量 (${item.name})`"
+                    v-model="item.sendAmount"
+                    :rules="[rules.amountLimit, rules.amountInput]"
+                   ></v-text-field>
+                </div>
+              </v-form>
+              <v-text-field
+                  label="手数料(xem)"
+                  v-model="fee"
+                  required
+                  disabled
+              ></v-text-field>
+              <v-btn color="info" @click="submitMosaic" :disabled="!valid">送金</v-btn>
+              <v-btn @click="clearMosaic">クリア</v-btn>
+            </div>
+            </v-card>
+          </v-flex>
+        </v-layout>
+          <!--
           <div v-if="selectMosaic">
             <v-subheader>モザイク残高 ({{ selectMosaic.namespaceId }})</v-subheader>
             <v-card-text>
@@ -29,39 +119,6 @@
               v-model="selectMosaic"
               prepend-icon="view_quilt"></v-select>
           </v-flex>
-          <v-form v-model="valid" ref="form" lazy-validation>
-            <v-text-field
-              box
-              label="送金先"
-              v-model="senderAddr"
-              :rules="[rules.senderAddrLimit, rules.senderAddrInput]"
-              :counter="40"
-              required
-              placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
-            ></v-text-field>
-            <v-text-field
-              box
-              :label="amountLabel"
-              v-model="amount"
-              :rules="[rules.amountLimit, rules.amountInput]"
-              required
-            ></v-text-field>
-            <v-text-field
-              box
-              multi-line
-              label="メッセージ"
-              v-model="message"
-              :rules="[rules.messageRules]"
-              :counter="1024"
-              placeholder="メッセージを付与すると手数料が加算されます"
-            ></v-text-field>
-            <v-text-field
-              label="手数料(xem)"
-              v-model="fee"
-              required
-              disabled
-            ></v-text-field>
-          </v-form>
           <v-flex>
             <v-btn color="orange darken-1" class="white--text" @click.stop="showQRreader" block>QRコード読み取り</v-btn>
           </v-flex>
@@ -70,7 +127,7 @@
             <v-btn color="info" @click="submit" :disabled="!valid">送金</v-btn>
             <v-btn @click="clear">クリア</v-btn>
           </v-flex>
-          <br>
+          -->
           <!-- 送金確認ダイアログ -->
           <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
                          titleVal="送金確認"
@@ -89,10 +146,9 @@
                           typeVal="invoice"
                           v-on:qr-reader-event-scan-success="getQRContent"
                           v-on:qr-reader-event-tap-close="tapQRClose"></dialogQRreader>
-        </v-flex>
       </div>
-     </v-container>
-    </v-card>
+    </v-container>
+  </v-card>
 </template>
 
 <script>
@@ -105,6 +161,8 @@
   export default {
     data: () => ({
       valid: false,
+      validNem: false,
+      validMosaic: false,
       date: '',
       balance: 0,
       name: '',
@@ -171,7 +229,7 @@
     },
     methods: {
       submit () {
-        if (this.$refs.form.validate()) {
+        if (this.$refs.form.validate() && this.$refs.formNem.validate()) {
           console.log('submit')
           this.senderAddr = this.senderAddr.replace(/-/g, '')
           console.log(this.senderAddr)
@@ -200,6 +258,28 @@
         this.fee = 0
         // this.$refs.form.reset()
       },
+      submitMosaic () {
+        if (this.$refs.form.validate()) {
+          console.log('submitMosaic')
+          this.senderAddr = this.senderAddr.replace(/-/g, '')
+          console.log(this.senderAddr)
+          let total = Number(this.amount) + Number(this.fee)
+          let n = 6 // 下6桁まで残す.
+          total = Math.floor(total * Math.pow(10, n)) / Math.pow(10, n)
+          console.log(total)
+          this.mosaics.forEach((element) => {
+            console.log(element.sendAmount)
+          })
+        }
+      },
+      clearMosaic () {
+        this.senderAddr = ''
+        this.message = ''
+        this.fee = 0
+        this.mosaics.forEach((element) => {
+          element.sendAmount = 0
+        })
+      },
       reloadItem () {
         this.mosaics = []
         let id = Number.parseInt(this.id)
@@ -221,8 +301,9 @@
             nemWrapper.getMosaics(this.address)
               .then((result) => {
                 console.log(result)
-                result.forEach((element) => {
+                result.forEach((element, index) => {
                   let mosaic = {}
+                  mosaic.index = index
                   mosaic.text = element.mosaicId.namespaceId + ':' + element.mosaicId.name
                   mosaic.namespaceId = element.mosaicId.namespaceId
                   mosaic.name = element.mosaicId.name
@@ -305,5 +386,8 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
+.sideOffset {
+  margin: 0px 10px 0px 10px;
+}
 </style>
