@@ -19,6 +19,11 @@
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
         <nemTransactionCreate v-bind:id="String(selectItem.id)" v-if="selectItem"></nemTransactionCreate>
+        <div v-else>
+         <router-link to="/create">
+          <v-card-text>ウォレットを作成してください</v-card-text>
+         </router-link>
+        </div>
       </v-card>
     </v-flex>
   </div>

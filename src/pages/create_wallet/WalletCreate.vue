@@ -44,6 +44,7 @@
  // import axios from 'axios'
  import nemWrapper from '@/js/nem_wrapper'
  import localDatabaseWrapper from '@/js/local_database_wrapper'
+ import ModelWalletNem from '@/js/model/model_wallet_nem'
  import DialogConfirm from '@/components/DialogConfirm'
 
  export default {
@@ -70,10 +71,10 @@
    methods: {
      submit () {
        if (this.$refs.form.validate()) {
-         let storeData = {}
-         storeData[localDatabaseWrapper.VALUE_NAME] = this.name
-         storeData[localDatabaseWrapper.VALUE_DESCRIPTION] = this.description
-         storeData[localDatabaseWrapper.VALUE_WALLET_ACCOUNT] = nemWrapper.createWallet(this.name)
+         let storeData = new ModelWalletNem()
+         storeData.name = this.name
+         storeData.description = this.description
+         storeData.account = nemWrapper.createWallet(this.name)
          localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, false, -1)
            .then((result) => {
              console.log(result)

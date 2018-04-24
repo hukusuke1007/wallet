@@ -2,6 +2,12 @@
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3>
         <v-card>
+          <v-toolbar card color="primary" dark tabs>
+            <v-btn icon @click.native="back()" dark>
+              <v-icon>keyboard_arrow_left</v-icon>
+            </v-btn>
+           <v-toolbar-title>ウォレット一覧</v-toolbar-title>
+          </v-toolbar>
           <v-list two-line>
             <template v-for="(item, index) in items">
               <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>
@@ -44,7 +50,7 @@
   export default {
     data: () => ({
       items: [
-        { header: 'ウォレット一覧' }
+        { header: 'ウォレット' }
       ]
     }),
     mounted () {
@@ -82,6 +88,9 @@
       },
       tapAdd () {
         this.$router.push({ name: 'Create' })
+      },
+      back () {
+        history.go(-1)
       }
     }
   }
