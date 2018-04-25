@@ -1,4 +1,6 @@
-import {Account, AccountHttp, MosaicHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM, TransactionHttp, TransferTransaction, AccountOwnedMosaicsService} from 'nem-library'
+import {Account, AccountHttp, MosaicHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM, TransactionHttp, TransferTransaction, AccountOwnedMosaicsService, MosaicId} from 'nem-library'
+import {Observable} from 'rxjs/Observable'
+
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
 const PASSWORD = 'password'
@@ -142,6 +144,63 @@ exports.getFeeTransferXem = (senderAddr, amount, message) => {
   return tx.fee / NEM_UNIT
 }
 
+// モザイク送信の手数料を取得.
+exports.getFeeTransferMosaics = (senderAddr, mosaicData, message) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log(mosaicData)
+    let address = new Address(senderAddr)
+    // json作成
+    let dataList = []
+    let isXEM = false
+    let xemQuantity
+    mosaicData.forEach((element) => {
+      let data = {}
+      if ((element.namespace === 'nem') && (element.mosaic === 'xem')) {
+        isXEM = true
+        xemQuantity = element.quantity
+      } else {
+        data.mosaic = new MosaicId(element.namespace, element.mosaic)
+        data.quantity = element.quantity
+        dataList.push(data)
+      }
+    })
+    // 送金
+    if ((dataList.length === 0) && (isXEM)) {
+      // XEMのみの場合.
+      let transaction = TransferTransaction.create(
+        TimeWindow.createWithDeadline(),
+        address,
+        new XEM(xemQuantity),
+        PlainMessage.create(message)
+      )
+      resolve(transaction.fee / NEM_UNIT)
+    } else {
+      // それ以外.
+      Observable.from(dataList)
+        .flatMap(mosaicWithAmount => mosaicHttp.getMosaicTransferableWithAmount(
+          mosaicWithAmount.mosaic,
+          mosaicWithAmount.quantity
+        ))
+        .toArray()
+        .map(mosaics => {
+          if (isXEM) { mosaics.unshift(new XEM(xemQuantity)) }
+          return mosaics
+        })
+        .map(mosaics => TransferTransaction.createWithMosaics(
+          TimeWindow.createWithDeadline(),
+          address,
+          mosaics,
+          PlainMessage.create(message)
+        ))
+        .subscribe(
+          transaction => { resolve(transaction.fee / NEM_UNIT) },
+          error => { reject(error) }
+        )
+    }
+  })
+  return promise
+}
+
 // 送金(nem)
 exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
   let promise = new Promise((resolve, reject) => {
@@ -160,6 +219,77 @@ exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
       result => { resolve(result) },
       error => { reject(error) }
     )
+  })
+  return promise
+}
+
+// 送金(モザイク)
+exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKey) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log(mosaicData)
+    let transactionHttp = new TransactionHttp()
+    let mosaicHttp = new MosaicHttp()
+    let account = Account.createWithPrivateKey(privateKey)
+    let address = new Address(senderAddr)
+
+    // json作成
+    let dataList = []
+    let isXEM = false
+    let xemQuantity
+    mosaicData.forEach((element) => {
+      let data = {}
+      if ((element.namespace === 'nem') && (element.mosaic === 'xem')) {
+        isXEM = true
+        xemQuantity = element.quantity
+      } else {
+        data.mosaic = new MosaicId(element.namespace, element.mosaic)
+        data.quantity = element.quantity
+        dataList.push(data)
+      }
+    })
+
+    // 送金
+    if ((dataList.length === 0) && (isXEM)) {
+      // XEMのみの場合.
+      let mosaics = []
+      mosaics.push(new XEM(xemQuantity))
+      let transaction = TransferTransaction.createWithMosaics(
+        TimeWindow.createWithDeadline(),
+        address,
+        mosaics,
+        PlainMessage.create(message)
+      )
+      let signedTransaction = account.signTransaction(transaction)
+      let transactionHttp = new TransactionHttp()
+      transactionHttp.announceTransaction(signedTransaction).subscribe(
+        result => { resolve(result) },
+        error => { reject(error) }
+      )
+    } else {
+      // 送金
+      Observable.from(dataList)
+        .flatMap(mosaicWithAmount => mosaicHttp.getMosaicTransferableWithAmount(
+          mosaicWithAmount.mosaic,
+          mosaicWithAmount.quantity
+        ))
+        .toArray()
+        .map(mosaics => {
+          if (isXEM) { mosaics.unshift(new XEM(xemQuantity)) }
+          return mosaics
+        })
+        .map(mosaics => TransferTransaction.createWithMosaics(
+          TimeWindow.createWithDeadline(),
+          address,
+          mosaics,
+          PlainMessage.create(message)
+        ))
+        .map(transaction => account.signTransaction(transaction))
+        .flatMap(signedTransaction => transactionHttp.announceTransaction(signedTransaction))
+        .subscribe(
+          nemAnnounceResult => { resolve(nemAnnounceResult) },
+          error => { reject(error) }
+        )
+    }
   })
   return promise
 }

@@ -83,7 +83,7 @@
               </v-form>
               <v-text-field
                   label="手数料(xem)"
-                  v-model="fee"
+                  v-model="feeMosaics"
                   required
                   disabled
               ></v-text-field>
@@ -93,41 +93,6 @@
             </v-card>
           </v-flex>
         </v-layout>
-          <!--
-          <div v-if="selectMosaic">
-            <v-subheader>モザイク残高 ({{ selectMosaic.namespaceId }})</v-subheader>
-            <v-card-text>
-              <h2 class="font-color-shamrock">{{ selectMosaic.amount }} {{ selectMosaic.name }}</h2>
-            </v-card-text>
-            <v-card-actions>
-              <v-checkbox
-                label="譲渡許可"
-                :input-value="selectMosaic.transferable"
-                color="success"
-              ></v-checkbox>
-              <v-checkbox
-                label="徴収要求"
-                :input-value="selectMosaic.supplyMutable"
-                color="success"
-              ></v-checkbox>
-            </v-card-actions>
-          </div>
-          <v-flex justify-center>
-            <v-select
-              :items="mosaics"
-              label="モザイク"
-              v-model="selectMosaic"
-              prepend-icon="view_quilt"></v-select>
-          </v-flex>
-          <v-flex>
-            <v-btn color="orange darken-1" class="white--text" @click.stop="showQRreader" block>QRコード読み取り</v-btn>
-          </v-flex>
-          <br>
-          <v-flex>
-            <v-btn color="info" @click="submit" :disabled="!valid">送金</v-btn>
-            <v-btn @click="clear">クリア</v-btn>
-          </v-flex>
-          -->
           <!-- 送金確認ダイアログ -->
           <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
                          titleVal="送金確認"
@@ -167,10 +132,11 @@
       balance: 0,
       name: '',
       mosaics: [],
-      selectMosaic: null,
+      trMosaics: { item: [], other: [] },
       amountLabel: '送金量 (xem)',
       amount: 0,
       fee: 0,
+      feeMosaics: 0,
       message: '',
       senderAddr: '',
       publicKey: '',
@@ -179,6 +145,7 @@
       dialogPositiveNegativeMessage: '',
       isShowDialogConfirm: false,
       dialogMessage: '送金しました。',
+      transactionType: 'nem',
       isShowDialogQRreader: false,
       paused: false,
       content: '',
@@ -213,15 +180,18 @@
     watch: {
       senderAddr (val) {
         this.showFee()
+        this.showFeeMosaics(false)
       },
       amount (val) {
         this.showFee()
       },
       message (val) {
         this.showFee()
+        this.showFeeMosaics(false)
       },
-      selectMosaic (val) {
-        this.amountLabel = '送金量 (' + val.name + ')'
+      mosaics (after, before) {
+        console.log(after)
+        console.log(before)
       },
       id (val) {
         this.reloadItem()
@@ -231,6 +201,7 @@
       submit () {
         if (this.$refs.form.validate() && this.$refs.formNem.validate()) {
           console.log('submit')
+          this.transactionType = 'nem'
           this.senderAddr = this.senderAddr.replace(/-/g, '')
           console.log(this.senderAddr)
           let total = Number(this.amount) + Number(this.fee)
@@ -253,7 +224,6 @@
       clear () {
         this.senderAddr = ''
         this.message = ''
-        this.selectMosaic = 'nem:xem'
         this.amount = 0
         this.fee = 0
         // this.$refs.form.reset()
@@ -261,15 +231,48 @@
       submitMosaic () {
         if (this.$refs.form.validate()) {
           console.log('submitMosaic')
+          this.transactionType = 'mosaics'
+          this.trMosaics = { item: [], other: [] }
           this.senderAddr = this.senderAddr.replace(/-/g, '')
-          console.log(this.senderAddr)
-          let total = Number(this.amount) + Number(this.fee)
-          let n = 6 // 下6桁まで残す.
-          total = Math.floor(total * Math.pow(10, n)) / Math.pow(10, n)
-          console.log(total)
+          // validation
+          let mlist = []
           this.mosaics.forEach((element) => {
-            console.log(element.sendAmount)
+            let tmp = {
+              namespace: element.namespaceId,
+              mosaic: element.name,
+              quantity: element.sendAmount
+            }
+            let msgLimit = this.rules.amountLimit(element.sendAmount)
+            let msgInput = this.rules.amountInput(element.sendAmount)
+            let msgOver = true
+            if (Number(element.sendAmount) > Number(element.amount)) { msgOver = '残高が足りません。' }
+            console.log(element.sendAmount + '>' + element.amount)
+            if (msgLimit !== true) { tmp.errLimit = msgLimit }
+            if (msgInput !== true) { tmp.errInput = msgInput }
+            if (msgOver !== true) { tmp.errOver = msgOver }
+            mlist.push(tmp)
           })
+
+          // エラー以外のデータを入れる.
+          mlist.forEach((element) => {
+            console.log(element)
+            if (!('errLimit' in element) && !('errInput' in element) && !('errOver' in element)) {
+              let item = {
+                namespace: element.namespace,
+                mosaic: element.mosaic,
+                quantity: element.quantity
+              }
+              this.trMosaics.item.push(item)
+            }
+          })
+          console.log(this.trMosaics)
+          if (this.trMosaics.item.length !== 0) {
+            this.showFeeMosaics(true)
+          } else {
+            console.log('error')
+            this.dialogPositiveNegativeMessage = 'ERROR:モザイクの入力欄を確認してください。'
+            this.isShowDialogPositiveNegative = true
+          }
         }
       },
       clearMosaic () {
@@ -308,13 +311,13 @@
                   mosaic.namespaceId = element.mosaicId.namespaceId
                   mosaic.name = element.mosaicId.name
                   mosaic.amount = element.amount
+                  mosaic.sendAmount = 0
                   mosaic.divisibility = element.properties.divisibility
                   mosaic.initialSupply = element.properties.initialSupply
                   mosaic.supplyMutable = element.properties.supplyMutable
                   mosaic.transferable = element.properties.transferable
                   this.mosaics.push(mosaic)
                 })
-                this.selectMosaic = this.mosaics[0]
               }).catch((err) => {
                 console.log('get_mosaic_error: ' + err)
               })
@@ -325,9 +328,38 @@
       showFee () {
         if ((this.rules.senderAddrLimit(this.senderAddr) === true) &&
             (this.rules.senderAddrInput(this.senderAddr) === true)) {
-          console.log('amount OK')
+          console.log('showFee OK')
           this.fee = nemWrapper.getFeeTransferXem(this.senderAddr, this.amount, this.message)
         }
+      },
+      showFeeMosaics (isShowSendMosaic) {
+        if ((this.rules.senderAddrLimit(this.senderAddr) === true) &&
+            (this.rules.senderAddrInput(this.senderAddr) === true)) {
+          console.log('showFeeMosaics OK')
+          nemWrapper.getFeeTransferMosaics(this.senderAddr, this.trMosaics.item, this.message)
+            .then((result) => {
+              this.feeMosaics = result
+              console.log(this.feeMosaics)
+              if (isShowSendMosaic) {
+                this.showSendMosaicConfirm(this.feeMosaics)
+              }
+            }).catch((err) => {
+              console.error(err)
+              this.feeMosaics = 0
+            })
+        }
+      },
+      showSendMosaicConfirm (feeMosaics) {
+        this.dialogPositiveNegativeMessage = 'モザイクを送金しますか？<br><br>'
+
+        this.trMosaics.item.forEach((element) => {
+          let message = '[' + element.namespace + ':' + element.mosaic + ']' + '<br>' +
+                   '送金量:<br>' + element.quantity + ' ' + element.mosaic + '<br><br>'
+          this.dialogPositiveNegativeMessage += message
+        })
+        this.dialogPositiveNegativeMessage += '手数量:<br>' + feeMosaics + ' xem' + '<br><br>' +
+          '送金先:<br>' + this.senderAddr + '<br><br>' + 'メッセージ:<br>' + this.message
+        this.isShowDialogPositiveNegative = true
       },
       tapSendPositiveNegative (isPositive, message) {
         if (this.isShowDialogPositiveNegative === true) {
@@ -362,24 +394,48 @@
         }
       },
       sendTransaction () {
-        nemWrapper.transferTransaction(this.senderAddr, this.amount, this.message, this.privateKey)
-          .then((result) => {
-            console.log(result)
-            if (result.message === 'SUCCESS') {
-              this.dialogMessage = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>' +
-                'Hash:<br>' + result.transactionHash.data + '<br>'
-            } else {
-              this.dialogMessage = '送金エラー' + '<br><br>' +
-                'メッセージ:<br>' + result.message + '<br>'
-            }
-            this.isShowDialogConfirm = true
-          }).catch((err) => {
-            console.error(err)
-            let error = err.error.message
-            this.dialogMessage = '送金エラー' + '<br><br>' +
-                'メッセージ:<br>' + error + '<br>'
-            this.isShowDialogConfirm = true
-          })
+        let successMsg = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>'
+        let errorMsg = '送金エラー' + '<br><br>' + 'メッセージ:<br>'
+
+        if (this.transactionType === 'nem') {
+          // NEM送金
+          console.log('nem')
+          nemWrapper.transferTransaction(this.senderAddr, this.amount, this.message, this.privateKey)
+            .then((result) => {
+              console.log(result)
+              if (result.message === 'SUCCESS') {
+                this.dialogMessage = successMsg + 'Hash:<br>' + result.transactionHash.data + '<br>'
+              } else {
+                this.dialogMessage = errorMsg + result.message + '<br>'
+              }
+              this.isShowDialogConfirm = true
+            }).catch((err) => {
+              console.error(err)
+              let error = err.error.message
+              this.dialogMessage = errorMsg + error + '<br>'
+              this.isShowDialogConfirm = true
+            })
+        } else if (this.transactionType === 'mosaics') {
+          // モザイク送金
+          console.log('mosaics')
+          nemWrapper.transferTransactionMosaics(this.senderAddr, this.trMosaics.item, this.message, this.privateKey)
+            .then((result) => {
+              console.log(result)
+              if (result.message === 'SUCCESS') {
+                this.dialogMessage = successMsg + 'Hash:<br>' + result.transactionHash.data + '<br>'
+              } else {
+                this.dialogMessage = errorMsg + result.message + '<br>'
+              }
+              this.isShowDialogConfirm = true
+            }).catch((err) => {
+              console.error(err)
+              let error = err.error.message
+              this.dialogMessage = errorMsg + error + '<br>'
+              this.isShowDialogConfirm = true
+            })
+        } else {
+          console.log(this.transactionType)
+        }
       }
     }
   }
