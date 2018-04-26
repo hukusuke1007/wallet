@@ -93,6 +93,9 @@
             </v-card>
           </v-flex>
         </v-layout>
+          <!-- プログレス -->
+          <progressCircular v-bind:isShowVal="isShowProgress"></progressCircular>
+
           <!-- 送金確認ダイアログ -->
           <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
                          titleVal="送金確認"
@@ -122,6 +125,7 @@
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
+  import ProgressCircular from '@/components/ProgressCircular'
 
   export default {
     data: () => ({
@@ -149,6 +153,7 @@
       isShowDialogQRreader: false,
       paused: false,
       content: '',
+      isShowProgress: false,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -166,7 +171,8 @@
     components: {
       'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm,
-      'dialogQRreader': DialogQRreader
+      'dialogQRreader': DialogQRreader,
+      'progressCircular': ProgressCircular
     },
     mounted () {
       this.reloadItem()
@@ -227,6 +233,7 @@
         this.amount = 0
         this.fee = 0
         // this.$refs.form.reset()
+        // this.isShowProgress = true // テスト用
       },
       submitMosaic () {
         if (this.$refs.form.validate()) {
@@ -397,6 +404,7 @@
         let successMsg = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>'
         let errorMsg = '送金エラー' + '<br><br>' + 'メッセージ:<br>'
 
+        this.isShowProgress = true
         if (this.transactionType === 'nem') {
           // NEM送金
           console.log('nem')
@@ -408,11 +416,13 @@
               } else {
                 this.dialogMessage = errorMsg + result.message + '<br>'
               }
+              this.isShowProgress = false
               this.isShowDialogConfirm = true
             }).catch((err) => {
               console.error(err)
               let error = err.error.message
               this.dialogMessage = errorMsg + error + '<br>'
+              this.isShowProgress = false
               this.isShowDialogConfirm = true
             })
         } else if (this.transactionType === 'mosaics') {
@@ -426,15 +436,18 @@
               } else {
                 this.dialogMessage = errorMsg + result.message + '<br>'
               }
+              this.isShowProgress = false
               this.isShowDialogConfirm = true
             }).catch((err) => {
               console.error(err)
               let error = err.error.message
               this.dialogMessage = errorMsg + error + '<br>'
+              this.isShowProgress = false
               this.isShowDialogConfirm = true
             })
         } else {
           console.log(this.transactionType)
+          this.isShowProgress = false
         }
       }
     }
