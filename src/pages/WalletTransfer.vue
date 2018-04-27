@@ -8,11 +8,13 @@
           </v-btn>
           <v-toolbar-title>送金</v-toolbar-title>
          </v-toolbar>
+         <div class="sideOffset">
           <v-select
             :items="items"
             label="ウォレット"
             v-model="selectItem"
             prepend-icon="credit_card"></v-select>
+          </div>
       </v-card>
     </v-flex>
     <br>

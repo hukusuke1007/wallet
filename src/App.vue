@@ -58,6 +58,29 @@
           </router-link>
         </v-list-tile>
 
+        <!--  Wallet list -->
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">receipt</v-icon>
+          </v-list-tile-action>
+          <router-link to="/invoiceList">
+          <v-list-tile-content>
+            <v-list-tile-title>請求書一覧</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
+
+        <!--  CREATE -->
+        <v-list-tile>
+          <v-list-tile-action>
+            <v-icon color="black">note_add</v-icon>
+          </v-list-tile-action>
+          <router-link to="/invoiceCreate">
+          <v-list-tile-content>
+            <v-list-tile-title>請求書作成</v-list-tile-title>
+          </v-list-tile-content>
+          </router-link>
+        </v-list-tile>
         <!--  SETTING -->
         <!--
         <v-list-tile>
@@ -184,6 +207,9 @@ export default {
 
 .font-color-shamrock { color: #2FCDB4; }
 
+.sideOffset {
+  margin: 2px 10px 2px 10px;
+}
  /*
 a {
   text-decoration: none;

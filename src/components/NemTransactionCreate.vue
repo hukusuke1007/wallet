@@ -455,8 +455,6 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
-.sideOffset {
-  margin: 0px 10px 0px 10px;
-}
+<style scoped>
+
 </style>

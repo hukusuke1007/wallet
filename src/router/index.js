@@ -16,6 +16,8 @@ import WalletImport from '@/pages/create_wallet/WalletImport'
 import WalletTransfer from '@/pages/WalletTransfer'
 import WalletList from '@/pages/WalletList'
 import WalletDetail from '@/pages/WalletDetail'
+import InvoiceList from '@/pages/InvoiceList'
+import InvoiceCreate from '@/pages/InvoiceCreate'
 import Setting from '@/pages/Setting'
 
 Vue.use(Router)
@@ -68,6 +70,16 @@ export default new Router({
       name: 'WalletDetail',
       component: WalletDetail,
       props: true
+    },
+    {
+      path: '/invoiceList',
+      name: 'InvoiceList',
+      component: InvoiceList
+    },
+    {
+      path: '/invoiceCreate',
+      name: 'InvoiceCreate',
+      component: InvoiceCreate
     },
     {
       path: '/setting',
