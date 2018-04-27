@@ -7,6 +7,10 @@
               <v-icon>keyboard_arrow_left</v-icon>
             </v-btn>
            <v-toolbar-title>請求書一覧</v-toolbar-title>
+           <v-spacer></v-spacer>
+           <v-btn icon @click.native="showDelete()">
+              <v-icon>delete</v-icon>
+           </v-btn>
           </v-toolbar>
           <v-list two-line>
             <template v-for="(item, index) in items">
@@ -42,33 +46,59 @@
             </v-card-text>
           </v-card>
       </v-flex>
+    <!-- 削除ダイアログ -->
+    <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
+                   v-bind:titleVal="dialogPositiveNegativeTitle"
+                   v-bind:messageVal="dialogPositiveNegativeMessage"
+                   v-bind:positiveVal="dialogPositiveMessage"
+                   v-bind:negativeVal="dialogNegativeMessage"
+                   v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
+    <!-- 完了ダイアログ -->
+    <dialogConfirm v-bind:dialogVal="isShowDialogConfirm"
+                   v-bind:titleVal="dialogTitle"
+                   v-bind:messageVal="dialogMessage"
+                   v-on:dialog-confirm-event-tap-positive="tapConfirm"></dialogConfirm>
     </v-layout>
 </template>
 
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
+  import DialogConfirm from '@/components/DialogConfirm'
+  import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   export default {
     data: () => ({
       items: [
-        { header: 'ウォレット' }
-      ]
+        { header: '請求書' }
+      ],
+      isShowDialogConfirm: false,
+      dialogTitle: '請求書の削除',
+      dialogMessage: '削除しました。',
+      isShowDialogPositiveNegative: false,
+      dialogPositiveNegativeTitle: '請求書の削除',
+      dialogPositiveNegativeMessage: '全ての請求書を削除しますか？',
+      dialogPositiveMessage: '削除する',
+      dialogNegativeMessage: 'いいえ'
     }),
+    components: {
+      'dialogPositiveNegative': DialogPositiveNegative,
+      'dialogConfirm': DialogConfirm
+    },
     mounted () {
       console.log('mounted')
       this.reloadItems()
     },
     methods: {
       reloadItems () {
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, dbWrapper.VALUE_ALL)
+        dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, dbWrapper.VALUE_ALL)
           .then((result) => {
             result.forEach((element) => {
-              let dateString = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE].replace('T', ' ').slice(0, -4)
+              // let dateString = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE].replace('T', ' ').slice(0, -4)
               let item = {}
-              item.id = element[dbWrapper.VALUE_PRIMARY_ID]
-              item.date = dateString
-              item.title = element[dbWrapper.VALUE_NAME]
-              item.headline = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-              item.subtitle = element[dbWrapper.VALUE_DESCRIPTION]
+              item.id = element.id
+              // item.date = dateString
+              item.title = element.name
+              item.headline = element.senderAddr
+              item.subtitle = element.message
               // console.log(item)
               this.items.push(item)
             })
@@ -82,12 +112,44 @@
             console.log(err)
           })
       },
+      deleteWallet () {
+        dbWrapper.removeItemArray(dbWrapper.KEY_INVOICE, dbWrapper.VALUE_ALL)
+          .then((result) => {
+            this.dialogMessage = '削除しました'
+            this.deleteItems(-1)
+          }).catch((err) => {
+            console.log(err)
+            this.dialogMessage = 'ERROR：削除に失敗しました'
+          })
+      },
+      deleteItems (id) {
+        if (id === -1) {
+          this.items = []
+          this.items.push({ header: '請求書' })
+        }
+      },
       tapItem (index) {
         console.log('tap:' + index + ' id:' + this.items[index].id)
-        this.$router.push({ name: 'WalletDetail', params: {id: String(this.items[index].id)} })
+        // this.$router.push({ name: 'WalletDetail', params: {id: String(this.items[index].id)} })
       },
       tapAdd () {
-        this.$router.push({ name: 'Create' })
+        this.$router.push({ name: 'InvoiceCreate' })
+      },
+      showDelete () {
+        this.isShowDialogPositiveNegative = true
+      },
+      tapSendPositiveNegative (isPositive, message) {
+        this.isShowDialogPositiveNegative = false
+        if (isPositive) {
+          this.deleteWallet()
+          this.isShowDialogConfirm = true
+        }
+      },
+      tapConfirm (message) {
+        if (this.isShowDialogConfirm === true) {
+          this.isShowDialogConfirm = false
+          // this.$router.go({ name: 'InvoiceList' }) ブラウザリロードだが値を使わない。値を初期化する.
+        }
       },
       back () {
         history.go(-1)

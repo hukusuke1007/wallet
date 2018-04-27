@@ -15,7 +15,7 @@
                   <v-text-field
                     box
                     label="請求書名"
-                    v-model="invoiceName"
+                    v-model="name"
                     :counter="40"
                     required
                     placeholder="例. お菓子"
@@ -101,15 +101,17 @@
           <progressCircular v-bind:isShowVal="isShowProgress"></progressCircular>
 
           <!-- 送金確認ダイアログ -->
+          <!--
           <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
                          titleVal="送金確認"
                          v-bind:messageVal="dialogPositiveNegativeMessage"
                          positiveVal="送金する"
                          negativeVal="いいえ"
                          v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
+          -->
           <!-- 完了ダイアログ -->
           <dialogConfirm v-bind:dialogVal="isShowDialogConfirm"
-                         titleVal="送金"
+                         titleVal="請求書"
                          v-bind:messageVal="dialogMessage"
                          v-on:dialog-confirm-event-tap-positive="tapConfirm"></dialogConfirm>
           <!-- QRコードダイアログ -->
@@ -126,11 +128,11 @@
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
   // import nemWrapper from '@/js/nem_wrapper'
-  import DialogPositiveNegative from '@/components/DialogPositiveNegative'
+  // import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
   import ProgressCircular from '@/components/ProgressCircular'
-  // import ModelInvoice from '@/js/model/model_invoice'
+  import ModelInvoice from '@/js/model/model_invoice'
 
   export default {
     data: () => ({
@@ -142,7 +144,6 @@
       mosaics: [],
       amountLabel: '送金量',
       amount: 0,
-      invoiceName: '',
       message: '',
       senderAddr: '',
       currencyItems: [
@@ -152,14 +153,15 @@
       ],
       selectCurrency: { id: 0, text: 'NEM' },
       designItem: {},
-      isShowDialogPositiveNegative: false,
-      dialogPositiveNegativeMessage: '',
+      // isShowDialogPositiveNegative: false,
+      // dialogPositiveNegativeMessage: '',
       isShowDialogConfirm: false,
-      dialogMessage: '送金しました。',
+      dialogMessage: '作成しました。',
       isShowDialogQRreader: false,
       paused: false,
       content: '',
       isShowProgress: false,
+      isError: false,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -175,7 +177,7 @@
       }
     }),
     components: {
-      'dialogPositiveNegative': DialogPositiveNegative,
+      // 'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm,
       'dialogQRreader': DialogQRreader,
       'progressCircular': ProgressCircular
@@ -192,15 +194,10 @@
     },
     watch: {
       senderAddr (val) {
-        this.showFee()
-        this.showFeeMosaics(false)
       },
       amount (val) {
-        this.showFee()
       },
       message (val) {
-        this.showFee()
-        this.showFeeMosaics(false)
       },
       mosaics (after, before) {
         console.log(after)
@@ -223,6 +220,30 @@
           console.log('submit')
           this.senderAddr = this.senderAddr.replace(/-/g, '')
           console.log(this.senderAddr)
+          let id = Number.parseInt(this.id)
+          // 新規作成.
+          if (id === -1) {
+            let storeData = new ModelInvoice()
+            if ((this.selectCurrency.id === 0) || (this.selectCurrency.id === 1)) {
+              storeData.name = this.name
+              storeData.message = this.message
+              storeData.senderAddr = this.senderAddr
+              storeData.currencyItem = this.selectCurrency
+              storeData.amount = Number(this.amount)
+            }
+            dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, false, -1)
+              .then((result) => {
+                console.log(result)
+                this.isError = false
+                this.isShowDialogConfirm = true
+                this.dialogMessage = '請求書を作成しました。'
+              }).catch((err) => {
+                console.log(err)
+                this.isError = true
+                this.isShowDialogConfirm = true
+                this.dialogMessage = 'ERROR:データ保存に失敗しました。'
+              })
+          }
           /*
           this.dialogPositiveNegativeMessage = '送金しますか？<br><br>' +
             '送金量:<br>' + this.amount + ' xem' + '<br>' +
@@ -259,9 +280,8 @@
             this.name = result.name
             this.message = result.message
             this.senderAddr = result.senderAddr
-            this.currencyItem = result.currencyItem
+            this.selectCurrency = result.currencyItem
             this.amount = result.amount
-            this.currencyItem = result.currencyItem
             this.mosaics = result.mosaics
             this.num = result.num
             this.designItem = result.designItem
@@ -281,6 +301,7 @@
         this.isShowDialogPositiveNegative = true
         */
       },
+      /*
       tapSendPositiveNegative (isPositive, message) {
         if (this.isShowDialogPositiveNegative === true) {
           if (isPositive) {
@@ -292,9 +313,11 @@
           this.isShowDialogPositiveNegative = false
         }
       },
+      */
       tapConfirm (message) {
         if (this.isShowDialogConfirm === true) {
           this.isShowDialogConfirm = false
+          if (this.isError === false) { this.$router.push({ name: 'InvoiceList' }) }
         }
       },
       showQRreader () {
