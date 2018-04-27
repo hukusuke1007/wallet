@@ -125,11 +125,12 @@
 
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
-  import nemWrapper from '@/js/nem_wrapper'
+  // import nemWrapper from '@/js/nem_wrapper'
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
   import ProgressCircular from '@/components/ProgressCircular'
+  // import ModelInvoice from '@/js/model/model_invoice'
 
   export default {
     data: () => ({
@@ -144,18 +145,17 @@
       invoiceName: '',
       message: '',
       senderAddr: '',
-      publicKey: '',
       currencyItems: [
         { id: 0, text: 'NEM' },
         { id: 1, text: 'JPY' },
         { id: 2, text: 'Mosaics' }
       ],
       selectCurrency: { id: 0, text: 'NEM' },
+      designItem: {},
       isShowDialogPositiveNegative: false,
       dialogPositiveNegativeMessage: '',
       isShowDialogConfirm: false,
       dialogMessage: '送金しました。',
-      transactionType: 'nem',
       isShowDialogQRreader: false,
       paused: false,
       content: '',
@@ -221,12 +221,9 @@
       submit () {
         if (this.$refs.form.validate() && this.$refs.formCurrency.validate()) {
           console.log('submit')
-          this.transactionType = 'nem'
           this.senderAddr = this.senderAddr.replace(/-/g, '')
           console.log(this.senderAddr)
-          let total = Number(this.amount) + Number(this.fee)
-          let n = 6 // 下6桁まで残す.
-          total = Math.floor(total * Math.pow(10, n)) / Math.pow(10, n)
+          /*
           this.dialogPositiveNegativeMessage = '送金しますか？<br><br>' +
             '送金量:<br>' + this.amount + ' xem' + '<br>' +
             '手数量:<br>' + this.fee + ' xem' + '<br>' +
@@ -234,20 +231,20 @@
             '送金先:<br>' + this.senderAddr + '<br><br>' +
             'メッセージ:<br>' + this.message
           this.isShowDialogPositiveNegative = true
+          */
         }
       },
       clear () {
+        this.invoiceName = ''
         this.senderAddr = ''
         this.message = ''
         this.amount = 0
-        this.fee = 0
-        // this.$refs.form.reset()
-        // this.isShowProgress = true // テスト用
       },
       clearMosaic () {
+        this.invoiceName = ''
         this.senderAddr = ''
         this.message = ''
-        this.fee = 0
+        this.amount = 0
         this.mosaics.forEach((element) => {
           element.sendAmount = 0
         })
@@ -255,35 +252,19 @@
       reloadItem () {
         this.mosaics = []
         let id = Number.parseInt(this.id)
+        if (id === -1) return
         // console.log('reloadItem:' + id)
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
+        dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, id)
           .then((result) => {
-            this.date = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
-            this.name = result[dbWrapper.VALUE_NAME]
-            this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-            let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-            this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
-            // モザイク取得.
-            nemWrapper.getMosaics(this.address)
-              .then((result) => {
-                console.log(result)
-                result.forEach((element, index) => {
-                  let mosaic = {}
-                  mosaic.index = index
-                  mosaic.text = element.mosaicId.namespaceId + ':' + element.mosaicId.name
-                  mosaic.namespaceId = element.mosaicId.namespaceId
-                  mosaic.name = element.mosaicId.name
-                  mosaic.amount = element.amount
-                  mosaic.sendAmount = 0
-                  mosaic.divisibility = element.properties.divisibility
-                  mosaic.initialSupply = element.properties.initialSupply
-                  mosaic.supplyMutable = element.properties.supplyMutable
-                  mosaic.transferable = element.properties.transferable
-                  this.mosaics.push(mosaic)
-                })
-              }).catch((err) => {
-                console.log('get_mosaic_error: ' + err)
-              })
+            this.name = result.name
+            this.message = result.message
+            this.senderAddr = result.senderAddr
+            this.currencyItem = result.currencyItem
+            this.amount = result.amount
+            this.currencyItem = result.currencyItem
+            this.mosaics = result.mosaics
+            this.num = result.num
+            this.designItem = result.designItem
           }).catch((err) => {
             console.log(err)
           })

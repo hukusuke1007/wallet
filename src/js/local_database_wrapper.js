@@ -3,6 +3,7 @@ localForage.setDriver(localForage.LOCALSTORAGE)
 
 // データーベースのkey.
 const KEY_WALLET_INFO = 'key_wallet_info'
+const KEY_INVOICE = 'key_invoice'
 
 // 値のkey.
 const VALUE_PRIMARY_ID = 'id'
@@ -20,6 +21,7 @@ const MESSAGE_ERROR = 'error'
 
 // 外部公開.
 exports.KEY_WALLET_INFO = KEY_WALLET_INFO
+exports.KEY_INVOICE = KEY_INVOICE
 exports.VALUE_PRIMARY_ID = VALUE_PRIMARY_ID
 exports.VALUE_ALL = VALUE_ALL
 exports.VALUE_NAME = VALUE_NAME
