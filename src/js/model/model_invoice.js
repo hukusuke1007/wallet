@@ -1,4 +1,4 @@
-export default class ModeInvoice {
+export default class ModelInvoice {
   constructor () {
     this.id = -1
     this.name = ''
