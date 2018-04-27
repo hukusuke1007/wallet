@@ -81,14 +81,16 @@
                    ></v-text-field>
                 </div>
               </v-form>
-              <v-text-field
-                  label="手数料(xem)"
-                  v-model="feeMosaics"
-                  required
-                  disabled
-              ></v-text-field>
-              <v-btn color="info" @click="submitMosaic" :disabled="!valid">送金</v-btn>
-              <v-btn @click="clearMosaic">クリア</v-btn>
+              <div v-show="mosaics">
+                <v-text-field
+                    label="手数料(xem)"
+                    v-model="feeMosaics"
+                    required
+                    disabled
+                ></v-text-field>
+                <v-btn color="info" @click="submitMosaic" :disabled="!valid">送金</v-btn>
+                <v-btn @click="clearMosaic">クリア</v-btn>
+              </div>
             </div>
             </v-card>
           </v-flex>

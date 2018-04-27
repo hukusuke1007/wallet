@@ -13,19 +13,19 @@
     <br>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
-        <!-- <nemTransactionCreate v-bind:id="String(selectItem.id)"></nemTransactionCreate> -->
+        <nemInvoiceCreate v-bind:id="String(-1)"></nemInvoiceCreate>
       </v-card>
     </v-flex>
   </div>
 </template>
 <script>
-  // import NemTransactionCreate from '@/components/NemTransactionCreate'
+  import NemInvoiceCreate from '@/components/NemInvoiceCreate'
 
   export default {
     data: () => ({
     }),
     components: {
-      // 'nemTransactionCreate': NemTransactionCreate
+      'nemInvoiceCreate': NemInvoiceCreate
     },
     methods: {
       back () {

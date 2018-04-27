@@ -27,7 +27,7 @@
               label="モザイク"
               v-model="selectMosaic"
               prepend-icon="view_quilt"></v-select>
-          </v-flex>
+            </v-flex>
           <v-form v-model="valid" ref="form" lazy-validation>
             <v-text-field
               box
