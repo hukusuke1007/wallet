@@ -7,5 +7,7 @@ export default class ModelInvoice {
     this.currencyItem = {}
     this.amount = 0
     this.mosaics = []
+    this.num = 1
+    this.designItem = {}
   }
 }
