@@ -8,14 +8,14 @@
             </v-btn>
            <v-toolbar-title>請求書一覧</v-toolbar-title>
            <v-spacer></v-spacer>
-           <v-btn icon @click.native="showDelete()">
+           <v-btn icon @click.native="showDelete()" v-show="isDelete">
               <v-icon>delete</v-icon>
            </v-btn>
           </v-toolbar>
           <v-list two-line>
             <template v-for="(item, index) in items">
-              <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>
-              <v-list-tile avatar v-else ripple :key="index" @click="tapItem(index)">
+              <!-- <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader> -->
+              <v-list-tile avatar ripple :key="index" @click="tapItem(index)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
@@ -67,9 +67,8 @@
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   export default {
     data: () => ({
-      items: [
-        { header: '請求書' }
-      ],
+      items: [],
+      isDelete: { type: Boolean, default: false },
       isShowDialogConfirm: false,
       dialogTitle: '請求書の削除',
       dialogMessage: '削除しました。',
@@ -87,6 +86,15 @@
       console.log('mounted')
       this.reloadItems()
     },
+    watch: {
+      items (val) {
+        if (val.length !== 0) {
+          this.isDelete = true
+        } else {
+          this.isDelete = false
+        }
+      }
+    },
     methods: {
       reloadItems () {
         dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, dbWrapper.VALUE_ALL)
@@ -101,6 +109,7 @@
               item.subtitle = element.message
               // console.log(item)
               this.items.push(item)
+              this.isDelete = true
             })
             // 新しい順にソート.
             this.items.sort((a, b) => {
@@ -125,7 +134,6 @@
       deleteItems (id) {
         if (id === -1) {
           this.items = []
-          this.items.push({ header: '請求書' })
         }
       },
       tapItem (index) {
