@@ -1,4 +1,3 @@
-// モデルクラス - NEMウォレット
 export default class ModelWalletNem {
   constructor () {
     this.id = -1
