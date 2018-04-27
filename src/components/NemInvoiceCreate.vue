@@ -150,7 +150,7 @@
         { id: 1, text: 'JPY' },
         { id: 2, text: 'Mosaics' }
       ],
-      selectCurrency: null,
+      selectCurrency: { id: 0, text: 'NEM' },
       isShowDialogPositiveNegative: false,
       dialogPositiveNegativeMessage: '',
       isShowDialogConfirm: false,
