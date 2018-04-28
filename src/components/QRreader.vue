@@ -16,6 +16,7 @@
 </template>
 
 <script>
+  import nemWrapper from '@/js/nem_wrapper'
   export default {
     data () {
       return {
@@ -75,18 +76,20 @@
       },
       onDecode (content) {
         // ここでフィルタリングする.
-        if (this.typeVal === 'privateKey') {
-          console.log(this.typeVal)
-        } else if (this.typeVal === 'invoice') {
-          console.log(this.typeVal)
-        }
-        if (!content) {
+        let json = nemWrapper.getJsonQRcode(content)
+        if (!json) {
           this.content = '不正なQRコードです'
-          console.log('qr_reader is empty content')
+          console.log('qr_reader error')
         } else {
           this.content = '読み取り成功'
-          console.log('qr_reader:' + content)
-          this.$emit('qr-reader-event-scan-success', content)
+          /*
+          if (this.typeVal === 'privateKey') {
+            console.log(this.typeVal)
+          } else if (this.typeVal === 'invoice') {
+            console.log(this.typeVal)
+          }
+          */
+          this.$emit('qr-reader-event-scan-success', json)
           this.content = ''
           // this.paused = true
         }

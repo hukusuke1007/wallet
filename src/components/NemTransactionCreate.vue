@@ -391,7 +391,22 @@
         this.isShowDialogQRreader = true
       },
       getQRContent (content) {
-        console.log(content)
+        if (content !== null) {
+          this.amount = Number(content.data.amount) / Math.pow(10, 6)
+          this.senderAddr = content.data.addr
+          this.message = content.data.msg
+          // モザイク(オリジナルQR仕様)
+          if (content.data.mosaics) {
+            let mosaics = content.data.mosaics
+            mosaics.forEach((data) => {
+              this.mosaics.forEach((element) => {
+                if ((data.namespaceId === element.namespaceId) && (data.name === element.name)) {
+                  element.amount = data.amount / Math.pow(10, Number(element.divisibility))
+                }
+              })
+            })
+          }
+        }
         this.paused = true
         this.isShowDialogQRreader = false
       },
