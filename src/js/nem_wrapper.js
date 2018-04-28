@@ -1,4 +1,7 @@
-import {Account, AccountHttp, MosaicHttp, NEMLibrary, NetworkTypes, Address, SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM, TransactionHttp, TransferTransaction, AccountOwnedMosaicsService, MosaicId} from 'nem-library'
+import {UnconfirmedTransactionListener, ConfirmedTransactionListener,
+  Account, AccountHttp, MosaicHttp, NEMLibrary, NetworkTypes, Address,
+  SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM,
+  TransactionHttp, TransferTransaction, AccountOwnedMosaicsService, MosaicId} from 'nem-library'
 import {Observable} from 'rxjs/Observable'
 
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
@@ -12,42 +15,28 @@ exports.PUBLICK_KEY = PUBLICK_KEY
 exports.PRIVATE_KEY = PRIVATE_KEY
 exports.NEM_UNIT = NEM_UNIT
 
+const nodes = [
+  {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'happy.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
+  {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
+]
 // Using custom NIS Node
-const accountHttp = new AccountHttp([
-  {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'happy.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
-])
+const accountHttp = new AccountHttp(nodes)
 // const accountHttp = new AccountHttp()
-const mosaicHttp = new MosaicHttp([
-  {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'happy.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'shibuya.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
-])
+
+const mosaicHttp = new MosaicHttp(nodes)
 // const mosaicHttp = new MosaicHttp()
 
 // アカウントステータスを確認.
@@ -95,6 +84,34 @@ exports.getTransaction = (addr, pageSize, hash, id) => {
     let params = { pageSize: pageSize, hash: hash, id: id }
     accountHttp.allTransactions(address, params).subscribe(
       transaction => { resolve(transaction) },
+      error => { reject(error) }
+    )
+  })
+  return promise
+}
+
+// 未承認トランザクション取得.
+exports.getUncofirmedTransactionListener = (addr) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log(addr)
+    const address = new Address(addr)
+    const listener = new UnconfirmedTransactionListener(nodes).given(address)
+    listener.subscribe(
+      x => { resolve(x) },
+      error => { reject(error) }
+    )
+  })
+  return promise
+}
+
+// 承認トランザクション取得.
+exports.getCofirmedTransactionListener = (addr) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log(addr)
+    const address = new Address(addr)
+    const listener = new ConfirmedTransactionListener(nodes).given(address)
+    listener.subscribe(
+      x => { resolve(x) },
       error => { reject(error) }
     )
   })

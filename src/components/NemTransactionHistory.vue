@@ -55,6 +55,7 @@
       'dialogConfirm': DialogConfirm
     },
     mounted () {
+      this.items = [{ header: '送金履歴一覧 (最大100件)' }]
       this.reloadItem()
     },
     props: {
@@ -65,6 +66,13 @@
       accountAddress: {
         type: String,
         default: ''
+      }
+    },
+    watch: {
+      address (val) {
+        if (val) {
+          this.setTransactionListener()
+        }
       }
     },
     methods: {
@@ -186,6 +194,27 @@
         })
         let count = this.items.length - 1
         this.header = '送金履歴一覧 (' + count + '件）'
+      },
+      setTransactionListener () {
+        // 未承認トランザクション
+        nemWrapper.getUncofirmedTransactionListener(this.address)
+          .then((result) => {
+            console.log('getUncofirmedTransactionListener OK')
+            console.log(result)
+          }).catch((err) => {
+            console.log('getUncofirmedTransactionListener ERROR')
+            console.error(err)
+          })
+
+        // 承認トランザクション
+        nemWrapper.getCofirmedTransactionListener(this.address)
+          .then((result) => {
+            console.log('getCofirmedTransactionListener OK')
+            console.log(result)
+          }).catch((err) => {
+            console.log('getCofirmedTransactionListener ERROR')
+            console.error(err)
+          })
       },
       tapItem (index) {
         let item = this.items[index]
