@@ -57,11 +57,12 @@
     methods: {
       reloadItems () {
         let num = 100
-        for (let i = 0; i <= num; i++) {
+        for (let i = 1; i <= num; i++) {
           let item = {}
           item.text = i
           this.showItems.push(item)
         }
+        this.selectShowItem = this.showItems[0]
       },
       tapOperate (operate) {
         this.$emit('dialog-select-invoice-event-tap-operate', Number(this.selectShowItem.text), operate)

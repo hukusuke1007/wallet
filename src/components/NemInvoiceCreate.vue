@@ -127,7 +127,7 @@
 
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
-  // import nemWrapper from '@/js/nem_wrapper'
+  import nemWrapper from '@/js/nem_wrapper'
   // import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
@@ -220,30 +220,39 @@
           console.log('submit')
           this.senderAddr = this.senderAddr.replace(/-/g, '')
           console.log(this.senderAddr)
-          let id = Number.parseInt(this.id)
-          // 新規作成.
-          if (id === -1) {
-            let storeData = new ModelInvoice()
-            if ((this.selectCurrency.id === 0) || (this.selectCurrency.id === 1)) {
-              storeData.name = this.name
-              storeData.message = this.message
-              storeData.senderAddr = this.senderAddr
-              storeData.currencyItem = this.selectCurrency
-              storeData.amount = Number(this.amount)
-            }
-            dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, false, -1)
-              .then((result) => {
-                console.log(result)
-                this.isError = false
-                this.isShowDialogConfirm = true
-                this.dialogMessage = '請求書を作成しました。'
-              }).catch((err) => {
-                console.log(err)
-                this.isError = true
-                this.isShowDialogConfirm = true
-                this.dialogMessage = 'ERROR:データ保存に失敗しました。'
-              })
-          }
+          nemWrapper.getStatus(this.senderAddr)
+            .then((result) => {
+              console.log(result)
+              let id = Number.parseInt(this.id)
+              // 新規作成.
+              if (id === -1) {
+                let storeData = new ModelInvoice()
+                if ((this.selectCurrency.id === 0) || (this.selectCurrency.id === 1)) {
+                  storeData.name = this.name
+                  storeData.message = this.message
+                  storeData.senderAddr = this.senderAddr
+                  storeData.currencyItem = this.selectCurrency
+                  storeData.amount = Number(this.amount)
+                }
+                dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, false, -1)
+                  .then((result) => {
+                    console.log(result)
+                    this.isError = false
+                    this.isShowDialogConfirm = true
+                    this.dialogMessage = '請求書を作成しました。'
+                  }).catch((err) => {
+                    console.log(err)
+                    this.isError = true
+                    this.isShowDialogConfirm = true
+                    this.dialogMessage = 'ERROR:データ保存に失敗しました。'
+                  })
+              }
+            }).catch((err) => {
+              console.log(err)
+              this.isError = true
+              this.isShowDialogConfirm = true
+              this.dialogMessage = 'ERROR:送金先アドレスが正しくありません。'
+            })
           /*
           this.dialogPositiveNegativeMessage = '送金しますか？<br><br>' +
             '送金量:<br>' + this.amount + ' xem' + '<br>' +

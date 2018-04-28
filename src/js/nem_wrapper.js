@@ -50,6 +50,19 @@ const mosaicHttp = new MosaicHttp([
 ])
 // const mosaicHttp = new MosaicHttp()
 
+// アカウントステータスを確認.
+exports.getStatus = (addr) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log(addr)
+    const address = new Address(addr)
+    accountHttp.status(address).subscribe(
+      AccountStatus => { resolve(AccountStatus) },
+      error => { reject(error) }
+    )
+  })
+  return promise
+}
+
 // アカウント取得.
 exports.getAccount = (addr) => {
   let promise = new Promise((resolve, reject) => {
