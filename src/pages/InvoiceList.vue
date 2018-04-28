@@ -16,6 +16,9 @@
             <template v-for="(item, index) in items">
               <!-- <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader> -->
               <v-list-tile avatar ripple :key="index" @click="tapItem(index)">
+                <v-list-tile-action>
+                  <v-icon>receipt</v-icon>
+                </v-list-tile-action>
                 <v-list-tile-content>
                   <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
@@ -58,6 +61,12 @@
                    v-bind:titleVal="dialogTitle"
                    v-bind:messageVal="dialogMessage"
                    v-on:dialog-confirm-event-tap-positive="tapConfirm"></dialogConfirm>
+
+    <!-- 選択ダイアログ -->
+    <dialogSelectInvoice v-bind:dialogVal="isShowDialogSelectInvoice"
+                   v-bind:titleVal="dialogSelectInvoiceTitle"
+                   v-on:dialog-select-invoice-event-tap-operate="tapDialogOperate"
+                   v-on:dialog-select-invoice-event-tap-close="tapDialogClose"></DialogSelectInvoice>
     </v-layout>
 </template>
 
@@ -65,10 +74,13 @@
   import dbWrapper from '@/js/local_database_wrapper'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
+  import DialogSelectInvoice from '@/components/DialogSelectInvoice'
+
   export default {
     data: () => ({
       items: [],
-      isDelete: { type: Boolean, default: false },
+      selectItem: {},
+      isDelete: false,
       isShowDialogConfirm: false,
       dialogTitle: '請求書の削除',
       dialogMessage: '削除しました。',
@@ -76,14 +88,18 @@
       dialogPositiveNegativeTitle: '請求書の削除',
       dialogPositiveNegativeMessage: '全ての請求書を削除しますか？',
       dialogPositiveMessage: '削除する',
-      dialogNegativeMessage: 'いいえ'
+      dialogNegativeMessage: 'いいえ',
+      isShowDialogSelectInvoice: false,
+      dialogSelectInvoiceTitle: ''
     }),
     components: {
       'dialogPositiveNegative': DialogPositiveNegative,
-      'dialogConfirm': DialogConfirm
+      'dialogConfirm': DialogConfirm,
+      'dialogSelectInvoice': DialogSelectInvoice
     },
     mounted () {
       console.log('mounted')
+      // this.isDelete = false
       this.reloadItems()
     },
     watch: {
@@ -99,24 +115,24 @@
       reloadItems () {
         dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, dbWrapper.VALUE_ALL)
           .then((result) => {
-            result.forEach((element) => {
-              // let dateString = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE].replace('T', ' ').slice(0, -4)
-              let item = {}
-              item.id = element.id
-              // item.date = dateString
-              item.title = element.name
-              item.headline = element.senderAddr
-              item.subtitle = element.message
-              // console.log(item)
-              this.items.push(item)
-              this.isDelete = true
-            })
-            // 新しい順にソート.
-            this.items.sort((a, b) => {
-              if (a.id > b.id) return -1
-              if (a.id < b.id) return 1
-              return 0
-            })
+            if (result !== null) {
+              this.items = []
+              result.forEach((element) => {
+                let item = {}
+                item.id = element.id
+                item.title = element.name
+                item.headline = element.senderAddr
+                item.subtitle = element.message
+                item.isCheck = false
+                this.items.push(item)
+              })
+              // 新しい順にソート.
+              this.items.sort((a, b) => {
+                if (a.id > b.id) return -1
+                if (a.id < b.id) return 1
+                return 0
+              })
+            }
           }).catch((err) => {
             console.log(err)
           })
@@ -138,6 +154,9 @@
       },
       tapItem (index) {
         console.log('tap:' + index + ' id:' + this.items[index].id)
+        this.selectItem = this.items[index]
+        this.dialogSelectInvoiceTitle = '請求書: ' + this.selectItem.title
+        this.isShowDialogSelectInvoice = true
         // this.$router.push({ name: 'WalletDetail', params: {id: String(this.items[index].id)} })
       },
       tapAdd () {
@@ -158,6 +177,13 @@
           this.isShowDialogConfirm = false
           // this.$router.go({ name: 'InvoiceList' }) ブラウザリロードだが値を使わない。値を初期化する.
         }
+      },
+      tapDialogOperate (num, operate) {
+        console.log(num)
+        console.log(operate)
+      },
+      tapDialogClose () {
+        this.isShowDialogSelectInvoice = false
       },
       back () {
         history.go(-1)

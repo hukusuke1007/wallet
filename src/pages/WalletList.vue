@@ -10,8 +10,11 @@
           </v-toolbar>
           <v-list two-line>
             <template v-for="(item, index) in items">
-              <v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>
-              <v-list-tile avatar v-else ripple :key="index" @click="tapItem(index)">
+              <!--<v-subheader v-if="item.header" :key="item.header">{{ item.header }}</v-subheader>-->
+              <v-list-tile avatar ripple :key="index" @click="tapItem(index)">
+                <v-list-tile-action>
+                  <v-icon>credit_card</v-icon>
+                </v-list-tile-action>
                 <v-list-tile-content>
                   <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">{{ item.headline }}</v-list-tile-sub-title>
@@ -49,9 +52,7 @@
   import dbWrapper from '@/js/local_database_wrapper'
   export default {
     data: () => ({
-      items: [
-        { header: 'ウォレット' }
-      ]
+      items: []
     }),
     mounted () {
       console.log('mounted')
