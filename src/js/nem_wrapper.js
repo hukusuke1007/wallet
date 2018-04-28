@@ -314,6 +314,7 @@ exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKe
 
 // QRコード用のJSONデータを取得.
 exports.getJSONInvoiceForQRcode = (v, type, name, addr, amount, msg) => {
+  // v:2, type:1 アカウント, type:2 請求書
   let json = {
     v: v,
     type: type,
