@@ -225,22 +225,18 @@
         }
       },
       tapDialogOperate (num, operate) {
-        console.log(num)
+        console.log('num: ' + num + ' operate: ' + operate)
         this.selectOperate = operate
+        let id = String(this.selectItem.id)
         if (operate === 'open') {
-          console.log(operate)
+          this.$router.push({ name: 'InvoiceShow', params: {id: id, num: Number(num)} })
         } else if (operate === 'edit') {
-          console.log(operate)
-          console.log(this.selectItem.id)
-          let id = String(this.selectItem.id)
           this.$router.push({ name: 'InvoiceCreate', params: {id: id} })
         } else if (operate === 'copy') {
-          console.log(operate)
           this.dialogPositiveNegativeTitle = '請求書の複製'
           this.dialogPositiveNegativeMessage = '請求書をコピーしますか？'
           this.isShowDialogPositiveNegative = true
         } else if (operate === 'delete') {
-          console.log(operate)
           this.dialogPositiveNegativeTitle = '請求書の削除'
           this.dialogPositiveNegativeMessage = '請求書を削除しますか？'
           this.isShowDialogPositiveNegative = true

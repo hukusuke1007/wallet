@@ -3,6 +3,7 @@ import {UnconfirmedTransactionListener, ConfirmedTransactionListener,
   SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM,
   TransactionHttp, TransferTransaction, AccountOwnedMosaicsService, MosaicId} from 'nem-library'
 import {Observable} from 'rxjs/Observable'
+import encoding from 'encoding-japanese'
 
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
@@ -38,6 +39,14 @@ const accountHttp = new AccountHttp(nodes)
 
 const mosaicHttp = new MosaicHttp(nodes)
 // const mosaicHttp = new MosaicHttp()
+
+let getStr2Array = (str) => {
+  let array = []
+  for (let i = 0; i < str.length; i++) {
+    array.push(str.charCodeAt(i))
+  }
+  return array
+}
 
 // アカウントステータスを確認.
 exports.getStatus = (addr) => {
@@ -342,10 +351,13 @@ exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKe
   return promise
 }
 
-// QRコード用のJSONデータを取得.
-exports.getJSONInvoiceForQRcode = (v, type, name, addr, amount, msg) => {
+// NEMのQRコード用のJSONデータを取得.
+exports.getJSONInvoiceForQRcode = (v, type, nameVal, addr, amountVal, msgVal) => {
   // v:2, type:1 アカウント, type:2 請求書
-  let json = {
+  let name = encoding.codeToString(encoding.convert(getStr2Array(nameVal), 'SJIS'))
+  let msg = encoding.codeToString(encoding.convert(getStr2Array(msgVal), 'SJIS'))
+  let amount = amountVal * Math.pow(10, 6)
+  return {
     v: v,
     type: type,
     data: {
@@ -355,7 +367,27 @@ exports.getJSONInvoiceForQRcode = (v, type, name, addr, amount, msg) => {
       msg: msg
     }
   }
-  return json
+}
+
+// JPYのQRコード用のJSONデータを取得.
+exports.getJSONInvoiceForQRcodeJPY = (v, type, nameVal, addr, amountVal, msgVal) => {
+  // v:2, type:1 アカウント, type:2 請求書
+  let name = encoding.codeToString(encoding.convert(getStr2Array(nameVal), 'SJIS'))
+  let msg = encoding.codeToString(encoding.convert(getStr2Array(msgVal), 'SJIS'))
+  return {
+    v: v,
+    type: type,
+    data: {
+      name: name,
+      addr: addr,
+      amount: 0,
+      msg: msg,
+      office_nem: {
+        type: 'JPY',
+        amount: amountVal
+      }
+    }
+  }
 }
 
 // QRコード用のJSONデータを取得.

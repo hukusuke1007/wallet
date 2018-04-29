@@ -18,6 +18,7 @@ import WalletList from '@/pages/WalletList'
 import WalletDetail from '@/pages/WalletDetail'
 import InvoiceList from '@/pages/InvoiceList'
 import InvoiceCreate from '@/pages/InvoiceCreate'
+import InvoiceShow from '@/pages/InvoiceShow'
 import Setting from '@/pages/Setting'
 
 Vue.use(Router)
@@ -80,6 +81,12 @@ export default new Router({
       path: '/invoiceCreate',
       name: 'InvoiceCreate',
       component: InvoiceCreate,
+      props: true
+    },
+    {
+      path: '/invoiceShow',
+      name: 'InvoiceShow',
+      component: InvoiceShow,
       props: true
     },
     {

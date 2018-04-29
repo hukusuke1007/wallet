@@ -128,6 +128,7 @@
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
   import ProgressCircular from '@/components/ProgressCircular'
+  import exWrapper from '@/js/exchange_wrapper'
 
   export default {
     data: () => ({
@@ -178,6 +179,14 @@
     },
     mounted () {
       this.reloadItem()
+      exWrapper.getRateJpyXem()
+        .then((result) => {
+          console.log('exchange')
+          console.log(result)
+        }).catch((err) => {
+          console.log('exchange error')
+          console.error(err)
+        })
     },
     props: {
       id: {
