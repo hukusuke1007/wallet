@@ -117,11 +117,11 @@ const webpackConfig = merge(baseWebpackConfig, {
       globPatterns: ['**/*.{html,js,css}'],
       swDest: path.join(config.build.assetsRoot, 'service-worker.js'),
       skipWaiting: false,
-      clientsClaim: true,
-      runtimeCaching: [
-       {
-         // APIのキャッシュ
-         urlPattern: /.*api.*/,
+      clientsClaim: true
+      // runtimeCaching: [
+      //  {
+      //   urlPattern: /.*api.*/,
+      /*
          handler: 'networkFirst',
          options: {
            cacheName: 'api',
@@ -131,6 +131,7 @@ const webpackConfig = merge(baseWebpackConfig, {
          }
        }
      ]
+     */
     })
   ]
 })
