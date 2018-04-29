@@ -9,5 +9,7 @@ export default class ModelInvoice {
     this.mosaics = []
     this.num = 1
     this.designItem = {}
+    this.createDate = new Date()
+    this.updateDate = new Date()
   }
 }

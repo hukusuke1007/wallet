@@ -87,10 +87,11 @@
       isShowDialogPositiveNegative: false,
       dialogPositiveNegativeTitle: '請求書の削除',
       dialogPositiveNegativeMessage: '全ての請求書を削除しますか？',
-      dialogPositiveMessage: '削除する',
+      dialogPositiveMessage: 'はい',
       dialogNegativeMessage: 'いいえ',
       isShowDialogSelectInvoice: false,
-      dialogSelectInvoiceTitle: ''
+      dialogSelectInvoiceTitle: '',
+      selectOperate: ''
     }),
     components: {
       'dialogPositiveNegative': DialogPositiveNegative,
@@ -137,11 +138,37 @@
             console.log(err)
           })
       },
-      deleteWallet () {
-        dbWrapper.removeItemArray(dbWrapper.KEY_INVOICE, dbWrapper.VALUE_ALL)
+      copyInvoice (id) {
+        console.log('copyInvoice:getItemArray' + id)
+        this.dialogTitle = '請求書の複製'
+        dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, Number(id))
+          .then((result) => {
+            let copyData = result
+            dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, copyData, false, -1)
+              .then((result) => {
+                console.log(result)
+                this.reloadItems()
+                this.dialogMessage = 'コピーしました。'
+                this.isShowDialogConfirm = true
+                this.isShowDialogSelectInvoice = false
+              }).catch((err) => {
+                console.log(err)
+                this.dialogMessage = 'ERROR:データ保存に失敗しました。'
+                this.isShowDialogConfirm = true
+              })
+          }).catch((err) => {
+            console.log(err)
+            this.dialogMessage = 'ERROR:データ保存に失敗しました。'
+            this.isShowDialogConfirm = true
+          })
+      },
+      deleteInvoice (id) {
+        let operate = dbWrapper.VALUE_ALL
+        if (id !== -1) { operate = Number(id) }
+        dbWrapper.removeItemArray(dbWrapper.KEY_INVOICE, operate)
           .then((result) => {
             this.dialogMessage = '削除しました'
-            this.deleteItems(-1)
+            this.deleteItems(id)
           }).catch((err) => {
             console.log(err)
             this.dialogMessage = 'ERROR：削除に失敗しました'
@@ -150,6 +177,8 @@
       deleteItems (id) {
         if (id === -1) {
           this.items = []
+        } else {
+          this.reloadItems()
         }
       },
       tapItem (index) {
@@ -163,13 +192,30 @@
         this.$router.push({ name: 'InvoiceCreate' })
       },
       showDelete () {
+        this.selectOperate = 'allDelete'
+        this.dialogTitle = '請求書の削除'
+        this.dialogMessage = '削除しました。'
+        this.dialogPositiveNegativeTitle = '請求書の削除'
+        this.dialogPositiveNegativeMessage = '全ての請求書を削除しますか？'
         this.isShowDialogPositiveNegative = true
       },
       tapSendPositiveNegative (isPositive, message) {
         this.isShowDialogPositiveNegative = false
         if (isPositive) {
-          this.deleteWallet()
-          this.isShowDialogConfirm = true
+          if (this.selectOperate === 'allDelete') {
+            this.dialogTitle = '請求書の削除'
+            this.dialogMessage = '削除しました。'
+            this.deleteInvoice(-1)
+            this.isShowDialogConfirm = true
+          } else if (this.selectOperate === 'copy') {
+            this.copyInvoice(this.selectItem.id)
+          } else if (this.selectOperate === 'delete') {
+            this.dialogTitle = '請求書の削除'
+            this.dialogMessage = '削除しました。'
+            this.deleteInvoice(this.selectItem.id)
+            this.isShowDialogSelectInvoice = false
+            this.isShowDialogConfirm = true
+          }
         }
       },
       tapConfirm (message) {
@@ -180,7 +226,25 @@
       },
       tapDialogOperate (num, operate) {
         console.log(num)
-        console.log(operate)
+        this.selectOperate = operate
+        if (operate === 'open') {
+          console.log(operate)
+        } else if (operate === 'edit') {
+          console.log(operate)
+          console.log(this.selectItem.id)
+          let id = String(this.selectItem.id)
+          this.$router.push({ name: 'InvoiceCreate', params: {id: id} })
+        } else if (operate === 'copy') {
+          console.log(operate)
+          this.dialogPositiveNegativeTitle = '請求書の複製'
+          this.dialogPositiveNegativeMessage = '請求書をコピーしますか？'
+          this.isShowDialogPositiveNegative = true
+        } else if (operate === 'delete') {
+          console.log(operate)
+          this.dialogPositiveNegativeTitle = '請求書の削除'
+          this.dialogPositiveNegativeMessage = '請求書を削除しますか？'
+          this.isShowDialogPositiveNegative = true
+        }
       },
       tapDialogClose () {
         this.isShowDialogSelectInvoice = false

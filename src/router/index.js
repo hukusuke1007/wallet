@@ -79,7 +79,8 @@ export default new Router({
     {
       path: '/invoiceCreate',
       name: 'InvoiceCreate',
-      component: InvoiceCreate
+      component: InvoiceCreate,
+      props: true
     },
     {
       path: '/setting',

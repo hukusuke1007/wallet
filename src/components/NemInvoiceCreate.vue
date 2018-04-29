@@ -151,8 +151,9 @@
         { id: 1, text: 'JPY' },
         { id: 2, text: 'Mosaics' }
       ],
-      selectCurrency: { id: 0, text: 'NEM' },
+      selectCurrency: {},
       designItem: {},
+      createDate: null,
       // isShowDialogPositiveNegative: false,
       // dialogPositiveNegativeMessage: '',
       isShowDialogConfirm: false,
@@ -162,6 +163,7 @@
       content: '',
       isShowProgress: false,
       isError: false,
+      isUpdate: false,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -183,13 +185,14 @@
       'progressCircular': ProgressCircular
     },
     mounted () {
-      this.selectCurrency = this.currencyItems[0]
+      if (Number(this.id) !== -1) { this.isUpdate = true }
+      console.log('update: ' + this.isUpdate)
       this.reloadItem()
     },
     props: {
       id: {
         type: String,
-        default: -1
+        default: '-1'
       }
     },
     watch: {
@@ -217,36 +220,44 @@
     methods: {
       submit () {
         if (this.$refs.form.validate() && this.$refs.formCurrency.validate()) {
-          console.log('submit')
           this.senderAddr = this.senderAddr.replace(/-/g, '')
-          console.log(this.senderAddr)
+          console.log('NemInvoiceCreate: ' + this.senderAddr)
           nemWrapper.getStatus(this.senderAddr)
             .then((result) => {
               console.log(result)
               let id = Number.parseInt(this.id)
-              // 新規作成.
-              if (id === -1) {
-                let storeData = new ModelInvoice()
-                if ((this.selectCurrency.id === 0) || (this.selectCurrency.id === 1)) {
-                  storeData.name = this.name
-                  storeData.message = this.message
-                  storeData.senderAddr = this.senderAddr
-                  storeData.currencyItem = this.selectCurrency
-                  storeData.amount = Number(this.amount)
+              let storeData = new ModelInvoice()
+              if ((this.selectCurrency.id === 0) || (this.selectCurrency.id === 1)) {
+                storeData.id = id
+                storeData.name = this.name
+                storeData.message = this.message
+                storeData.senderAddr = this.senderAddr
+                storeData.currencyItem = this.selectCurrency
+                storeData.amount = Number(this.amount)
+                if (this.createDate === null) {
+                  storeData.createDate = new Date()
+                } else {
+                  storeData.createDate = this.createDate
                 }
-                dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, false, -1)
-                  .then((result) => {
-                    console.log(result)
-                    this.isError = false
-                    this.isShowDialogConfirm = true
-                    this.dialogMessage = '請求書を作成しました。'
-                  }).catch((err) => {
-                    console.log(err)
-                    this.isError = true
-                    this.isShowDialogConfirm = true
-                    this.dialogMessage = 'ERROR:データ保存に失敗しました。'
-                  })
+                storeData.updateDate = new Date()
               }
+              console.log('NemInvoiceCreate:setItemArray' + id)
+              dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, this.isUpdate, id)
+                .then((result) => {
+                  console.log(result)
+                  this.isError = false
+                  this.isShowDialogConfirm = true
+                  if (this.isUpdate) {
+                    this.dialogMessage = '請求書を変更しました。'
+                  } else {
+                    this.dialogMessage = '請求書を作成しました。'
+                  }
+                }).catch((err) => {
+                  console.log(err)
+                  this.isError = true
+                  this.isShowDialogConfirm = true
+                  this.dialogMessage = 'ERROR:データ保存に失敗しました。'
+                })
             }).catch((err) => {
               console.log(err)
               this.isError = true
@@ -282,24 +293,36 @@
       reloadItem () {
         this.mosaics = []
         let id = Number.parseInt(this.id)
-        if (id === -1) return
-        // console.log('reloadItem:' + id)
-        dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, id)
-          .then((result) => {
-            this.name = result.name
-            this.message = result.message
-            this.senderAddr = result.senderAddr
-            this.selectCurrency = result.currencyItem
-            this.amount = result.amount
-            this.mosaics = result.mosaics
-            this.num = result.num
-            this.designItem = result.designItem
-          }).catch((err) => {
-            console.log(err)
-          })
+        console.log('NemInvoiceCreate:reloadItem: ' + id)
+        if (id === -1) {
+          this.selectCurrency = this.currencyItems[0]
+        } else {
+          dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, id)
+            .then((result) => {
+              this.name = result.name
+              this.message = result.message
+              this.senderAddr = result.senderAddr
+              this.amount = result.amount
+              this.mosaics = result.mosaics
+              this.num = result.num
+              this.designItem = result.designItem
+              this.createDate = result.createDate
+              // こうしないとselectに反映されない..?
+              switch (result.currencyItem.id) {
+                case 0: this.selectCurrency = this.currencyItems[0]
+                  break
+                case 1: this.selectCurrency = this.currencyItems[1]
+                  break
+                case 2: this.selectCurrency = this.currencyItems[2]
+                  break
+              }
+            }).catch((err) => {
+              console.log(err)
+            })
+        }
       },
+      /*
       showSendMosaicConfirm (feeMosaics) {
-        /*
         this.dialogPositiveNegativeMessage = 'モザイクを送金しますか？<br><br>'
         let message = '[' + element.namespace + ':' + element.mosaic + ']' + '<br>' +
                  '送金量:<br>' + element.quantity + ' ' + element.mosaic + '<br><br>'
@@ -308,9 +331,7 @@
         this.dialogPositiveNegativeMessage += '手数量:<br>' + feeMosaics + ' xem' + '<br><br>' +
           '送金先:<br>' + this.senderAddr + '<br><br>' + 'メッセージ:<br>' + this.message
         this.isShowDialogPositiveNegative = true
-        */
       },
-      /*
       tapSendPositiveNegative (isPositive, message) {
         if (this.isShowDialogPositiveNegative === true) {
           if (isPositive) {
@@ -344,7 +365,8 @@
           this.paused = true
           this.isShowDialogQRreader = false
         }
-      },
+      }
+      /*
       sendTransaction () {
         // let successMsg = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>'
         // let errorMsg = '送金エラー' + '<br><br>' + 'メッセージ:<br>'
@@ -360,6 +382,7 @@
           this.isShowProgress = false
         }
       }
+      */
     }
   }
 </script>
