@@ -186,7 +186,7 @@
       exWrapper.getRateJpyXem()
         .then((result) => {
           console.log('rateJpyXem: ' + result)
-          this.rateJpyXem = result
+          this.rateJpyXem = Math.round(result * 1000) / 1000
         }).catch((err) => {
           console.error(err)
         })
@@ -217,10 +217,10 @@
         this.reloadItem()
       },
       rateJpyXem (val) {
-        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(this.balance, val, 3)
+        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(this.balance, val, 0)
       },
       balance (val) {
-        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(val, this.rateJpyXem, 3)
+        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(val, this.rateJpyXem, 0)
       }
     },
     methods: {
@@ -252,8 +252,6 @@
         this.message = ''
         this.amount = 0
         this.fee = 0
-        // this.$refs.form.reset()
-        // this.isShowProgress = true // テスト用
       },
       submitMosaic () {
         if (this.$refs.form.validate()) {
