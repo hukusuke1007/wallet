@@ -40,6 +40,8 @@
               <div class="sideOffset">
               <v-card-title primary-title><h2 style="color: green">NEM</h2></v-card-title>
               <v-subheader>残高</v-subheader><v-card-text><h3 class="font-color-shamrock">{{ balance }} xem</h3></v-card-text>
+              <v-card-text><font color="gray">時価総額: {{ totalJpyXem }} 円</font></v-card-text>
+              <font color="gray">レート: {{ rateJpyXem }} 円/XEM</font>
               <v-form v-model="validNem" ref="formNem" lazy-validation>
                 <v-text-field
                   box
@@ -157,6 +159,8 @@
       paused: false,
       content: '',
       isShowProgress: false,
+      totalJpyXem: 0,
+      rateJpyXem: 0,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -181,10 +185,9 @@
       this.reloadItem()
       exWrapper.getRateJpyXem()
         .then((result) => {
-          console.log('exchange')
-          console.log(result)
+          console.log('rateJpyXem: ' + result)
+          this.rateJpyXem = result
         }).catch((err) => {
-          console.log('exchange error')
           console.error(err)
         })
     },
@@ -212,6 +215,12 @@
       },
       id (val) {
         this.reloadItem()
+      },
+      rateJpyXem (val) {
+        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(this.balance, val, 3)
+      },
+      balance (val) {
+        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(val, this.rateJpyXem, 3)
       }
     },
     methods: {
@@ -401,19 +410,29 @@
       },
       getQRContent (content) {
         if (content !== null) {
-          this.amount = Number(content.data.amount) / Math.pow(10, 6)
           this.senderAddr = content.data.addr
           this.message = content.data.msg
-          // モザイク(オリジナルQR仕様)
-          if (content.data.mosaics) {
-            let mosaics = content.data.mosaics
-            mosaics.forEach((data) => {
-              this.mosaics.forEach((element) => {
-                if ((data.namespaceId === element.namespaceId) && (data.name === element.name)) {
-                  element.amount = data.amount / Math.pow(10, Number(element.divisibility))
-                }
+          if ('office_nem' in content.data) {
+            exWrapper.getRateJpyXem()
+              .then((result) => {
+                this.rateJpyXem = result
+                this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
+              }).catch((err) => {
+                console.error(err)
               })
-            })
+          } else {
+            this.amount = Number(content.data.amount) / Math.pow(10, 6)
+            // モザイク(オリジナルQR仕様)
+            if ('mosaics' in content.data) {
+              let mosaics = content.data.mosaics
+              mosaics.forEach((data) => {
+                this.mosaics.forEach((element) => {
+                  if ((data.namespaceId === element.namespaceId) && (data.name === element.name)) {
+                    element.amount = data.amount / Math.pow(10, Number(element.divisibility))
+                  }
+                })
+              })
+            }
           }
         }
         this.paused = true

@@ -1,27 +1,21 @@
 import axios from 'axios'
 
-const axiosZaif = axios.create({
-  baseURL: 'https://api.zaif.jp/api/1/last_price',
-  headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS, DELETE',
-    'Access-Control-Max-Age': '3600',
-    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-    'Access-Control-Allow-Credentials': 'true',
-    'ContentType': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest'
-  },
-  responseType: 'json'
-})
-
 // レートを取得.
 exports.getRateJpyXem = () => {
   let promise = new Promise((resolve, reject) => {
-    axiosZaif.get('/xem_jpy').then((responce) => {
-      resolve(responce)
-    }).catch((err) => {
-      reject(err)
-    })
+    let poloUrl = 'https://poloniex.com/public?command=returnTicker'
+    let blchainUrl = 'https://blockchain.info/ticker?cors=true'
+    let polo = null
+    axios.get(poloUrl)
+      .then((poloResult) => {
+        polo = poloResult
+        return axios.get(blchainUrl)
+      }).then((blchainResult) => {
+        let price = polo.data.BTC_XEM.last * blchainResult.data.JPY.last
+        resolve(price)
+      }).catch((err) => {
+        reject(err)
+      })
   })
   return promise
 }

@@ -397,3 +397,17 @@ exports.getJsonQRcode = (qrText) => {
   console.log(qrJson)
   return qrJson
 }
+
+// 時価総額を取得.
+exports.getTotalAmountJpyXem = (amount, jpyXem, precision) => {
+  let total = Number(amount) * Number(jpyXem)
+  let factor = Math.pow(10, precision)
+  return Math.round(total * factor) / factor
+}
+
+// 日本円からXEMを取得.
+exports.getTotalAmountXemJpy = (jpy, jpyXem, precision) => {
+  let total = Number(jpy) / Number(jpyXem)
+  let factor = Math.pow(10, precision)
+  return Math.round(total * factor) / factor
+}

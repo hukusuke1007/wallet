@@ -17,6 +17,7 @@
     "ajv": "^6.4.0",
     "ajv-keywords": "^3.1.0",
     "axios": "^0.18.0",
+    "axios-jsonp-pro": "^1.1.3",
     "babel-preset-es2015": "^6.24.1",
     "ecl": "0.0.4",
     "encoding-japanese": "^1.0.28",
@@ -34,7 +35,8 @@
     "vue-qriously": "^1.1.1",
     "vue-router": "^3.0.1",
     "vuetify": "^1.0.14",
-    "yarn": "^1.5.1"
+    "yarn": "^1.5.1",
+    "zaif.jp": "^0.1.16"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.5",
