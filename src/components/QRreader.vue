@@ -75,9 +75,8 @@
         }
       },
       onDecode (content) {
-        // ここでフィルタリングする.
         console.log(content)
-        if (content !== null) {
+        if (content !== '') {
           let json = nemWrapper.getJsonQRcode(content)
           if (!json) {
             this.content = '不正なQRコードです'

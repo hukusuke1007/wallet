@@ -407,37 +407,35 @@
         this.isShowDialogQRreader = true
       },
       getQRContent (content) {
-        if (content !== null) {
-          this.senderAddr = content.data.addr
-          this.message = content.data.msg
-          if ('office_nem' in content.data) {
-            this.isShowProgress = true
-            exWrapper.getRateJpyXem()
-              .then((result) => {
-                this.rateJpyXem = result
-                this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
-                this.isShowProgress = false
-              }).catch((err) => {
-                console.error(err)
-                this.isShowProgress = false
-              })
+        this.senderAddr = content.data.addr
+        this.message = content.data.msg
+        if ('office_nem' in content.data) {
+          this.isShowProgress = true
+          exWrapper.getRateJpyXem()
+            .then((result) => {
+              this.rateJpyXem = result
+              this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
+              this.isShowProgress = false
+            }).catch((err) => {
+              console.error(err)
+              this.isShowProgress = false
+            })
+        } else {
+          if ('amount' in content.data) {
+            this.amount = Number(content.data.amount) / Math.pow(10, 6)
           } else {
-            if ('amount' in content.data) {
-              this.amount = Number(content.data.amount) / Math.pow(10, 6)
-            } else {
-              this.amount = 0
-            }
-            // モザイク(オリジナルQR仕様)
-            if ('mosaics' in content.data) {
-              let mosaics = content.data.mosaics
-              mosaics.forEach((data) => {
-                this.mosaics.forEach((element) => {
-                  if ((data.namespaceId === element.namespaceId) && (data.name === element.name)) {
-                    element.amount = data.amount / Math.pow(10, Number(element.divisibility))
-                  }
-                })
+            this.amount = 0
+          }
+          // モザイク(オリジナルQR仕様)
+          if ('mosaics' in content.data) {
+            let mosaics = content.data.mosaics
+            mosaics.forEach((data) => {
+              this.mosaics.forEach((element) => {
+                if ((data.namespaceId === element.namespaceId) && (data.name === element.name)) {
+                  element.amount = data.amount / Math.pow(10, Number(element.divisibility))
+                }
               })
-            }
+            })
           }
         }
         this.paused = true
