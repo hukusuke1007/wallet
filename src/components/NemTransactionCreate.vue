@@ -414,16 +414,16 @@
             exWrapper.getRateJpyXem()
               .then((result) => {
                 this.rateJpyXem = result
-                if (content.data.office_nem.amount === 0) {
-                  this.amount = 0
-                } else {
-                  this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
-                }
+                this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
               }).catch((err) => {
                 console.error(err)
               })
           } else {
-            this.amount = Number(content.data.amount) / Math.pow(10, 6)
+            if ('amount' in content.data) {
+              this.amount = Number(content.data.amount) / Math.pow(10, 6)
+            } else {
+              this.amount = 0
+            }
             // モザイク(オリジナルQR仕様)
             if ('mosaics' in content.data) {
               let mosaics = content.data.mosaics

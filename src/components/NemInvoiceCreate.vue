@@ -359,10 +359,10 @@
         if ((content !== null) && ('data' in content)) {
           this.name = content.data.name
           this.senderAddr = content.data.addr
-          if (content.data.amount === 0) {
-            this.amount = 0
+          if ('amount' in content.data) {
+            this.amount = Number(content.data.amount) / Math.pow(10, 6)
           } else {
-            this.amount = content.data.amount / Math.pow(10, 6)
+            this.amount = 0
           }
           this.message = content.data.msg
           this.paused = true
