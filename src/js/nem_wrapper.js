@@ -351,6 +351,23 @@ exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKe
 // NEMのQRコード用のJSONデータを取得.
 exports.getJSONInvoiceForQRcode = (v, type, nameVal, addr, amountVal, msgVal) => {
   // v:2, type:1 アカウント, type:2 請求書
+  let amount = amountVal * Math.pow(10, 6)
+  let json = {
+    type: type,
+    data: {
+      name: nameVal,
+      addr: amountVal,
+      amount: amount,
+      msg: msgVal
+    },
+    v: v
+  }
+  let jsonString = JSON.stringify(json)
+  console.log(jsonString)
+  let result = encoding.codeToString(encoding.convert(getStr2Array(jsonString), 'SJIS'))
+  console.log(result)
+  return result
+  /*
   let name = encoding.codeToString(encoding.convert(getStr2Array(nameVal), 'SJIS'))
   let msg = encoding.codeToString(encoding.convert(getStr2Array(msgVal), 'SJIS'))
   let amount = amountVal * Math.pow(10, 6)
@@ -364,6 +381,7 @@ exports.getJSONInvoiceForQRcode = (v, type, nameVal, addr, amountVal, msgVal) =>
       msg: msg
     }
   }
+  */
 }
 
 // JPYのQRコード用のJSONデータを取得.

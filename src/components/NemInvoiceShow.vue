@@ -124,8 +124,8 @@
         if (result.currencyItem.text === 'NEM') {
           // NEM
           this.unitName = 'XEM'
-          this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, this.amount, result.message))
-          console.log(this.qrValue)
+          // this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, this.amount, result.message))
+          this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, this.amount, result.message)
         } else if (result.currencyItem.text === 'JPY') {
           // JPY
           this.unitName = '円'
