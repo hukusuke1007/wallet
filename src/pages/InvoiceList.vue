@@ -67,6 +67,10 @@
                    v-bind:titleVal="dialogSelectInvoiceTitle"
                    v-on:dialog-select-invoice-event-tap-operate="tapDialogOperate"
                    v-on:dialog-select-invoice-event-tap-close="tapDialogClose"></DialogSelectInvoice>
+
+    <nemInvoiceShow v-bind:dialogVal="isShowNemInvoice"
+                   v-bind:id="selectItem.id"
+                   v-on:dialog-nem-invoice-show-event-close="tapCloseInvoiceShow"></nemInvoiceShow>
     </v-layout>
 </template>
 
@@ -75,6 +79,7 @@
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogSelectInvoice from '@/components/DialogSelectInvoice'
+  import NemInvoiceShow from '@/components/NemInvoiceShow'
 
   export default {
     data: () => ({
@@ -91,12 +96,14 @@
       dialogNegativeMessage: 'いいえ',
       isShowDialogSelectInvoice: false,
       dialogSelectInvoiceTitle: '',
-      selectOperate: ''
+      selectOperate: '',
+      isShowNemInvoice: false
     }),
     components: {
       'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm,
-      'dialogSelectInvoice': DialogSelectInvoice
+      'dialogSelectInvoice': DialogSelectInvoice,
+      'nemInvoiceShow': NemInvoiceShow
     },
     mounted () {
       console.log('mounted')
@@ -229,7 +236,8 @@
         this.selectOperate = operate
         let id = String(this.selectItem.id)
         if (operate === 'open') {
-          this.$router.push({ name: 'InvoiceShow', params: {id: id, num: Number(num)} })
+          this.isShowNemInvoice = true
+          // this.$router.push({ name: 'InvoiceShow', params: {id: id, num: Number(num)} })
         } else if (operate === 'edit') {
           this.$router.push({ name: 'InvoiceCreate', params: {id: id} })
         } else if (operate === 'copy') {
@@ -244,6 +252,9 @@
       },
       tapDialogClose () {
         this.isShowDialogSelectInvoice = false
+      },
+      tapCloseInvoiceShow () {
+        this.isShowNemInvoice = false
       },
       back () {
         history.go(-1)
