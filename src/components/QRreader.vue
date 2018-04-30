@@ -77,22 +77,19 @@
       onDecode (content) {
         // ここでフィルタリングする.
         console.log(content)
-        let json = nemWrapper.getJsonQRcode(content)
-        if (!json) {
-          this.content = '不正なQRコードです'
-          console.log('qr_reader error')
-        } else {
-          this.content = '読み取り成功'
-          /*
-          if (this.typeVal === 'privateKey') {
-            console.log(this.typeVal)
-          } else if (this.typeVal === 'invoice') {
-            console.log(this.typeVal)
+        if (content !== null) {
+          let json = nemWrapper.getJsonQRcode(content)
+          if (!json) {
+            this.content = '不正なQRコードです'
+            console.log('qr_reader error')
+          } else {
+            this.content = '読み取り成功'
+            this.$emit('qr-reader-event-scan-success', json)
+            this.content = ''
+            // this.paused = true
           }
-          */
-          this.$emit('qr-reader-event-scan-success', json)
-          this.content = ''
-          // this.paused = true
+        } else {
+          console.log('QR読み込みエラー')
         }
       },
       tapClose (message) {

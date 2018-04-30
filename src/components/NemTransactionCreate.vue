@@ -411,12 +411,15 @@
           this.senderAddr = content.data.addr
           this.message = content.data.msg
           if ('office_nem' in content.data) {
+            this.isShowProgress = true
             exWrapper.getRateJpyXem()
               .then((result) => {
                 this.rateJpyXem = result
                 this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
+                this.isShowProgress = false
               }).catch((err) => {
                 console.error(err)
+                this.isShowProgress = false
               })
           } else {
             if ('amount' in content.data) {

@@ -356,37 +356,42 @@ exports.getJSONInvoiceForQRcode = (v, type, nameVal, addr, amountVal, msgVal) =>
     type: type,
     data: {
       name: nameVal,
-      addr: amountVal,
+      addr: addr,
       amount: amount,
       msg: msgVal
     },
     v: v
   }
   let jsonString = JSON.stringify(json)
-  console.log(jsonString)
-  let result = encoding.codeToString(encoding.convert(getStr2Array(jsonString), 'SJIS'))
+  console.log(json)
+  let result = encoding.codeToString(encoding.convert(getStr2Array(jsonString), 'UTF8'))
   console.log(result)
   return result
-  /*
-  let name = encoding.codeToString(encoding.convert(getStr2Array(nameVal), 'SJIS'))
-  let msg = encoding.codeToString(encoding.convert(getStr2Array(msgVal), 'SJIS'))
-  let amount = amountVal * Math.pow(10, 6)
-  return {
-    v: v,
+}
+
+// JPYのQRコード用のJSONデータを取得.
+exports.getJSONInvoiceForQRcodeJPY = (v, type, name, addr, amountJpy, msg) => {
+  // v:2, type:1 アカウント, type:2 請求書
+  let json = {
     type: type,
     data: {
       name: name,
       addr: addr,
-      amount: amount,
-      msg: msg
-    }
+      amount: 0,
+      msg: msg,
+      office_nem: {
+        type: 'JPY',
+        amount: amountJpy
+      }
+    },
+    v: v
   }
-  */
-}
-
-// JPYのQRコード用のJSONデータを取得.
-exports.getJSONInvoiceForQRcodeJPY = (v, type, nameVal, addr, amountVal, msgVal) => {
-  // v:2, type:1 アカウント, type:2 請求書
+  let jsonString = JSON.stringify(json)
+  console.log(json)
+  let result = encoding.codeToString(encoding.convert(getStr2Array(jsonString), 'UTF8'))
+  console.log(result)
+  return result
+  /*
   let name = encoding.codeToString(encoding.convert(getStr2Array(nameVal), 'SJIS'))
   let msg = encoding.codeToString(encoding.convert(getStr2Array(msgVal), 'SJIS'))
   return {
@@ -403,6 +408,7 @@ exports.getJSONInvoiceForQRcodeJPY = (v, type, nameVal, addr, amountVal, msgVal)
       }
     }
   }
+  */
 }
 
 // QRコード用のJSONデータを取得.

@@ -129,7 +129,7 @@
         } else if (result.currencyItem.text === 'JPY') {
           // JPY
           this.unitName = '円'
-          this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcodeJPY(2, 2, result.name, result.senderAddr, this.amount, result.message))
+          this.qrValue = nemWrapper.getJSONInvoiceForQRcodeJPY(2, 2, result.name, result.senderAddr, this.amount, result.message)
           console.log(this.qrValue)
         }
       },
