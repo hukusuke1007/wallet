@@ -35,10 +35,8 @@ const nodes = [
 ]
 // Using custom NIS Node
 const accountHttp = new AccountHttp(nodes)
-// const accountHttp = new AccountHttp()
-
 const mosaicHttp = new MosaicHttp(nodes)
-// const mosaicHttp = new MosaicHttp()
+const transactionHttp = new TransactionHttp(nodes)
 
 let getStr2Array = (str) => {
   let array = []
@@ -271,7 +269,6 @@ exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
       PlainMessage.create(message)
     )
     let signedTransaction = account.signTransaction(tx)
-    let transactionHttp = new TransactionHttp()
     transactionHttp.announceTransaction(signedTransaction).subscribe(
       result => { resolve(result) },
       error => { reject(error) }

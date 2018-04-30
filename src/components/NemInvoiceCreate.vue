@@ -356,8 +356,14 @@
       },
       getQRContent (content) {
         console.log(content)
-        this.paused = true
-        this.isShowDialogQRreader = false
+        if ((content !== null) && ('data' in content)) {
+          this.name = content.data.name
+          this.senderAddr = content.data.addr
+          this.amount = content.data.amount / Math.pow(10, 6)
+          this.message = content.data.msg
+          this.paused = true
+          this.isShowDialogQRreader = false
+        }
       },
       tapQRClose (message) {
         if (this.isShowDialogQRreader === true) {
