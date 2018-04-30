@@ -363,9 +363,7 @@ exports.getJSONInvoiceForQRcode = (v, type, nameVal, addr, amountVal, msgVal) =>
     v: v
   }
   let jsonString = JSON.stringify(json)
-  console.log(json)
   let result = encoding.codeToString(encoding.convert(getStr2Array(jsonString), 'UTF8'))
-  console.log(result)
   return result
 }
 
@@ -387,28 +385,8 @@ exports.getJSONInvoiceForQRcodeJPY = (v, type, name, addr, amountJpy, msg) => {
     v: v
   }
   let jsonString = JSON.stringify(json)
-  console.log(json)
   let result = encoding.codeToString(encoding.convert(getStr2Array(jsonString), 'UTF8'))
-  console.log(result)
   return result
-  /*
-  let name = encoding.codeToString(encoding.convert(getStr2Array(nameVal), 'SJIS'))
-  let msg = encoding.codeToString(encoding.convert(getStr2Array(msgVal), 'SJIS'))
-  return {
-    v: v,
-    type: type,
-    data: {
-      name: name,
-      addr: addr,
-      amount: 0,
-      msg: msg,
-      office_nem: {
-        type: 'JPY',
-        amount: amountVal
-      }
-    }
-  }
-  */
 }
 
 // QRコード用のJSONデータを取得.
