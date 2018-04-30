@@ -414,7 +414,11 @@
             exWrapper.getRateJpyXem()
               .then((result) => {
                 this.rateJpyXem = result
-                this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
+                if (content.data.office_nem.amount === 0) {
+                  this.amount = 0
+                } else {
+                  this.amount = nemWrapper.getTotalAmountXemJpy(content.data.office_nem.amount, this.rateJpyXem, 6)
+                }
               }).catch((err) => {
                 console.error(err)
               })

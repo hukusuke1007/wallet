@@ -359,7 +359,11 @@
         if ((content !== null) && ('data' in content)) {
           this.name = content.data.name
           this.senderAddr = content.data.addr
-          this.amount = content.data.amount / Math.pow(10, 6)
+          if (content.data.amount === 0) {
+            this.amount = 0
+          } else {
+            this.amount = content.data.amount / Math.pow(10, 6)
+          }
           this.message = content.data.msg
           this.paused = true
           this.isShowDialogQRreader = false
