@@ -11,7 +11,7 @@
               <div v-if="invoice">
                 <div class="itemNum">個数: {{ num }}</div>
                 <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
-                <qriously v-model="qrValue" :size="300"></qriously>
+                <qriously v-model="qrValue" :size="200"></qriously>
                 <v-card-text>通貨: {{ invoice.currencyItem.text }}</v-card-text>
                 <v-card-text><h2 class="font-color-shamrock">{{ amount }} {{ unitName }}</h2></v-card-text>
                 <v-subheader>メッセージ</v-subheader><v-card-text>{{ invoice.message }}</v-card-text>

@@ -50,10 +50,8 @@
         dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, dbWrapper.VALUE_ALL)
           .then((result) => {
             result.forEach((element) => {
-              let dateString = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE].replace('T', ' ').slice(0, -4)
               let item = {}
               item.id = element[dbWrapper.VALUE_PRIMARY_ID]
-              item.date = dateString
               item.text = element[dbWrapper.VALUE_NAME]
               item.headline = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
               item.subtitle = element[dbWrapper.VALUE_DESCRIPTION]

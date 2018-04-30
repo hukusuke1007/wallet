@@ -50,7 +50,7 @@
           <v-subheader>公開鍵</v-subheader><v-card-text>{{ publicKey }}</v-card-text>
           <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
           <v-subheader>アカウントのQRコード</v-subheader>
-          <qriously v-model="qrValue" :size="300"></qriously>
+          <qriously v-model="qrValue" :size="200"></qriously>
           <br>
           <!-- ダイアログ -->
           <dialogConfirm v-bind:dialogVal="isShowDialog"
