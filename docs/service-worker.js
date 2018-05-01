@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.0.1/workbox-sw.js");
 
 importScripts(
-  "./precache-manifest.c8792300753d42919c3ecfa202410cf5.js"
+  "./precache-manifest.8865d7bf5505effed015b3e70db3292a.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "wallet"});
@@ -29,7 +29,7 @@ workbox.clientsClaim();
 self.__precacheManifest = [
   {
     "url": "index.html",
-    "revision": "40b95782b33e3644d289e7a2e7f32547"
+    "revision": "5ede63914829b34298959c24d9938d82"
   },
   {
     "url": "precache-manifest.00636609815fc1967681b0d3252ddccc.js",
@@ -564,6 +564,10 @@ self.__precacheManifest = [
     "revision": "c7e9d3f50c1c32c776dbdfec58aa9645"
   },
   {
+    "url": "precache-manifest.c8792300753d42919c3ecfa202410cf5.js",
+    "revision": "c8792300753d42919c3ecfa202410cf5"
+  },
+  {
     "url": "precache-manifest.caa78f44361d86a703fd18637cdcdf04.js",
     "revision": "caa78f44361d86a703fd18637cdcdf04"
   },
@@ -709,7 +713,7 @@ self.__precacheManifest = [
   },
   {
     "url": "service-worker.js",
-    "revision": "bd41537b068231f9f8414c6a13ef95ff"
+    "revision": "4926162255634019b9401aabac5c9fa5"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
