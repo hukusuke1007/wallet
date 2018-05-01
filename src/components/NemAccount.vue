@@ -67,7 +67,6 @@
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import DialogConfirm from '@/components/DialogConfirm'
-  // import {XEM, MosaicTransferable} from 'nem-library'
 
   export default {
     data: () => ({
@@ -116,8 +115,7 @@
             let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
             this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
             this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
-            this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description))
-            console.log(this.qrValue)
+            this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description)
             // 残高取得.
             nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
