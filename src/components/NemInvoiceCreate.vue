@@ -9,7 +9,7 @@
           <v-layout row wrap column>
             <!--  請求書情報 -->
             <v-flex>
-              <v-card>
+              <v-card flat>
               <div class="sideOffset">
                 <v-form v-model="valid" ref="form" lazy-validation>
                   <v-text-field
@@ -36,7 +36,7 @@
 
            <!--  通貨 -->
            <v-flex>
-            <v-card>
+            <v-card flat>
               <div class="sideOffset">
               <v-flex justify-center>
                 <v-select
@@ -80,7 +80,7 @@
 
           <!--  メッセージ -->
           <v-flex>
-            <v-card>
+            <v-card flat>
             <div class="sideOffset">
               <v-text-field
                 box
@@ -100,15 +100,6 @@
           <!-- プログレス -->
           <progressCircular v-bind:isShowVal="isShowProgress"></progressCircular>
 
-          <!-- 送金確認ダイアログ -->
-          <!--
-          <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
-                         titleVal="送金確認"
-                         v-bind:messageVal="dialogPositiveNegativeMessage"
-                         positiveVal="送金する"
-                         negativeVal="いいえ"
-                         v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
-          -->
           <!-- 完了ダイアログ -->
           <dialogConfirm v-bind:dialogVal="isShowDialogConfirm"
                          titleVal="請求書"
@@ -128,7 +119,6 @@
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
-  // import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
   import ProgressCircular from '@/components/ProgressCircular'

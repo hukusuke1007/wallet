@@ -1,6 +1,7 @@
 {
   "name": "Office NEM wallet",
   "short_name": "Office NEM",
+  "description": "This app is NEM wallet for Japan Office.",
   "icons": [
     {
       "src": "./img/icons/android-chrome-192x192.png",
@@ -15,7 +16,7 @@
   ],
   "start_url": "../?utm_source=homescreen",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#000000",
   "theme_color": "#fd79a8"
 }

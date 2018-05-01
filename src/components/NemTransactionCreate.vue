@@ -8,7 +8,7 @@
         <div class="w-break">
           <v-layout row wrap column>
             <v-flex>
-              <v-card>
+              <v-card flat>
               <div class="sideOffset">
                 <v-form v-model="valid" ref="form" lazy-validation>
                   <v-text-field
