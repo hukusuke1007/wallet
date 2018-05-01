@@ -122,6 +122,7 @@
      </v-content>
 
       <!-- フッター -->
+      <!--
       <v-footer height="auto" class="pink accent-1">
          <v-layout row wrap justify-center>
           <v-btn
@@ -134,10 +135,11 @@
             {{ link }}
           </v-btn>
           <v-flex xs12 py-3 text-xs-center white--text>
-            &copy;2018. <strong>hobbydevelop</strong>
+            &copy;2018. <strong>Shohei Nakagawa</strong>
           </v-flex>
         </v-layout>
       </v-footer>
+    -->
   </v-app>
   <!-- </div> -->
 </template>

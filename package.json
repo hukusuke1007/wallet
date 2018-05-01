@@ -2,7 +2,7 @@
   "name": "wallet",
   "version": "1.0.0",
   "description": "wallet",
-  "author": "hobbydevelop",
+  "author": "Shohei Nakagawa",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
