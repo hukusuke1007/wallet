@@ -14,11 +14,12 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.0.1/workbox-sw.js");
 
 importScripts(
-  "./precache-manifest.8865d7bf5505effed015b3e70db3292a.js"
+  "./precache-manifest.372bc755fd36ecf52f0159afccd478f0.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "wallet"});
 
+workbox.skipWaiting();
 workbox.clientsClaim();
 
 /**
@@ -29,7 +30,7 @@ workbox.clientsClaim();
 self.__precacheManifest = [
   {
     "url": "index.html",
-    "revision": "5ede63914829b34298959c24d9938d82"
+    "revision": "2d2349f73f2d6e136b140303cfa3d239"
   },
   {
     "url": "precache-manifest.00636609815fc1967681b0d3252ddccc.js",
@@ -372,6 +373,10 @@ self.__precacheManifest = [
     "revision": "882408d02f36f3f0344c29b8bd935d27"
   },
   {
+    "url": "precache-manifest.8865d7bf5505effed015b3e70db3292a.js",
+    "revision": "8865d7bf5505effed015b3e70db3292a"
+  },
+  {
     "url": "precache-manifest.892731b093129274fc96e6c2b00ec1a7.js",
     "revision": "892731b093129274fc96e6c2b00ec1a7"
   },
@@ -544,6 +549,10 @@ self.__precacheManifest = [
     "revision": "c44b1aa345b60662c91d92c43039cd02"
   },
   {
+    "url": "precache-manifest.c49bdde93ec7e0dfc8e9aa4be2b7d99d.js",
+    "revision": "c49bdde93ec7e0dfc8e9aa4be2b7d99d"
+  },
+  {
     "url": "precache-manifest.c4e90eb5a7fd75e9fb642699b7207ca2.js",
     "revision": "c4e90eb5a7fd75e9fb642699b7207ca2"
   },
@@ -713,10 +722,11 @@ self.__precacheManifest = [
   },
   {
     "url": "service-worker.js",
-    "revision": "4926162255634019b9401aabac5c9fa5"
+    "revision": "9e34ad7736f67813043dc8e2f993fc02"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-workbox.routing.registerRoute(/.*api.*/, workbox.strategies.networkFirst({ cacheName: "api", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":43200})] }), 'GET');
+workbox.routing.registerRoute("/", workbox.strategies.networkFirst({ cacheName: "page", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"maxEntries":10})] }), 'GET');
+workbox.routing.registerRoute(/.*api.*/, workbox.strategies.networkFirst({ cacheName: "api", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"maxEntries":10})] }), 'GET');
