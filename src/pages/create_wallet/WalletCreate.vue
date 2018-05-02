@@ -23,7 +23,7 @@
         ></v-text-field>
       </v-flex>
       <v-flex>
-      <v-btn color="info" @click="submit" :disabled="!valid">作成</v-btn>
+      <v-btn color="light-blue lighten-3" @click="submit" :disabled="!valid">作成</v-btn>
       <v-btn @click="clear">クリア</v-btn>
       </v-flex>
       <br>

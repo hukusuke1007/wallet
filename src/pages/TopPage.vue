@@ -16,16 +16,6 @@
                   <v-icon>cached</v-icon>
               </v-btn>
             </v-card-actions>
-              <!--
-              <div style="position: absolute; left: 8px;">
-               <v-card-title>時価</v-card-title>
-              </div>
-              <div style="position: absolute; right: 8px;">
-                <v-btn fab small flat @click="getRate">
-                  <v-icon>cached</v-icon>
-                </v-btn>
-              </div>
-            -->
             <v-card-text>
               <div>{{ rateJpyXem }} 円/XEM</div>
               <span class="grey--text">{{ rateDate }}</span>
@@ -36,27 +26,33 @@
         <v-flex>
           <v-card>
             <v-card-title>送金</v-card-title>
-            <v-btn large flat :to="{name: 'WalletTransfer'}">
-                <v-icon>send</v-icon>
-            </v-btn>
+            <v-flex>
+              <v-btn color="light-blue lighten-3" large block :to="{name: 'WalletTransfer'}">
+                  <v-icon>send</v-icon><span class="label">送金する</span>
+              </v-btn>
+            </v-flex>
           </v-card>
         </v-flex>
         <!-- ウォレット -->
         <v-flex>
           <v-card>
             <v-card-title>ウォレット</v-card-title>
-            <v-btn large flat :to="{name: 'WalletList'}">
-                <v-icon>credit_card</v-icon>
-            </v-btn>
+            <v-flex>
+              <v-btn color="light-blue lighten-3" large block :to="{name: 'WalletList'}">
+                  <v-icon>credit_card</v-icon><span class="label">ウォレットを表示する</span>
+              </v-btn>
+            </v-flex>
           </v-card>
         </v-flex>
         <!-- 請求書 -->
         <v-flex>
           <v-card>
             <v-card-title>請求書</v-card-title>
-            <v-btn large flat :to="{name: 'InvoiceList'}">
-                <v-icon>receipt</v-icon>
-            </v-btn>
+            <v-flex>
+              <v-btn color="light-blue lighten-3" large block :to="{name: 'InvoiceList'}">
+                  <v-icon>receipt</v-icon><span class="label">請求書を表示する</span>
+              </v-btn>
+            </v-flex>
           </v-card>
         </v-flex>
       </v-layout>
@@ -100,11 +96,7 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-/*
-.footer {
-  position:  fixed;
-  bottom: 0;
-  width: 100%;
+.label {
+  margin-left: 10px;
 }
-*/
 </style>

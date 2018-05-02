@@ -108,6 +108,7 @@
        <v-toolbar-side-icon @click.stop="naviBar = !naviBar"></v-toolbar-side-icon>
        <v-toolbar-title class="white--text">Office NEM wallet</v-toolbar-title>
        <v-spacer></v-spacer>
+       <v-toolbar-side-icon @click="goTop"><v-icon>home</v-icon></v-toolbar-side-icon>
      </v-toolbar>
      <v-content>
 
@@ -160,6 +161,9 @@ export default {
 
   },
   methods: {
+    goTop () {
+      this.$router.push({name: 'TopPage'})
+    },
     tapFooter (link) {
       console.log(link)
       switch (link) {

@@ -91,7 +91,7 @@
                 :counter="1024"
                 placeholder="例. 商品番号XXX-XXXX"
               ></v-text-field>
-              <v-btn color="info" @click="submit" :disabled="!valid">完了</v-btn>
+              <v-btn color="light-blue lighten-3" @click="submit" :disabled="!valid">完了</v-btn>
               <v-btn @click="clear">クリア</v-btn>
             </div>
             </v-card>

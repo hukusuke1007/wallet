@@ -32,18 +32,10 @@
         :counter="64"
         required
       ></v-text-field>
-      <!--
-      <v-btn
-       color="orange darken-1"
-       class="white--text"
-       @click.stop="showQRreader"
-       block
-      >QRコード読み取り</v-btn>
-      -->
       </v-flex>
       
       <v-flex>
-      <v-btn color="info" @click="submit" :disabled="!valid">作成</v-btn>
+      <v-btn color="light-blue lighten-3" @click="submit" :disabled="!valid">作成</v-btn>
       <v-btn @click="clear">クリア</v-btn>
       </v-flex>
       <br>
@@ -56,30 +48,19 @@
                    titleVal="ウォレット作成"
                    v-bind:messageVal="dialogMsg"
                    v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
-    <!-- QRダイアログ -->
-    <!--
-    <dialogQRreader v-bind:dialogVal="isShowDialogQRreader"
-                    v-bind:pauseVal="paused"
-                    typeVal="privateKey"
-                    v-on:qr-reader-event-scan-success="getContent"
-                    v-on:qr-reader-event-tap-close="tapClose"></dialogQRreader>
-    -->
   </v-container>
 </template>
 
 <script>
- // import axios from 'axios'
  import nemWrapper from '@/js/nem_wrapper'
  import localDatabaseWrapper from '@/js/local_database_wrapper'
  import ModelWalletNem from '@/js/model/model_wallet_nem'
  import DialogConfirm from '@/components/DialogConfirm'
- // import DialogQRreader from '@/components/QRreader'
 
  export default {
    data: () => ({
      valid: true,
      paused: false,
-     // isShowDialogQRreader: false,
      content: '',
      name: '',
      description: '',
@@ -101,7 +82,6 @@
    }),
    components: {
      'dialogConfirm': DialogConfirm
-     // 'dialogQRreader': DialogQRreader
    },
    methods: {
      submit () {
@@ -130,25 +110,6 @@
      back () {
        history.go(-1)
      },
-     showQRreader () {
-       this.paused = false
-       // this.isShowDialogQRreader = true
-     },
-     /*
-     getContent (content) {
-       console.log(content)
-       this.privateKey = content
-       this.paused = true
-       this.isShowDialogQRreader = false
-     },
-     tapClose (message) {
-       if (this.isShowDialogQRreader === true) {
-         console.log(message)
-         this.paused = true
-         this.isShowDialogQRreader = false
-       }
-     },
-     */
      tapPositive (message) {
        console.log(message)
        if (this.isShowDialog === true) {
