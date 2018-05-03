@@ -281,7 +281,6 @@ exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
 exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKey) => {
   let promise = new Promise((resolve, reject) => {
     console.log(mosaicData)
-    let transactionHttp = new TransactionHttp()
     let mosaicHttp = new MosaicHttp()
     let account = Account.createWithPrivateKey(privateKey)
     let address = new Address(senderAddr)
@@ -314,7 +313,6 @@ exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKe
         PlainMessage.create(message)
       )
       let signedTransaction = account.signTransaction(transaction)
-      let transactionHttp = new TransactionHttp()
       transactionHttp.announceTransaction(signedTransaction).subscribe(
         result => { resolve(result) },
         error => { reject(error) }
