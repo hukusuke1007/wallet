@@ -71,7 +71,7 @@
     watch: {
       address (val) {
         if (val) {
-          this.setTransactionListener()
+          // this.setTransactionListener()
         }
       }
     },

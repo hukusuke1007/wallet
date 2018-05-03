@@ -19,7 +19,7 @@ exports.NEM_UNIT = NEM_UNIT
 const nodes = [
   {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
   {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
+  // {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
   {protocol: 'https', domain: 'happy.supernode.me', port: 7891},
   {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
   {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
