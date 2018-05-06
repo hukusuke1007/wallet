@@ -11,7 +11,7 @@
         required
       ></v-text-field>
       </v-flex>
-
+      <!--
       <v-flex>
         <v-text-field
           box
@@ -22,7 +22,7 @@
           :counter="1024"
         ></v-text-field>
       </v-flex>
-
+      -->
       <v-flex>
       <v-text-field
         box

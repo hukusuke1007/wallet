@@ -212,6 +212,14 @@ export default {
 .sideOffset {
   margin: 2px 10px 2px 10px;
 }
+
+.subTitle {
+ font-size: 1.0em;
+ position: absolute;
+ font-weight: bold;
+ color: #b2bec3;
+ left: 20px;
+}
  /*
 a {
   text-decoration: none;

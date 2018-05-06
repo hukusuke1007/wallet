@@ -12,7 +12,6 @@
               <div class="sideOffset">
                 <v-form v-model="valid" ref="form" lazy-validation>
                   <v-text-field
-                    box
                     label="送金先"
                     v-model="senderAddr"
                     :rules="[rules.senderAddrLimit, rules.senderAddrInput]"
@@ -21,8 +20,6 @@
                     placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
                   ></v-text-field>
                   <v-text-field
-                    box
-                    multi-line
                     label="メッセージ"
                     v-model="message"
                     :rules="[rules.messageRules]"
@@ -39,9 +36,12 @@
             <v-card>
               <div class="sideOffset">
               <v-card-title primary-title><h2 style="color: green">NEM</h2></v-card-title>
-              <v-subheader>残高</v-subheader><v-card-text><h3 class="font-color-shamrock">{{ balance }} xem</h3></v-card-text>
-              <v-card-text><font color="gray">時価総額: {{ totalJpyXem }} 円</font></v-card-text>
-              <font color="gray">レート: {{ rateJpyXem }} 円/XEM</font>
+              <div class="subTitle">残高</div>
+              <v-card-text>
+                <h2 class="font-color-shamrock">{{ balance }} xem</h2>
+              </v-card-text>
+              <div><font color="gray">時価総額: {{ totalJpyXem }} 円</font></div>
+              <div><font color="gray">レート: {{ rateJpyXem }} 円/XEM</font></div>
               <v-form v-model="validNem" ref="formNem" lazy-validation>
                 <v-text-field
                   box
@@ -50,15 +50,11 @@
                   :rules="[rules.amountLimit, rules.amountInput]"
                   required
                 ></v-text-field>
-                <v-text-field
-                  label="手数料(xem)"
-                  v-model="fee"
-                  required
-                  disabled
-                ></v-text-field>
               </v-form>
+              <v-flex>
+               <div class="grey--text" style="font-size: 1.2em;">手数料 {{ fee }} xem</div>
+              </v-flex>
               <v-btn color="orange darken-1" class="white--text" @click.stop="showQRreader" block>QRコード読み取り</v-btn>
-              <br>
               <v-btn color="info" @click="submit" :disabled="!valid">送金</v-btn>
               <v-btn @click="clear">クリア</v-btn>
             </div>
@@ -72,11 +68,11 @@
               <v-card-title primary-title><h2 style="color: blue">モザイク</h2></v-card-title>
               <v-form v-model="validMosaic" ref="formMosaic" lazy-validation>
                 <div v-for="item in mosaics" :key="`mosaic-${item.index}`">
-                   <v-card-title >{{ item.text }}</v-card-title>
-                   <v-subheader>残高 ({{ item.namespaceId }})</v-subheader>
-                   <v-card-text><h3 class="font-color-shamrock">{{ item.amount }} {{ item.name }}</h3></v-card-text>
+                   <div class="subTitle">残高 ({{ item.namespaceId }})</div>
+                   <v-card-text>
+                    <h2 class="font-color-shamrock">{{ item.amount }} {{ item.name }}</h2>
+                  </v-card-text>
                    <v-text-field
-                   box
                     :label="`送金量 (${item.name})`"
                     v-model="item.sendAmount"
                     :rules="[rules.amountLimit, rules.amountInput]"
@@ -84,12 +80,9 @@
                 </div>
               </v-form>
               <div v-show="mosaics">
-                <v-text-field
-                    label="手数料(xem)"
-                    v-model="feeMosaics"
-                    required
-                    disabled
-                ></v-text-field>
+                <v-flex>
+                 <div class="grey--text" style="font-size: 1.2em;">手数料 {{ feeMosaics }} xem</div>
+                </v-flex>
                 <v-btn color="info" @click="submitMosaic" :disabled="!valid">送金</v-btn>
                 <v-btn @click="clearMosaic">クリア</v-btn>
               </div>
@@ -504,5 +497,10 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+.feeLabel {
+ font-size: 1.0em;
+ position: absolute;
+ color: #b2bec3;
+ left: 40px;
+}
 </style>

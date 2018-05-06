@@ -2,9 +2,12 @@
     <v-card flat>
       <v-container fluid>
         <div class="w-break">
-          <v-subheader>残高 (nem)</v-subheader><v-card-text><h2 class="font-color-shamrock">{{ balance }} xem</h2></v-card-text>
+          <div class="subTitle">残高 (nem)</div>
+          <v-card-text>
+            <h2 class="font-color-shamrock">{{ balance }} xem</h2>
+          </v-card-text>
           <div v-if="selectMosaic">
-            <v-subheader>モザイク残高 ({{ selectMosaic.namespaceId }})</v-subheader>
+            <div class="subTitle">モザイク残高 ({{ selectMosaic.namespaceId }})</div>
             <v-card-text>
               <h2 class="font-color-shamrock">{{ selectMosaic.amount }} {{ selectMosaic.name }}</h2>
             </v-card-text>
@@ -37,6 +40,7 @@
               :counter="16"
               required
             ></v-text-field>
+            <!--
             <v-text-field
               box
               multi-line
@@ -45,6 +49,7 @@
               :rules="descriptionRules"
               :counter="1024"
             ></v-text-field>
+            -->
           </v-form>
           <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ address }}</v-card-text>
           <v-subheader>公開鍵</v-subheader><v-card-text>{{ publicKey }}</v-card-text>

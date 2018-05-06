@@ -13,7 +13,6 @@
               <div class="sideOffset">
                 <v-form v-model="valid" ref="form" lazy-validation>
                   <v-text-field
-                    box
                     label="請求書名"
                     v-model="name"
                     :counter="40"
@@ -21,7 +20,6 @@
                     placeholder="例. お菓子"
                   ></v-text-field>
                   <v-text-field
-                    box
                     label="送金先"
                     v-model="senderAddr"
                     :rules="[rules.senderAddrLimit, rules.senderAddrInput]"
@@ -48,7 +46,6 @@
               <div v-if="selectCurrency.id===0||selectCurrency.id===1">
                 <v-form v-model="validCurrency" ref="formCurrency" lazy-validation>
                   <v-text-field
-                    box
                     :label="amountLabel"
                     v-model="amount"
                     :rules="[rules.amountLimit, rules.amountInput]"
@@ -83,8 +80,6 @@
             <v-card flat>
             <div class="sideOffset">
               <v-text-field
-                box
-                multi-line
                 label="メッセージ"
                 v-model="message"
                 :rules="[rules.messageRules]"

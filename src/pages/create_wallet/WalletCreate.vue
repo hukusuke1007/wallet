@@ -11,7 +11,7 @@
         required
       ></v-text-field>
       </v-flex>
-
+      <!--
       <v-flex>
         <v-text-field
           box
@@ -22,6 +22,7 @@
           :counter="1024"
         ></v-text-field>
       </v-flex>
+      -->
       <v-flex>
       <v-btn color="light-blue lighten-3" @click="submit" :disabled="!valid">作成</v-btn>
       <v-btn @click="clear">クリア</v-btn>
