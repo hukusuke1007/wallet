@@ -90,16 +90,18 @@ exports.setItem = (key, data) => {
 }
 
 // 保存(配列データ)
-exports.setItemArray = (key, data, isUpdate, updateId) => {
+exports.setItemArray = (key, data, updateId) => {
   let promise = new Promise((resolve, reject) => {
     localForage.getItem(key)
       .then((result) => {
         console.log('setItemArray get result:', result)
         let storeList = []
         if (result) { storeList = result }
-        if (isUpdate) {
+        if (updateId !== -1) {
+          console.log('setItemArray update:', updateId)
           storeList = getDataArrayUpdateFromKey(storeList, data, VALUE_PRIMARY_ID, updateId) // 該当する要素を更新した配列を取得.
         } else {
+          console.log('setItemArray new_create:', updateId)
           let id = getKeyMaxNumber(result, VALUE_PRIMARY_ID) + 1
           let storeData = data
           storeData[VALUE_PRIMARY_ID] = id

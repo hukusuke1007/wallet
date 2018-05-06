@@ -89,8 +89,8 @@
          let storeData = new ModelWalletNem()
          storeData.name = this.name
          storeData.description = this.description
-         storeData.account = nemWrapper.createWalletWithPrivateKey(this.name, this.privateKey)
-         localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, false, -1)
+         storeData.account = nemWrapper.createWalletWithPrivateKey(this.name, nemWrapper.PASSWORD, this.privateKey)
+         localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, -1)
            .then((result) => {
              console.log(result)
              this.isError = false

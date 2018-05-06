@@ -76,24 +76,22 @@
     },
     props: {
       id: {
-        type: String,
+        type: Number,
         default: -1
       }
     },
     methods: {
       reloadItem () {
-        let id = Number.parseInt(this.id)
-        // console.log('reloadItem:' + id)
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
           .then((result) => {
-            this.name = result[dbWrapper.VALUE_NAME]
+            this.name = result.name
           }).catch((err) => {
             console.log(err)
             this.message = err
           })
       },
       deleteWallet () {
-        dbWrapper.removeItemArray(dbWrapper.KEY_WALLET_INFO, Number.parseInt(this.id))
+        dbWrapper.removeItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
           .then((result) => {
             this.dialogMessage = '削除しました'
           }).catch((err) => {

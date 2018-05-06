@@ -20,7 +20,7 @@
     <br>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
-        <nemTransactionCreate v-bind:id="String(selectItem.id)" v-if="selectItem"></nemTransactionCreate>
+        <nemTransactionCreate v-bind:id="selectItem.id" v-if="selectItem"></nemTransactionCreate>
         <div v-else>
          <router-link to="/create">
           <v-card-text>ウォレットを作成してください</v-card-text>
@@ -51,11 +51,10 @@
           .then((result) => {
             result.forEach((element) => {
               let item = {}
-              item.id = element[dbWrapper.VALUE_PRIMARY_ID]
-              item.text = element[dbWrapper.VALUE_NAME]
-              item.headline = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-              item.subtitle = element[dbWrapper.VALUE_DESCRIPTION]
-              // console.log(item)
+              item.id = element.id
+              item.text = element.name
+              item.headline = element.account.address.value
+              item.subtitle = element.description
               this.items.push(item)
             })
             // 新しい順にソート.

@@ -42,7 +42,6 @@
 </template>
 
 <script>
- // import axios from 'axios'
  import nemWrapper from '@/js/nem_wrapper'
  import localDatabaseWrapper from '@/js/local_database_wrapper'
  import ModelWalletNem from '@/js/model/model_wallet_nem'
@@ -75,8 +74,8 @@
          let storeData = new ModelWalletNem()
          storeData.name = this.name
          storeData.description = this.description
-         storeData.account = nemWrapper.createWallet(this.name)
-         localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, false, -1)
+         storeData.account = nemWrapper.createWallet(this.name, nemWrapper.PASSWORD)
+         localDatabaseWrapper.setItemArray(localDatabaseWrapper.KEY_WALLET_INFO, storeData, -1)
            .then((result) => {
              console.log(result)
              this.isError = false

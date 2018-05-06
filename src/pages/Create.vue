@@ -11,10 +11,8 @@
       </v-card>
       <v-card>
         <v-card-text>ウォレットの作成方法を選択してください</v-card-text>
-        <v-card-acton>
-          <v-btn color="light-blue lighten-3" large @click="goCreate">新規作成</v-btn>
-          <v-btn color="light-blue lighten-3" large @click="goImport">秘密鍵をインポート</v-btn>
-        </v-card-acton>
+        <v-btn color="light-blue lighten-3" large @click="goCreate">新規作成</v-btn>
+        <v-btn color="light-blue lighten-3" large @click="goImport">秘密鍵をインポート</v-btn>
       </v-card>
     </v-flex>
    </v-layout>

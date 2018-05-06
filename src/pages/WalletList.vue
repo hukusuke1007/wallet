@@ -87,7 +87,7 @@
       },
       tapItem (index) {
         console.log('tap:' + index + ' id:' + this.items[index].id)
-        this.$router.push({ name: 'WalletDetail', params: {id: String(this.items[index].id)} })
+        this.$router.push({ name: 'WalletDetail', params: {id: this.items[index].id} })
       },
       tapAdd () {
         this.$router.push({ name: 'Create' })

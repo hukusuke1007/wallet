@@ -60,7 +60,7 @@
     },
     props: {
       id: {
-        type: String,
+        type: Number,
         default: -1
       },
       accountAddress: {
@@ -71,20 +71,19 @@
     watch: {
       address (val) {
         if (val) {
-          // this.setTransactionListener()
         }
       }
     },
     methods: {
       reloadItem () {
-        if (this.id !== '-1') {
-          let id = Number.parseInt(this.id)
+        if (this.id !== -1) {
+          let id = this.id
           // console.log('reloadItem:' + id)
           dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
             .then((result) => {
-              this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-              let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-              this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
+              this.address = result.account.address.value
+              let pairKey = nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD)
+              this.publicKey = pairKey.publicKey
               nemWrapper.getTransaction(this.address, 100, undefined, undefined)
                 .then((result) => {
                   this.setItemsForTransaction(result)
@@ -194,27 +193,6 @@
         })
         let count = this.items.length - 1
         this.header = '送金履歴一覧 (' + count + '件）'
-      },
-      setTransactionListener () {
-        // 未承認トランザクション
-        nemWrapper.getUncofirmedTransactionListener(this.address)
-          .then((result) => {
-            console.log('getUncofirmedTransactionListener OK')
-            console.log(result)
-          }).catch((err) => {
-            console.log('getUncofirmedTransactionListener ERROR')
-            console.error(err)
-          })
-
-        // 承認トランザクション
-        nemWrapper.getCofirmedTransactionListener(this.address)
-          .then((result) => {
-            console.log('getCofirmedTransactionListener OK')
-            console.log(result)
-          }).catch((err) => {
-            console.log('getCofirmedTransactionListener ERROR')
-            console.error(err)
-          })
       },
       tapItem (index) {
         let item = this.items[index]

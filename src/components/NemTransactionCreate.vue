@@ -186,7 +186,7 @@
     },
     props: {
       id: {
-        type: String,
+        type: Number,
         default: -1
       }
     },
@@ -256,8 +256,8 @@
           let mlist = []
           this.mosaics.forEach((element) => {
             let tmp = {
-              namespace: element.namespaceId,
-              mosaic: element.name,
+              namespaceId: element.namespaceId,
+              name: element.name,
               quantity: element.sendAmount
             }
             let msgLimit = this.rules.amountLimit(element.sendAmount)
@@ -276,8 +276,8 @@
             console.log(element)
             if (!('errLimit' in element) && !('errInput' in element) && !('errOver' in element)) {
               let item = {
-                namespace: element.namespace,
-                mosaic: element.mosaic,
+                namespaceId: element.namespaceId,
+                name: element.name,
                 quantity: element.quantity
               }
               this.trMosaics.item.push(item)
@@ -303,16 +303,14 @@
       },
       reloadItem () {
         this.mosaics = []
-        let id = Number.parseInt(this.id)
-        // console.log('reloadItem:' + id)
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
           .then((result) => {
-            this.date = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
-            this.name = result[dbWrapper.VALUE_NAME]
-            this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-            let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-            this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
-            this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
+            this.date = result.account.creationDate
+            this.name = result.name
+            this.address = result.account.address.value
+            let pairKey = nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD)
+            this.publicKey = pairKey.publicKey
+            this.privateKey = pairKey.privateKey
             // 残高取得
             nemWrapper.getAccountFromPublicKey(this.publicKey)
               .then((result) => {
@@ -371,8 +369,8 @@
         this.dialogPositiveNegativeMessage = 'モザイクを送金しますか？<br><br>'
 
         this.trMosaics.item.forEach((element) => {
-          let message = '[' + element.namespace + ':' + element.mosaic + ']' + '<br>' +
-                   '送金量:<br>' + element.quantity + ' ' + element.mosaic + '<br><br>'
+          let message = '[' + element.namespaceId + ':' + element.name + ']' + '<br>' +
+                   '送金量:<br>' + element.quantity + ' ' + element.name + '<br><br>'
           this.dialogPositiveNegativeMessage += message
         })
         this.dialogPositiveNegativeMessage += '手数量:<br>' + feeMosaics + ' xem' + '<br><br>' +

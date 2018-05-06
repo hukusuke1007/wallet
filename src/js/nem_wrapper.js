@@ -1,4 +1,4 @@
-import {UnconfirmedTransactionListener, ConfirmedTransactionListener,
+import {/* UnconfirmedTransactionListener, ConfirmedTransactionListener, */
   Account, AccountHttp, MosaicHttp, NEMLibrary, NetworkTypes, Address,
   SimpleWallet, Password, EncryptedPrivateKey, TimeWindow, Message, PlainMessage, XEM,
   TransactionHttp, TransferTransaction, AccountOwnedMosaicsService, MosaicId} from 'nem-library'
@@ -15,15 +15,16 @@ const NEM_UNIT = 1000000
 exports.PUBLICK_KEY = PUBLICK_KEY
 exports.PRIVATE_KEY = PRIVATE_KEY
 exports.NEM_UNIT = NEM_UNIT
+exports.PASSWORD = PASSWORD
 
 const nodes = [
   {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
   {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
-  // {protocol: 'https', domain: 'beny.supernode.me', port: 7891},
+  // {protocol: 'https', domain: 'beny.supernode.me', port: 7891}, 調子悪い？
   {protocol: 'https', domain: 'happy.supernode.me', port: 7891},
   {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891},
+  // {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7891}, 調子悪い？
+  // {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7891}, 調子悪い？
   {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
   {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
   {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
@@ -33,6 +34,25 @@ const nodes = [
   {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
   {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
 ]
+/*
+const webScoketNodes = [
+  {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7779},
+  // {protocol: 'https', domain: 'beny.supernode.me', port: 7891}, 調子悪い？
+  {protocol: 'https', domain: 'happy.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'nemstrunk.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'nemstrunk2.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'nsm.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'kohkei.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'shibuya.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'qora01.supernode.me', port: 7779},
+  {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7779}
+]
+*/
 // Using custom NIS Node
 const accountHttp = new AccountHttp(nodes)
 const mosaicHttp = new MosaicHttp(nodes)
@@ -97,28 +117,13 @@ exports.getTransaction = (addr, pageSize, hash, id) => {
   return promise
 }
 
-// 未承認トランザクション取得.
-exports.getUncofirmedTransactionListener = (addr) => {
+// 未承認トランザクションの取得.
+exports.getUnconfirmedTransaction = (addr) => {
   let promise = new Promise((resolve, reject) => {
     console.log(addr)
     const address = new Address(addr)
-    const listener = new UnconfirmedTransactionListener(nodes).given(address)
-    listener.subscribe(
-      x => { resolve(x) },
-      error => { reject(error) }
-    )
-  })
-  return promise
-}
-
-// 承認トランザクション取得.
-exports.getCofirmedTransactionListener = (addr) => {
-  let promise = new Promise((resolve, reject) => {
-    console.log(addr)
-    const address = new Address(addr)
-    const listener = new ConfirmedTransactionListener(nodes).given(address)
-    listener.subscribe(
-      x => { resolve(x) },
+    accountHttp.unconfirmedTransactions(address).subscribe(
+      unconfirmedTransaction => { resolve(unconfirmedTransaction) },
       error => { reject(error) }
     )
   })
@@ -155,12 +160,12 @@ exports.getMessageFromPlain = (hex) => {
 }
 
 // 公開鍵と秘密鍵を取得.
-exports.getPairKey = (account) => {
+exports.getPairKey = (account, pass) => {
   const address = new Address(account.address.value)
   const encryptedPrivateKey = new EncryptedPrivateKey(account.encryptedPrivateKey.encryptedKey, account.encryptedPrivateKey.iv)
   const simpleWallet = new SimpleWallet(account.name, account.network, address, account.creationDate, encryptedPrivateKey)
 
-  const password = new Password(PASSWORD)
+  const password = new Password(pass)
   const wallet = simpleWallet.open(password)
   // console.log(wallet)
   let pairKey = {}
@@ -171,16 +176,17 @@ exports.getPairKey = (account) => {
 }
 
 // ウォレット作成.
-exports.createWallet = (name) => {
-  const password = new Password(PASSWORD)
+exports.createWallet = (name, pass) => {
+  console.log('createWallet', name, pass)
+  const password = new Password(pass)
   const account = SimpleWallet.create(name, password)
   console.log(account)
   return account
 }
 
 // 秘密鍵からウォレット作成.
-exports.createWalletWithPrivateKey = (name, privateKey) => {
-  const password = new Password(PASSWORD)
+exports.createWalletWithPrivateKey = (name, pass, privateKey) => {
+  const password = new Password(pass)
   const account = SimpleWallet.createWithPrivateKey(name, password, privateKey)
   console.log(account)
   return account
@@ -196,7 +202,9 @@ exports.getFeeTransferXem = (senderAddr, amount, message) => {
     xem,
     PlainMessage.create(message)
   )
-  return tx.fee / NEM_UNIT
+  let result = tx.fee / NEM_UNIT
+  console.log('xemFee', result)
+  return result
 }
 
 // モザイク送信の手数料を取得.
@@ -210,11 +218,11 @@ exports.getFeeTransferMosaics = (senderAddr, mosaicData, message) => {
     let xemQuantity
     mosaicData.forEach((element) => {
       let data = {}
-      if ((element.namespace === 'nem') && (element.mosaic === 'xem')) {
+      if ((element.namespaceId === 'nem') && (element.name === 'xem')) {
         isXEM = true
         xemQuantity = element.quantity
       } else {
-        data.mosaic = new MosaicId(element.namespace, element.mosaic)
+        data.mosaic = new MosaicId(element.namespaceId, element.name)
         data.quantity = element.quantity
         dataList.push(data)
       }
@@ -248,7 +256,11 @@ exports.getFeeTransferMosaics = (senderAddr, mosaicData, message) => {
           PlainMessage.create(message)
         ))
         .subscribe(
-          transaction => { resolve(transaction.fee / NEM_UNIT) },
+          transaction => {
+            let result = transaction.fee / NEM_UNIT
+            console.log('mosaicsFee', result)
+            resolve(result)
+          },
           error => { reject(error) }
         )
     }
@@ -280,8 +292,6 @@ exports.transferTransaction = (senderAddr, amount, message, privateKey) => {
 // 送金(モザイク)
 exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKey) => {
   let promise = new Promise((resolve, reject) => {
-    console.log(mosaicData)
-    // let mosaicHttp = new MosaicHttp()
     let account = Account.createWithPrivateKey(privateKey)
     let address = new Address(senderAddr)
 
@@ -291,11 +301,11 @@ exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKe
     let xemQuantity
     mosaicData.forEach((element) => {
       let data = {}
-      if ((element.namespace === 'nem') && (element.mosaic === 'xem')) {
+      if ((element.namespaceId === 'nem') && (element.name === 'xem')) {
         isXEM = true
         xemQuantity = element.quantity
       } else {
-        data.mosaic = new MosaicId(element.namespace, element.mosaic)
+        data.mosaic = new MosaicId(element.namespaceId, element.name)
         data.quantity = element.quantity
         dataList.push(data)
       }

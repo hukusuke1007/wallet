@@ -103,23 +103,20 @@
     },
     props: {
       id: {
-        type: String,
+        type: Number,
         default: -1
       }
     },
     methods: {
       reloadItem () {
-        let id = Number.parseInt(this.id)
-        // console.log('reloadItem:' + id)
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
           .then((result) => {
-            this.date = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
-            this.name = result[dbWrapper.VALUE_NAME]
-            this.description = result[dbWrapper.VALUE_DESCRIPTION]
-            this.address = result[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-            let pairKey = nemWrapper.getPairKey(result[dbWrapper.VALUE_WALLET_ACCOUNT])
-            this.publicKey = pairKey[nemWrapper.PUBLICK_KEY]
-            this.privateKey = pairKey[nemWrapper.PRIVATE_KEY]
+            this.date = result.account.creationDate
+            this.name = result.name
+            this.address = result.account.address.value
+            let pairKey = nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD)
+            this.publicKey = pairKey.publicKey
+            this.privateKey = pairKey.privateKey
             this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description)
             // 残高取得.
             nemWrapper.getAccountFromPublicKey(this.publicKey)

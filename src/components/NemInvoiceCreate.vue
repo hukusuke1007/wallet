@@ -148,7 +148,6 @@
       content: '',
       isShowProgress: false,
       isError: false,
-      isUpdate: false,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -170,14 +169,12 @@
       'progressCircular': ProgressCircular
     },
     mounted () {
-      if (Number(this.id) !== -1) { this.isUpdate = true }
-      console.log('update: ' + this.isUpdate)
       this.reloadItem()
     },
     props: {
       id: {
-        type: String,
-        default: '-1'
+        type: Number,
+        default: -1
       }
     },
     watch: {
@@ -227,12 +224,12 @@
                 storeData.updateDate = new Date()
               }
               console.log('NemInvoiceCreate:setItemArray' + id)
-              dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, this.isUpdate, id)
+              dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, id)
                 .then((result) => {
                   console.log(result)
                   this.isError = false
                   this.isShowDialogConfirm = true
-                  if (this.isUpdate) {
+                  if (this.id !== -1) {
                     this.dialogMessage = '請求書を変更しました。'
                   } else {
                     this.dialogMessage = '請求書を作成しました。'

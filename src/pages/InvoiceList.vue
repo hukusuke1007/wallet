@@ -151,7 +151,7 @@
         dbWrapper.getItemArray(dbWrapper.KEY_INVOICE, Number(id))
           .then((result) => {
             let copyData = result
-            dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, copyData, false, -1)
+            dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, copyData, -1)
               .then((result) => {
                 console.log(result)
                 this.reloadItems()
@@ -234,7 +234,7 @@
       tapDialogOperate (num, operate) {
         console.log('num: ' + num + ' operate: ' + operate)
         this.selectOperate = operate
-        let id = String(this.selectItem.id)
+        let id = this.selectItem.id
         if (operate === 'open') {
           this.isShowNemInvoice = true
           // this.$router.push({ name: 'InvoiceShow', params: {id: id, num: Number(num)} })
