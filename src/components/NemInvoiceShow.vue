@@ -20,9 +20,10 @@
         grid-list-lg
         >
       <v-flex xs12 sm6 offset-sm3>
-        <v-card>
         <div class="w-break sideOffset">
-          <v-layout row wrap column>
+          <v-layout wrap column>
+            <v-flex>
+            <v-card>
             <div id="invoiceData">
               <div v-if="invoice" class="center">
                 <div class="itemNum">個数: {{ num }}</div>
@@ -37,9 +38,15 @@
                <v-card-text>請求書データがありません。</v-card-text>
              </div>
            </div>
+           </v-card>
+           </v-flex>
+           <v-flex>
+            <v-card>
+              <v-btn color="light-blue lighten-3" large block @click="download">請求書のPDFをダウンロード</v-btn>
+            </v-card>
+          </v-flex>
           </v-layout>
         </div>
-        </v-card>
       </v-flex>
     </v-container>
   </v-card>
@@ -146,7 +153,7 @@
           .then((canvas) => {
             let dataURI = canvas.toDataURL('image/jpeg')
             let pdf = new Jspdf()
-            pdf.addImage(dataURI, 'JPEG', 28, 8) // x, yの座標
+            pdf.addImage(dataURI, 'JPEG', 0, 10, 0, 0) // x, yの座標
             let date = new Date()
             let pdfName = 'office_nem_invoice_' + this.id + '_' + date.getTime() + '.pdf'
             console.log(pdfName)

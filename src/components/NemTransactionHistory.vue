@@ -1,9 +1,9 @@
 <template>
     <v-card flat>
           <v-list two-line>
+            <v-subheader>送金履歴一覧 {{ items.length }}件</v-subheader>
             <template v-for="(item, index) in items">
-              <v-subheader v-if="item.header" :key="item.header">{{ header }}</v-subheader>
-              <v-list-tile v-else ripple :key="index" @click="tapItem(index)">
+              <v-list-tile ripple :key="index" @click="tapItem(index)">
                 <v-list-tile-content v-show="item.type === `TransferTransaction`">
                   <v-list-tile-title>通貨: {{ item.namespace }}:{{ item.name }}</v-list-tile-title>
                   <!-- <v-list-tile-sub-title>受取先: {{ item.recipientAddr }}</v-list-tile-sub-title> -->
@@ -42,20 +42,16 @@
 
   export default {
     data: () => ({
-      header: '送金履歴一覧 (最大100件)',
       title: '',
       address: '',
       isShowDialog: false,
       dialogMessage: '',
-      items: [
-        { header: '送金履歴一覧 (最大100件)' }
-      ]
+      items: []
     }),
     components: {
       'dialogConfirm': DialogConfirm
     },
     mounted () {
-      this.items = [{ header: '送金履歴一覧 (最大100件)' }]
       this.reloadItem()
     },
     props: {
@@ -76,6 +72,7 @@
     },
     methods: {
       reloadItem () {
+        this.items = []
         if (this.id !== -1) {
           let id = this.id
           // console.log('reloadItem:' + id)
@@ -153,6 +150,12 @@
             this.items.push(item)
             */
           }
+        })
+        // 日付順にソート.
+        this.items.sort((a, b) => {
+          if (a.timeStamp > b.timeStamp) return -1
+          if (a.timeStamp < b.timeStamp) return 1
+          return 0
         })
         // モザイク送金履歴を確認.
         this.items.map((element, index, array) => {
