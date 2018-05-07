@@ -32,20 +32,30 @@
 </template>
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
+  import nemWrapper from '@/js/nem_wrapper'
   import NemTransactionCreate from '@/components/NemTransactionCreate'
+  import { mapActions } from 'vuex'
 
   export default {
     data: () => ({
       selectItem: null,
       items: []
     }),
+    computed: {
+    },
     components: {
       'nemTransactionCreate': NemTransactionCreate
     },
     mounted () {
       this.reloadItem()
     },
+    watch: {
+      'selectItem.id' (val) {
+        this.selectWallet(val)
+      }
+    },
     methods: {
+      ...mapActions('Nem', ['doUpdateNemBalance', 'doUpdateMosaicsBalance', 'doObserveTransaction', 'doWalletItem', 'doAddress', 'doPairKey', 'doTransactionStatus']),
       reloadItem () {
         dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, dbWrapper.VALUE_ALL)
           .then((result) => {
@@ -64,6 +74,20 @@
               return 0
             })
             this.selectItem = this.items[0]
+          }).catch((err) => {
+            console.log(err)
+          })
+      },
+      selectWallet (id) {
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
+          .then((result) => {
+            if (result) {
+              this.doWalletItem(result)
+              this.doAddress(result.account.address.value)
+              this.doPairKey(nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD))
+              this.doUpdateNemBalance()
+              this.doUpdateMosaicsBalance()
+            }
           }).catch((err) => {
             console.log(err)
           })

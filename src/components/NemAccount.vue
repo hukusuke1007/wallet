@@ -4,7 +4,7 @@
         <div class="w-break">
           <div class="subTitle">残高 (nem)</div>
           <v-card-text>
-            <h2 class="font-color-shamrock">{{ balance }} xem</h2>
+            <h2 class="font-color-shamrock">{{ nemBalance }} xem</h2>
           </v-card-text>
           <div v-if="selectMosaic">
             <div class="subTitle">モザイク残高 ({{ selectMosaic.namespaceId }})</div>
@@ -40,19 +40,9 @@
               :counter="16"
               required
             ></v-text-field>
-            <!--
-            <v-text-field
-              box
-              multi-line
-              label="ウォレットの説明"
-              v-model="description"
-              :rules="descriptionRules"
-              :counter="1024"
-            ></v-text-field>
-            -->
           </v-form>
-          <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ address }}</v-card-text>
-          <v-subheader>公開鍵</v-subheader><v-card-text>{{ publicKey }}</v-card-text>
+          <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ walletItem.account.address.value }}</v-card-text>
+          <v-subheader>公開鍵</v-subheader><v-card-text>{{ pairKey.publicKey }}</v-card-text>
           <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
           <v-subheader>アカウントのQRコード</v-subheader>
           <qriously v-model="qrValue" :size="200"></qriously>
@@ -60,7 +50,7 @@
           <!-- ダイアログ -->
           <dialogConfirm v-bind:dialogVal="isShowDialog"
                          titleVal="秘密鍵"
-                         v-bind:messageVal="privateKey"
+                         v-bind:messageVal="pairKey.privateKey"
                          v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
         </v-flex>
         </div>
@@ -69,22 +59,15 @@
 </template>
 
 <script>
-  import dbWrapper from '@/js/local_database_wrapper'
+  // import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import DialogConfirm from '@/components/DialogConfirm'
+  import { mapGetters } from 'vuex'
 
   export default {
     data: () => ({
       valid: true,
-      date: '',
-      balance: 0,
       selectMosaic: null,
-      mosaics: [],
-      name: '',
-      description: '',
-      address: '',
-      publicKey: '',
-      privateKey: '',
       qrValue: '',
       isShowDialog: false,
       nameRules: [
@@ -95,6 +78,9 @@
         value => (value.length <= 1024) || '最大文字数を超えています。'
       ]
     }),
+    computed: {
+      ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transactionStatus', 'isLoading'])
+    },
     components: {
       'dialogConfirm': DialogConfirm
     },
@@ -102,53 +88,24 @@
       this.reloadItem()
     },
     props: {
-      id: {
-        type: Number,
-        default: -1
+      name: {
+        type: String,
+        default: ''
+      }
+    },
+    watch: {
+      mosaics (after, before) {
+        console.log(after)
+        console.log(before)
+        this.reloadItem()
       }
     },
     methods: {
       reloadItem () {
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
-          .then((result) => {
-            this.date = result.account.creationDate
-            this.name = result.name
-            this.address = result.account.address.value
-            let pairKey = nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD)
-            this.publicKey = pairKey.publicKey
-            this.privateKey = pairKey.privateKey
-            this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.address, 0, this.description)
-            // 残高取得.
-            nemWrapper.getAccountFromPublicKey(this.publicKey)
-              .then((result) => {
-                this.balance = result.balance.balance / nemWrapper.NEM_UNIT
-              }).catch((err) => {
-                console.log(err)
-              })
-            // モザイク取得.
-            nemWrapper.getMosaics(this.address)
-              .then((result) => {
-                console.log(result)
-                result.forEach((element) => {
-                  let mosaic = {}
-                  mosaic.text = element.mosaicId.namespaceId + ':' + element.mosaicId.name
-                  mosaic.namespaceId = element.mosaicId.namespaceId
-                  mosaic.name = element.mosaicId.name
-                  mosaic.amount = element.amount
-                  mosaic.divisibility = element.properties.divisibility
-                  mosaic.initialSupply = element.properties.initialSupply
-                  mosaic.supplyMutable = element.properties.supplyMutable
-                  mosaic.transferable = element.properties.transferable
-                  this.mosaics.push(mosaic)
-                })
-                this.selectMosaic = this.mosaics[0]
-              }).catch((err) => {
-                console.log('get_mosaic_error: ' + err)
-              })
-          }).catch((err) => {
-            console.error(err)
-            this.message = err
-          })
+        if (this.mosaics.length > 0) {
+          this.selectMosaic = this.mosaics[0]
+        }
+        this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.walletItem.account.address.value, 0, '')
       },
       showPrivateKey () {
         this.isShowDialog = true

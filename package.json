@@ -38,6 +38,7 @@
     "vue-qriously": "^1.1.1",
     "vue-router": "^3.0.1",
     "vuetify": "^1.0.14",
+    "vuex": "^3.0.1",
     "yarn": "^1.5.1",
     "zaif.jp": "^0.1.16"
   },

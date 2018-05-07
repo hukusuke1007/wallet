@@ -24,9 +24,9 @@
           <v-tab-item v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :id="`tab-${tabItem.id}`">
           </v-tab-item>
           <v-flex xs12 sm10 offset-sm1>
-            <nemAccount v-bind:id="id" v-show="tab === `tab-0`"></nemAccount>
-            <nemTransactionHistory v-bind:id="id" v-show="tab === `tab-1`"></nemTransactionHistory>
-            <nemTransactionCreate v-bind:id="id" v-show="tab === `tab-2`"></nemTransactionCreate>
+            <nemAccount v-bind:name="name" v-show="tab === `tab-0`"></nemAccount>
+            <nemTransactionHistory v-show="tab === `tab-1`"></nemTransactionHistory>
+            <nemTransactionCreate v-show="tab === `tab-2`"></nemTransactionCreate>
           </v-flex>
         </v-tabs-items>
       </div>

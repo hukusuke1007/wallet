@@ -35,19 +35,22 @@
 </template>
 
 <script>
-  import dbWrapper from '@/js/local_database_wrapper'
+  // import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import DialogConfirm from '@/components/DialogConfirm'
   import {TransferTransaction, MultisigTransaction} from 'nem-library'
+  import { mapGetters, mapActions } from 'vuex'
 
   export default {
     data: () => ({
       title: '',
-      address: '',
       isShowDialog: false,
       dialogMessage: '',
       items: []
     }),
+    computed: {
+      ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transaction', 'transactionStatus', 'isLoading'])
+    },
     components: {
       'dialogConfirm': DialogConfirm
     },
@@ -58,50 +61,33 @@
       id: {
         type: Number,
         default: -1
-      },
-      accountAddress: {
-        type: String,
-        default: ''
       }
     },
     watch: {
-      address (val) {
-        if (val) {
+      transaction (val) {
+        console.log('history_transaction', val)
+        this.setItemsForTransaction(val)
+      }
+      /*
+      transactionStatus (val) {
+        console.log('transactionStatus', val)
+        if (val === 'unconfirmed') {
+          console.log('transactionStatus: unconfirmed')
+          this.$toast('トランザクション承認中...')
+        } else if (val === 'confirmed') {
+          this.$toast('トランザクションが承認されました。反映されない場合は更新ボタンを押してください。')
+          this.doTransactionStatus('none')
         }
       }
+      */
     },
     methods: {
+      ...mapActions('Nem', ['doUpdateTransaction', 'doTransactionStatus']),
       reloadItem () {
-        this.items = []
-        if (this.id !== -1) {
-          let id = this.id
-          // console.log('reloadItem:' + id)
-          dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, id)
-            .then((result) => {
-              this.address = result.account.address.value
-              let pairKey = nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD)
-              this.publicKey = pairKey.publicKey
-              nemWrapper.getTransaction(this.address, 100, undefined, undefined)
-                .then((result) => {
-                  this.setItemsForTransaction(result)
-                }).catch((err) => {
-                  console.error(err)
-                })
-            }).catch((err) => {
-              console.log(err)
-              this.message = err
-            })
-        } else if (this.accountAddress.length === 40) {
-          this.address = this.accountAddress
-          nemWrapper.getTransaction(this.address, 100, undefined, undefined)
-            .then((result) => {
-              this.setItemsForTransaction(result)
-            }).catch((err) => {
-              console.error(err)
-            })
-        }
+        this.doUpdateTransaction()
       },
       setItemsForTransaction (transactions) {
+        this.items = []
         transactions.forEach((element, index) => {
           // console.log(element)
           if (element instanceof TransferTransaction) {

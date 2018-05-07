@@ -38,7 +38,7 @@
               <v-card-title primary-title><h2 style="color: green">NEM</h2></v-card-title>
               <div class="subTitle">残高</div>
               <v-card-text>
-                <h2 class="font-color-shamrock">{{ balance }} xem</h2>
+                <h2 class="font-color-shamrock">{{ nemBalance }} xem</h2>
               </v-card-text>
               <div><font color="gray">時価総額: {{ totalJpyXem }} 円</font></div>
               <div><font color="gray">レート: {{ rateJpyXem }} 円/XEM</font></div>
@@ -67,7 +67,7 @@
             <div class="sideOffset">
               <v-card-title primary-title><h2 style="color: blue">モザイク</h2></v-card-title>
               <v-form v-model="validMosaic" ref="formMosaic" lazy-validation>
-                <div v-for="item in mosaics" :key="`mosaic-${item.index}`">
+                <div v-for="item in senderMosaics">
                    <div class="subTitle">残高 ({{ item.namespaceId }})</div>
                    <v-card-text>
                     <h2 class="font-color-shamrock">{{ item.amount }} {{ item.name }}</h2>
@@ -117,23 +117,20 @@
 </template>
 
 <script>
-  import dbWrapper from '@/js/local_database_wrapper'
+  // import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import DialogQRreader from '@/components/QRreader'
   import ProgressCircular from '@/components/ProgressCircular'
   import exWrapper from '@/js/exchange_wrapper'
+  import { mapGetters, mapActions } from 'vuex'
 
   export default {
     data: () => ({
       valid: false,
       validNem: false,
       validMosaic: false,
-      date: '',
-      balance: 0,
-      name: '',
-      mosaics: [],
       trMosaics: { item: [], other: [] },
       amountLabel: '送金量 (xem)',
       amount: 0,
@@ -141,8 +138,7 @@
       feeMosaics: 0,
       message: '',
       senderAddr: '',
-      publicKey: '',
-      privateKey: '',
+      senderMosaics: [],
       isShowDialogPositiveNegative: false,
       dialogPositiveNegativeMessage: '',
       isShowDialogConfirm: false,
@@ -169,6 +165,9 @@
         messageRules: (value) => (value.length <= 1024) || '最大文字数を超えています。'
       }
     }),
+    computed: {
+      ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transactionStatus', 'isLoading'])
+    },
     components: {
       'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm,
@@ -206,18 +205,17 @@
       mosaics (after, before) {
         console.log(after)
         console.log(before)
-      },
-      id (val) {
         this.reloadItem()
       },
       rateJpyXem (val) {
-        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(this.balance, val, 0)
+        this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(this.nemBalance, val, 0)
       },
-      balance (val) {
+      nemBalance (val) {
         this.totalJpyXem = nemWrapper.getTotalAmountJpyXem(val, this.rateJpyXem, 0)
       }
     },
     methods: {
+      ...mapActions('Nem', ['doUpdateNemBalance', 'doUpdateMosaicsBalance', 'doObserveTransaction', 'doTransactionStatus']),
       submit () {
         if (this.$refs.form.validate() && this.$refs.formNem.validate()) {
           console.log('submit')
@@ -227,7 +225,7 @@
           let total = Number(this.amount) + Number(this.fee)
           let n = 6 // 下6桁まで残す.
           total = Math.floor(total * Math.pow(10, n)) / Math.pow(10, n)
-          if (Number(this.balance) < total) {
+          if (Number(this.nemBalance) < total) {
             this.dialogTitle = '送金エラー'
             this.dialogMessage = 'NEMの残高が足りません。'
             this.isShowDialogConfirm = true
@@ -250,7 +248,7 @@
       },
       submitMosaic () {
         if (this.$refs.form.validate()) {
-          if (Number(this.balance) === 0) {
+          if (Number(this.nemBalance) === 0) {
             this.dialogTitle = '送金エラー'
             this.dialogMessage = 'NEMの残高が足りません。モザイク送信時はNEMの手数料が必要です。'
             this.isShowDialogConfirm = true
@@ -261,7 +259,7 @@
             this.senderAddr = this.senderAddr.replace(/-/g, '')
             // validation
             let mlist = []
-            this.mosaics.forEach((element) => {
+            this.senderMosaics.forEach((element) => {
               let tmp = {
                 namespaceId: element.namespaceId,
                 name: element.name,
@@ -305,49 +303,21 @@
         this.senderAddr = ''
         this.message = ''
         this.fee = 0
-        this.mosaics.forEach((element) => {
+        this.senderMosaics.forEach((element) => {
           element.sendAmount = 0
         })
       },
       reloadItem () {
-        this.mosaics = []
-        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
-          .then((result) => {
-            this.date = result.account.creationDate
-            this.name = result.name
-            this.address = result.account.address.value
-            let pairKey = nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD)
-            this.publicKey = pairKey.publicKey
-            this.privateKey = pairKey.privateKey
-            // 残高取得
-            nemWrapper.getAccountFromPublicKey(this.publicKey)
-              .then((result) => {
-                this.balance = result.balance.balance / nemWrapper.NEM_UNIT
-              })
-            // モザイク取得.
-            nemWrapper.getMosaics(this.address)
-              .then((result) => {
-                console.log(result)
-                result.forEach((element, index) => {
-                  let mosaic = {}
-                  mosaic.index = index
-                  mosaic.text = element.mosaicId.namespaceId + ':' + element.mosaicId.name
-                  mosaic.namespaceId = element.mosaicId.namespaceId
-                  mosaic.name = element.mosaicId.name
-                  mosaic.amount = element.amount
-                  mosaic.sendAmount = 0
-                  mosaic.divisibility = element.properties.divisibility
-                  mosaic.initialSupply = element.properties.initialSupply
-                  mosaic.supplyMutable = element.properties.supplyMutable
-                  mosaic.transferable = element.properties.transferable
-                  this.mosaics.push(mosaic)
-                })
-              }).catch((err) => {
-                console.log('get_mosaic_error: ' + err)
-              })
-          }).catch((err) => {
-            console.log(err)
-          })
+        this.senderMosaics = []
+        this.mosaics.forEach((element) => {
+          let item = {
+            namespaceId: element.namespaceId,
+            name: element.name,
+            quantity: element.amount,
+            sendAmount: 0
+          }
+          this.senderMosaics.push(item)
+        })
       },
       showFee () {
         if ((this.rules.senderAddrLimit(this.senderAddr) === true) &&
@@ -428,7 +398,7 @@
           if ('mosaics' in content.data) {
             let mosaics = content.data.mosaics
             mosaics.forEach((data) => {
-              this.mosaics.forEach((element) => {
+              this.senderMosaics.forEach((element) => {
                 if ((data.namespaceId === element.namespaceId) && (data.name === element.name)) {
                   element.amount = data.amount / Math.pow(10, Number(element.divisibility))
                 }
@@ -452,7 +422,7 @@
         if (this.transactionType === 'nem') {
           // NEM送金
           console.log('nem')
-          nemWrapper.transferTransaction(this.senderAddr, this.amount, this.message, this.privateKey)
+          nemWrapper.transferTransaction(this.senderAddr, this.amount, this.message, this.pairKey.privateKey)
             .then((result) => {
               console.log(result)
               this.dialogTitle = '送金'
@@ -474,7 +444,7 @@
         } else if (this.transactionType === 'mosaics') {
           // モザイク送金
           console.log('mosaics')
-          nemWrapper.transferTransactionMosaics(this.senderAddr, this.trMosaics.item, this.message, this.privateKey)
+          nemWrapper.transferTransactionMosaics(this.senderAddr, this.trMosaics.item, this.message, this.pairKey.privateKey)
             .then((result) => {
               console.log(result)
               this.dialogTitle = '送金'

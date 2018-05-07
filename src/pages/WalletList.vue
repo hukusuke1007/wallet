@@ -50,6 +50,8 @@
 
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
+  import nemWrapper from '@/js/nem_wrapper'
+  import { mapActions } from 'vuex'
   export default {
     data: () => ({
       items: []
@@ -59,20 +61,16 @@
       this.reloadItems()
     },
     methods: {
+      ...mapActions('Nem', ['doUpdateNemBalance', 'doUpdateMosaicsBalance', 'doObserveTransaction', 'doWalletItem', 'doAddress', 'doPairKey', 'doTransactionStatus']),
       reloadItems () {
         dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, dbWrapper.VALUE_ALL)
           .then((result) => {
             result.forEach((element) => {
-              // console.log(element)
-              // let dateString = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_CREATION_DATE]
               let item = {}
-              // dateString.replace('T', ' ').slice(0, -4)
-              item.id = element[dbWrapper.VALUE_PRIMARY_ID]
-              // item.date = dateString
-              item.title = element[dbWrapper.VALUE_NAME]
-              item.headline = element[dbWrapper.VALUE_WALLET_ACCOUNT][dbWrapper.VALUE_ADDRESS]['value']
-              item.subtitle = element[dbWrapper.VALUE_DESCRIPTION]
-              // console.log(item)
+              item.id = element.id
+              item.title = element.name
+              item.headline = element.account.address.value
+              item.subtitle = element.description
               this.items.push(item)
             })
             // 新しい順にソート.
@@ -87,7 +85,19 @@
       },
       tapItem (index) {
         console.log('tap:' + index + ' id:' + this.items[index].id)
-        this.$router.push({ name: 'WalletDetail', params: {id: this.items[index].id} })
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, this.items[index].id)
+          .then((result) => {
+            if (result) {
+              this.doWalletItem(result)
+              this.doAddress(result.account.address.value)
+              this.doPairKey(nemWrapper.getPairKey(result.account, nemWrapper.PASSWORD))
+              this.doUpdateNemBalance()
+              this.doUpdateMosaicsBalance()
+              this.$router.push({ name: 'WalletDetail', params: {id: this.items[index].id} })
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
       },
       tapAdd () {
         this.$router.push({ name: 'Create' })
