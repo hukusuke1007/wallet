@@ -10,6 +10,9 @@
         <v-btn icon @click.native="close()" dark>
           <v-icon>close</v-icon>
         </v-btn>
+        <v-spacer></v-spacer>
+        <v-toolbar-side-icon @click="download"><v-icon>get_app</v-icon></v-toolbar-side-icon>
+        <!-- <v-toolbar-side-icon @click="print"><v-icon>print</v-icon></v-toolbar-side-icon> -->
       </v-toolbar>
       <v-container
         fluid
@@ -20,18 +23,20 @@
         <v-card>
         <div class="w-break sideOffset">
           <v-layout row wrap column>
-            <div v-if="invoice">
-              <div class="itemNum">個数: {{ num }}</div>
-              <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
-              <v-card flat><qriously v-model="qrValue" :size="300" ></qriously></v-card>
-              <v-subheader>通貨: {{ invoice.currencyItem.text }}</v-subheader>
-              <v-card-text><h2 class="font-color-shamrock">{{ amount }} {{ unitName }}</h2></v-card-text>
-              <v-subheader>メッセージ</v-subheader>
-              <v-card-text><h3>{{ invoice.message }}</h3></v-card-text>
-            </div>
-            <div v-else>
-              <v-card-text>請求書データがありません。</v-card-text>
-            </div>
+            <div id="invoiceData">
+              <div v-if="invoice" class="center">
+                <div class="itemNum">個数: {{ num }}</div>
+                <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
+                <v-card flat><qriously v-model="qrValue" :size="300" ></qriously></v-card>
+                <v-subheader>通貨: {{ invoice.currencyItem.text }}</v-subheader>
+                <v-card-text><h2 class="font-color-shamrock">{{ amount }} {{ unitName }}</h2></v-card-text>
+                <v-subheader>メッセージ</v-subheader>
+                <v-card-text><h3>{{ invoice.message }}</h3></v-card-text>
+              </div>
+             <div v-else>
+               <v-card-text>請求書データがありません。</v-card-text>
+             </div>
+           </div>
           </v-layout>
         </div>
         </v-card>
@@ -44,6 +49,9 @@
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
+  import html2canvas from 'html2canvas'
+  import Jspdf from 'jspdf'
+  // import PrintJS from 'print-js'
 
   export default {
     data: () => ({
@@ -133,6 +141,22 @@
           console.log(this.qrValue)
         }
       },
+      download () {
+        html2canvas(document.getElementById('invoiceData'))
+          .then((canvas) => {
+            let dataURI = canvas.toDataURL('image/jpeg')
+            let pdf = new Jspdf()
+            pdf.addImage(dataURI, 'JPEG', 28, 8) // x, yの座標
+            let date = new Date()
+            let pdfName = 'office_nem_invoice_' + this.id + '_' + date.getTime() + '.pdf'
+            console.log(pdfName)
+            pdf.save(pdfName)
+            // let printUrl = pdf.output('datauristring')
+            // PrintJS(printUrl)
+          })
+      },
+      print () {
+      },
       close () {
         console.log('close')
         this.$emit('dialog-nem-invoice-show-event-close', 'close')
@@ -145,5 +169,9 @@
 <style scoped>
 .itemNum {
   float: right;
+}
+.center {
+  display: inline-block;
+  text-align: center;
 }
 </style>
