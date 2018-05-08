@@ -24,7 +24,7 @@
           <v-layout wrap column>
             <v-flex>
             <v-card>
-            <div id="invoiceData">
+            <div ref="invoiceData">
               <div v-if="invoice" class="center">
                 <div class="itemNum">個数: {{ num }}</div>
                 <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
@@ -42,6 +42,7 @@
            </v-flex>
            <v-flex>
             <v-card>
+              <!-- <img :src="image_src"> -->
               <v-btn color="light-blue lighten-3" large block @click="download">請求書のPDFをダウンロード</v-btn>
             </v-card>
           </v-flex>
@@ -62,6 +63,7 @@
 
   export default {
     data: () => ({
+      // image_src: null,
       dialog: false,
       amountLabel: '',
       invoice: null,
@@ -149,16 +151,43 @@
         }
       },
       download () {
-        html2canvas(document.getElementById('invoiceData'))
+        // document.getElementById('invoiceData')
+        html2canvas(this.$refs.invoiceData)
           .then((canvas) => {
-            let dataURI = canvas.toDataURL('image/jpeg')
-            let pdf = new Jspdf()
-            pdf.addImage(dataURI, 'JPEG', 0, 10, 0, 0) // x, yの座標
+            let dataURI = canvas.toDataURL('image/png')
+            // 画像のサイズを取得.
+            /*
+            let image = new Image()
+            let width = 0
+            let height = 0
+            image.onload = function () {
+              width = image.width
+              height = image.height
+              console.log('imageSize', width, height)
+            }
+            image.src = dataURI
+            */
+            // this.image_src = dataURI
+            let imgWidth = 210
+            let pageHeight = 295
+            let imgHeight = canvas.height * imgWidth / canvas.width
+            let heightLeft = imgHeight
+            let position = 10
+            console.log('canvasSize', canvas.height, canvas.width)
+            let pdf = new Jspdf('p', 'mm')
+            pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight) // x, yの座標
+            heightLeft -= pageHeight
+            while (heightLeft >= 0) {
+              position = heightLeft - imgHeight
+              pdf.addPage()
+              pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight)
+              heightLeft -= pageHeight
+            }
             let date = new Date()
             let pdfName = 'office_nem_invoice_' + this.id + '_' + date.getTime() + '.pdf'
             console.log(pdfName)
             pdf.save(pdfName)
-            // let printUrl = pdf.output('datauristring')
+            // let renderString = pdf.output('datauristring')
             // PrintJS(printUrl)
           })
       },
