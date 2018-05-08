@@ -212,7 +212,6 @@ exports.getFeeTransferMosaics = (senderAddr, mosaicData, message) => {
   let promise = new Promise((resolve, reject) => {
     console.log(mosaicData)
     let address = new Address(senderAddr)
-    // json作成
     let dataList = []
     let isXEM = false
     let xemQuantity
@@ -294,8 +293,6 @@ exports.transferTransactionMosaics = (senderAddr, mosaicData, message, privateKe
   let promise = new Promise((resolve, reject) => {
     let account = Account.createWithPrivateKey(privateKey)
     let address = new Address(senderAddr)
-
-    // json作成
     let dataList = []
     let isXEM = false
     let xemQuantity
