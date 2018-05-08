@@ -114,7 +114,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new workboxPlugin.GenerateSW({
       cacheId: 'wallet',
       globDirectory: config.build.assetsRoot,
-      globPatterns: ['**/*.{html,js,css}'],
+      globPatterns: ['**/*.{html,js,css,png}'],
       swDest: path.join(config.build.assetsRoot, 'service-worker.js'),
       skipWaiting: true,
       clientsClaim: true,
@@ -124,17 +124,6 @@ const webpackConfig = merge(baseWebpackConfig, {
          handler: 'networkFirst',
          options: {
            cacheName: 'page',
-           expiration: {
-             maxAgeSeconds: 60 * 60 * 24,
-             maxEntries: 10
-           }
-         }
-       },
-       {
-         urlPattern: /.*api.*/,
-         handler: 'networkFirst',
-         options: {
-           cacheName: 'api',
            expiration: {
              maxAgeSeconds: 60 * 60 * 24,
              maxEntries: 10

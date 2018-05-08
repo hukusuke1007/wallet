@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.0.1/workbox-sw.js");
 
 importScripts(
-  "./precache-manifest.2ecdfec7b60578ef8750ddb12b8b534f.js"
+  "./precache-manifest.721595735a6c44d7e7cedb6ed8a861e8.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "wallet"});
@@ -30,7 +30,7 @@ workbox.clientsClaim();
 self.__precacheManifest = [
   {
     "url": "index.html",
-    "revision": "47754fd47f04f501599a93cf63be450f"
+    "revision": "5ca6182146df47ce98fa53548e8aded5"
   },
   {
     "url": "precache-manifest.00636609815fc1967681b0d3252ddccc.js",
@@ -171,6 +171,10 @@ self.__precacheManifest = [
   {
     "url": "precache-manifest.2e01043daacf95464ba3c3d0af19f185.js",
     "revision": "2e01043daacf95464ba3c3d0af19f185"
+  },
+  {
+    "url": "precache-manifest.2ecdfec7b60578ef8750ddb12b8b534f.js",
+    "revision": "2ecdfec7b60578ef8750ddb12b8b534f"
   },
   {
     "url": "precache-manifest.301659822a9aa259ff4d09df32296624.js",
@@ -315,6 +319,10 @@ self.__precacheManifest = [
   {
     "url": "precache-manifest.6c5f436964ef4614095f29b9e26c44bc.js",
     "revision": "6c5f436964ef4614095f29b9e26c44bc"
+  },
+  {
+    "url": "precache-manifest.6d3521a641816ef86dac6dc45f9eec42.js",
+    "revision": "6d3521a641816ef86dac6dc45f9eec42"
   },
   {
     "url": "precache-manifest.6e66d1f0b8260a4b80716136c185068c.js",
@@ -769,6 +777,10 @@ self.__precacheManifest = [
     "revision": "f81777a51977a7d69f0e28937eb05ace"
   },
   {
+    "url": "precache-manifest.fa9cd9416c174a439ae9dfd3abd4b794.js",
+    "revision": "fa9cd9416c174a439ae9dfd3abd4b794"
+  },
+  {
     "url": "precache-manifest.fab67a22fee9c4132e153d698f849363.js",
     "revision": "fab67a22fee9c4132e153d698f849363"
   },
@@ -790,11 +802,10 @@ self.__precacheManifest = [
   },
   {
     "url": "service-worker.js",
-    "revision": "dd201270fbd676167bb0f03d41a0a799"
+    "revision": "c0b4fe3efcb016b9e257938851b36f4b"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.suppressWarnings();
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
 workbox.routing.registerRoute("/", workbox.strategies.networkFirst({ cacheName: "page", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"maxEntries":10})] }), 'GET');
-workbox.routing.registerRoute(/.*api.*/, workbox.strategies.networkFirst({ cacheName: "api", plugins: [new workbox.expiration.Plugin({"maxAgeSeconds":86400,"maxEntries":10})] }), 'GET');
