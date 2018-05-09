@@ -70,7 +70,7 @@
                 <div v-for="item in senderMosaics">
                    <div class="subTitle">残高 ({{ item.namespaceId }})</div>
                    <v-card-text>
-                    <h2 class="font-color-shamrock">{{ item.amount }} {{ item.name }}</h2>
+                    <h2 class="font-color-shamrock">{{ item.quantity }} {{ item.name }}</h2>
                   </v-card-text>
                    <v-text-field
                     :label="`送金量 (${item.name})`"
