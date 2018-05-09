@@ -46,11 +46,23 @@
           <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
           <v-subheader>アカウントのQRコード</v-subheader>
           <qriously v-model="qrValue" :size="200"></qriously>
-          <br>
+          <v-flex>
+            <v-btn icon @click.native="showDeleteWallet()">
+              <v-icon color="primary">delete</v-icon>
+            </v-btn>
+          </v-flex>
+
+          <!-- 確認ダイアログ -->
+          <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
+                         titleVal="ウォレットの削除"
+                         v-bind:messageVal="dialogPositiveNegativeMessage"
+                         positiveVal="削除する"
+                         negativeVal="いいえ"
+                         v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
           <!-- ダイアログ -->
           <dialogConfirm v-bind:dialogVal="isShowDialog"
-                         titleVal="秘密鍵"
-                         v-bind:messageVal="pairKey.privateKey"
+                         v-bind:titleVal="dialogTitle"
+                         v-bind:messageVal="dialogMessage"
                          v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
         </v-flex>
         </div>
@@ -59,8 +71,9 @@
 </template>
 
 <script>
-  // import dbWrapper from '@/js/local_database_wrapper'
+  import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
+  import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import { mapGetters } from 'vuex'
 
@@ -70,6 +83,11 @@
       selectMosaic: null,
       qrValue: '',
       isShowDialog: false,
+      isShowDialogPositiveNegative: false,
+      dialogPositiveNegativeMessage: 'ウォレットを削除しますか？',
+      dialogTitle: '',
+      dialogMessage: '削除しました。',
+      selectDialog: '',
       nameRules: [
         value => !!value || '名前を入力してください',
         value => (value && value.length <= 16) || '最大文字数を超えています。'
@@ -82,12 +100,17 @@
       ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transactionStatus', 'isLoading'])
     },
     components: {
+      'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm
     },
     mounted () {
       this.reloadItem()
     },
     props: {
+      id: {
+        type: Number,
+        default: -1
+      },
       name: {
         type: String,
         default: ''
@@ -108,10 +131,40 @@
         this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.walletItem.account.address.value, 0, '')
       },
       showPrivateKey () {
+        this.dialogTitle = '秘密鍵'
+        this.dialogMessage = this.pairKey.privateKey
+        this.selectDialog = 'private_key'
         this.isShowDialog = true
       },
       tapPositive (message) {
-        this.isShowDialog = false
+        if (this.isShowDialog === true) {
+          this.isShowDialog = false
+          if (this.selectDialog === 'delete_wallet') {
+            this.$router.push({ name: 'WalletList' })
+          }
+        }
+      },
+      deleteWallet () {
+        this.dialogTitle = 'ウォレットの削除'
+        dbWrapper.removeItemArray(dbWrapper.KEY_WALLET_INFO, this.id)
+          .then((result) => {
+            this.dialogMessage = '削除しました'
+          }).catch((err) => {
+            console.log(err)
+            this.dialogMessage = 'ERROR：削除に失敗しました'
+          })
+      },
+      showDeleteWallet () {
+        console.log('delete')
+        this.selectDialog = 'delete_wallet'
+        this.isShowDialogPositiveNegative = true
+      },
+      tapSendPositiveNegative (isPositive, message) {
+        this.isShowDialogPositiveNegative = false
+        if (isPositive) {
+          this.deleteWallet()
+          this.isShowDialog = true
+        }
       }
     }
   }

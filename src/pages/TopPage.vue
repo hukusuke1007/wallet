@@ -8,8 +8,10 @@
        <v-layout column wrap>
         <!-- 時価レート -->
         <v-flex>
+          <img :src="require('@/assets/headerLogo_pink.png')"></img>
+        </v-flex>
+        <v-flex>
           <v-card>
-            <v-card-media :src="require('../assets/headerLogo_pink.png')"></v-card-media>
             <v-card-actions>
               <v-card-title>時価レート</v-card-title>
               <v-spacer></v-spacer>

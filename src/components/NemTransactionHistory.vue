@@ -2,57 +2,55 @@
     <v-card flat>
           <v-list two-line>
             <v-subheader>送金履歴一覧 {{ items.length }}件</v-subheader>
+
             <template v-for="(item, index) in items">
               <v-list-tile ripple :key="index" @click="tapItem(index)">
                 <v-list-tile-content v-show="item.type === `TransferTransaction`">
-                  <v-list-tile-title>通貨: {{ item.namespace }}:{{ item.name }}</v-list-tile-title>
-                  <!-- <v-list-tile-sub-title>受取先: {{ item.recipientAddr }}</v-list-tile-sub-title> -->
-                  <div v-if="!item.mosaics || item.mosaics.length === 0">
+                  <v-list-tile-title><div :class="item.depositId">{{ item.deposit }}</div></v-list-tile-title>
+                  <v-list-tile-sub-title>{{ item.recipientAddr }}</v-list-tile-sub-title>
+                  <div v-if="item.mosaicsAddInfos.length===0">
                     <v-list-tile-sub-title>送金量: {{ item.amount }}</v-list-tile-sub-title>
                   </div>
                   <div v-else>
-                    <v-list-tile-sub-title><font color="blue">モザイクはタップして確認</font></v-list-tile-sub-title>
+                    <v-list-tile-sub-title>モザイクの詳細はこちら</v-list-tile-sub-title>
                   </div>
-                  <v-list-tile-sub-title>メッセージ: {{ item.message }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <v-list-tile-action-text>{{ item.timeStamp }}</v-list-tile-action-text>
-                  <v-list-tile-action-text><div :class="item.depositColor">{{ item.deposit }}</div></v-list-tile-action-text>
-                  <v-list-tile-action-text>手数料: {{ item.fee }}</v-list-tile-action-text>
-                  <!-- <v-icon color="grey lighten-1">keyboard_arrow_right</v-icon> -->
+                  <v-list-tile-action-text><div :class="item.statusId">{{ item.status }}</div></v-list-tile-action-text>
+                  <v-icon color="grey lighten-1">keyboard_arrow_right</v-icon>
                 </v-list-tile-action>
               </v-list-tile>
               <v-divider v-if="index + 1 < items.length" :key="`divider-${index}`"></v-divider>
             </template>
+
           </v-list>
 
-          <!-- ダイアログ -->
-          <dialogConfirm v-bind:dialogVal="isShowDialog"
-                         v-bind:titleVal="title"
-                         v-bind:messageVal="dialogMessage"
-                         v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
+          <!-- 履歴詳細ダイアログ -->
+          <DialogHistoryDetail v-bind:dialogVal="isShowHistoryDetail"
+                         v-bind:item="selectItem"
+                         v-on:dialog-history-detail-close="tapHistoryDetailClose"></DialogHistoryDetail>
     </v-card>
 </template>
 
 <script>
   // import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
-  import DialogConfirm from '@/components/DialogConfirm'
+  import DialogHistoryDetail from '@/components/DialogHistoryDetail'
   import {TransferTransaction, MultisigTransaction} from 'nem-library'
   import { mapGetters, mapActions } from 'vuex'
 
   export default {
     data: () => ({
-      title: '',
-      isShowDialog: false,
-      dialogMessage: '',
-      items: []
+      isShowHistoryDetail: false,
+      items: [],
+      selectItem: {}
     }),
     computed: {
       ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transaction', 'transactionStatus', 'isLoading'])
     },
     components: {
-      'dialogConfirm': DialogConfirm
+      DialogHistoryDetail
     },
     mounted () {
       this.reloadItem()
@@ -97,11 +95,23 @@
             let nameVal = element._xem.mosaicId.name
             let namespaceVal = element._xem.mosaicId.namespaceId
             let depositMsg = '入金'
-            let depositMsgColor = 'example2'
+            let depositMsgColor = 'recieve'
             if (element.signer.address.value === this.address) {
               depositMsg = '出金'
-              depositMsgColor = 'example1'
+              depositMsgColor = 'send'
             }
+            let amount = element._xem.amount
+            let confirmMsg = '承認'
+            let confirmMsgColor = 'confirm'
+            let hash = ''
+            if (element.transactionInfo == null) {
+              confirmMsg = '未承認'
+              confirmMsgColor = 'unConfirm'
+              amount = '承認中...'
+            } else {
+              hash = element.transactionInfo.hash.data
+            }
+
             let item = {
               type: 'TransferTransaction',
               message: convMessage,
@@ -109,14 +119,16 @@
               recipientAddr: element.recipient.value,
               senderAddr: element.signer.address.value,
               timeStamp: dateString,
-              hash: element.transactionInfo.hash.data,
+              hash: hash,
               name: nameVal,
               namespace: namespaceVal,
-              amount: element._xem.amount,
+              amount: amount,
               mosaics: element._mosaics,
               mosaicsAddInfos: [],
               deposit: depositMsg,
-              depositColor: depositMsgColor
+              depositId: depositMsgColor,
+              status: confirmMsg,
+              statusId: confirmMsgColor
             }
             this.items.push(item)
           } else if (element instanceof MultisigTransaction) {
@@ -184,35 +196,12 @@
         this.header = '送金履歴一覧 (' + count + '件）'
       },
       tapItem (index) {
-        let item = this.items[index]
-        // console.log(item)
-        this.title = item.timeStamp
-        if (item.mosaicsAddInfos.length > 0) {
-          let mosaicMessage = '【モザイク】<br><br>'
-          item.mosaicsAddInfos.forEach((element) => {
-            let amount = element.quantity
-            if (element.divisibility > 0) {
-              amount = element.quantity / Math.pow(10, element.divisibility)
-            }
-            mosaicMessage += '[' + element.namespaceId + ':' + element.name + ']' + '<br>' +
-                     '送金量:<br>' + amount + ' ' + element.name + '<br><br>'
-          })
-          this.dialogMessage = mosaicMessage +
-                     '手数量:<br>' + item.fee + ' xem<br><br>' +
-                     '送金先:<br>「' + item.senderAddr + '」から<br>' + '「' + item.recipientAddr + '」へ<br><br>' +
-                     'ハッシュ:<br>' + item.hash + '<br><br>' +
-                     'メッセージ:<br>' + item.message
-        } else {
-          this.dialogMessage = '送金量:<br>' + item.amount + ' ' + item.name + '<br><br>' +
-                     '手数量:<br>' + item.fee + ' xem<br><br>' +
-                     '送金先:<br>「' + item.senderAddr + '」から<br>' + '「' + item.recipientAddr + '」へ<br><br>' +
-                     'ハッシュ:<br>' + item.hash + '<br><br>' +
-                     'メッセージ:<br>' + item.message
-        }
-        this.isShowDialog = true
+        this.selectItem = this.items[index]
+        console.log(this.selectItem)
+        this.isShowHistoryDetail = true
       },
-      tapPositive (message) {
-        this.isShowDialog = false
+      tapHistoryDetailClose (message) {
+        this.isShowHistoryDetail = false
       }
     }
   }
@@ -220,6 +209,8 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.example1 { color: #ff0000; }
-.example2 { color: #008000; }
+.send { color: #ff0000; }
+.recieve { color: #008000; }
+.confirm { color: #00b894; font-weight: bold;}
+.unConfirm { color: #fdcb6e; font-weight: bold;}
 </style>
