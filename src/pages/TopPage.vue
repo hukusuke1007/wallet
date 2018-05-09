@@ -9,6 +9,7 @@
         <!-- 時価レート -->
         <v-flex>
           <v-card>
+            <v-card-media :src="require('../assets/headerLogo_pink.png')"></v-card-media>
             <v-card-actions>
               <v-card-title>時価レート</v-card-title>
               <v-spacer></v-spacer>
@@ -65,6 +66,7 @@
   export default {
     name: 'topPage',
     data: () => ({
+      imageLogo: require('@/assets/headerLogo_pink.png'),
       rateJpyXem: 0,
       rateDate: '',
       isLoadinRateJpyXem: false

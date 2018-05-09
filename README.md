@@ -1,6 +1,6 @@
-# wallet
+# Office NEM wallet
 
-> wallet
+> This is NEM wallet for office.
 
 ## Build Setup
 
