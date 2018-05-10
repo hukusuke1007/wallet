@@ -19,14 +19,25 @@
                     required
                     placeholder="例. お菓子"
                   ></v-text-field>
-                  <v-text-field
-                    label="送金先"
-                    v-model="senderAddr"
-                    :rules="[rules.senderAddrLimit, rules.senderAddrInput]"
-                    :counter="40"
-                    required
-                    placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
-                  ></v-text-field>
+                  <v-layout row wrap>
+                    <v-flex>
+                    <v-text-field
+                      label="送金先"
+                      v-model="senderAddr"
+                      :rules="[]"
+                      :counter="40"
+                      required
+                      placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
+                    ></v-text-field>
+                    </v-flex>
+                    <v-flex>
+                      <v-select
+                      :items="myAccountItems"
+                      label="ウォレットから選択"
+                      v-model="selectMyAccount"
+                      prepend-icon="credit_card"></v-select>
+                    </v-flex>
+                  </v-layout>
                 </v-form>
               </div>
               </v-card>
@@ -131,11 +142,15 @@
       amount: 0,
       message: '',
       senderAddr: '',
+      myAccountItems: [
+        { id: -1, text: 'なし', address: '' }
+      ],
       currencyItems: [
         { id: 0, text: 'NEM' },
         { id: 1, text: 'JPY' },
         { id: 2, text: 'Mosaics' }
       ],
+      selectMyAccount: {},
       selectCurrency: {},
       designItem: {},
       createDate: null,
@@ -187,6 +202,13 @@
       mosaics (after, before) {
         console.log(after)
         console.log(before)
+      },
+      selectMyAccount (val) {
+        if (val.id === -1) {
+          this.senderAddr = ''
+        } else {
+          this.senderAddr = val.address
+        }
       },
       selectCurrency (val) {
         if (val.id === 0) {
@@ -246,15 +268,6 @@
               this.isShowDialogConfirm = true
               this.dialogMessage = 'ERROR:送金先アドレスが正しくありません。'
             })
-          /*
-          this.dialogPositiveNegativeMessage = '送金しますか？<br><br>' +
-            '送金量:<br>' + this.amount + ' xem' + '<br>' +
-            '手数量:<br>' + this.fee + ' xem' + '<br>' +
-            '合計:<br>' + total + ' xem' + '<br><br>' +
-            '送金先:<br>' + this.senderAddr + '<br><br>' +
-            'メッセージ:<br>' + this.message
-          this.isShowDialogPositiveNegative = true
-          */
         }
       },
       clear () {
@@ -274,6 +287,8 @@
       },
       reloadItem () {
         this.mosaics = []
+        this.myAccountItems = [ { id: -1, text: 'なし', address: '' } ]
+        this.selectMyAccount = this.myAccountItems[0]
         let id = Number.parseInt(this.id)
         console.log('NemInvoiceCreate:reloadItem: ' + id)
         if (id === -1) {
@@ -302,30 +317,20 @@
               console.log(err)
             })
         }
+        dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, dbWrapper.VALUE_ALL)
+          .then((result) => {
+            result.forEach((element) => {
+              let item = {
+                id: element.id,
+                text: element.name,
+                address: element.account.address.value
+              }
+              this.myAccountItems.push(item)
+            })
+          }).catch((err) => {
+            console.log(err)
+          })
       },
-      /*
-      showSendMosaicConfirm (feeMosaics) {
-        this.dialogPositiveNegativeMessage = 'モザイクを送金しますか？<br><br>'
-        let message = '[' + element.namespace + ':' + element.mosaic + ']' + '<br>' +
-                 '送金量:<br>' + element.quantity + ' ' + element.mosaic + '<br><br>'
-        this.dialogPositiveNegativeMessage += message
-
-        this.dialogPositiveNegativeMessage += '手数量:<br>' + feeMosaics + ' xem' + '<br><br>' +
-          '送金先:<br>' + this.senderAddr + '<br><br>' + 'メッセージ:<br>' + this.message
-        this.isShowDialogPositiveNegative = true
-      },
-      tapSendPositiveNegative (isPositive, message) {
-        if (this.isShowDialogPositiveNegative === true) {
-          if (isPositive) {
-            console.log(message)
-            this.sendTransaction()
-          } else {
-            console.log(message)
-          }
-          this.isShowDialogPositiveNegative = false
-        }
-      },
-      */
       tapConfirm (message) {
         if (this.isShowDialogConfirm === true) {
           this.isShowDialogConfirm = false
@@ -358,23 +363,6 @@
           this.isShowDialogQRreader = false
         }
       }
-      /*
-      sendTransaction () {
-        // let successMsg = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>'
-        // let errorMsg = '送金エラー' + '<br><br>' + 'メッセージ:<br>'
-        this.isShowProgress = true
-        if (this.transactionType === 'nem') {
-          // NEM送金
-          console.log('nem')
-        } else if (this.transactionType === 'mosaics') {
-          // モザイク送金
-          console.log('mosaics')
-        } else {
-          console.log(this.transactionType)
-          this.isShowProgress = false
-        }
-      }
-      */
     }
   }
 </script>

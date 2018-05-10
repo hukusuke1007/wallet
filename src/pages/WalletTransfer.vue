@@ -7,6 +7,8 @@
             <v-icon>keyboard_arrow_left</v-icon>
           </v-btn>
           <v-toolbar-title>送金</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="updateAccount" :loading="isLoading"><v-icon>cached</v-icon></v-btn>
          </v-toolbar>
          <div class="sideOffset">
           <v-select
@@ -34,7 +36,7 @@
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import NemTransactionCreate from '@/components/NemTransactionCreate'
-  import { mapActions } from 'vuex'
+  import { mapGetters, mapActions } from 'vuex'
 
   export default {
     data: () => ({
@@ -42,6 +44,7 @@
       items: []
     }),
     computed: {
+      ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transaction', 'transactionStatus', 'isLoading'])
     },
     components: {
       'nemTransactionCreate': NemTransactionCreate
@@ -56,6 +59,10 @@
     },
     methods: {
       ...mapActions('Nem', ['doUpdateNemBalance', 'doUpdateMosaicsBalance', 'doObserveTransaction', 'doWalletItem', 'doAddress', 'doPairKey', 'doTransactionStatus']),
+      updateAccount () {
+        this.doUpdateNemBalance()
+        this.doUpdateMosaicsBalance()
+      },
       reloadItem () {
         dbWrapper.getItemArray(dbWrapper.KEY_WALLET_INFO, dbWrapper.VALUE_ALL)
           .then((result) => {

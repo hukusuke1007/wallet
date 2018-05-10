@@ -14,7 +14,7 @@
                   <v-text-field
                     label="送金先"
                     v-model="senderAddr"
-                    :rules="[rules.senderAddrLimit, rules.senderAddrInput]"
+                    :rules="[]"
                     :counter="40"
                     required
                     placeholder="例. NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
@@ -151,13 +151,14 @@
       isShowProgress: false,
       totalJpyXem: 0,
       rateJpyXem: 0,
+      isError: false,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
           const pattern = /^[a-zA-Z0-9-]+$/
           return pattern.test(value) || '入力が不正です'
         },
-        amountLimit: (value) => !!value || '金額を入力してください',
+        amountLimit: (value) => (value >= 0) || '金額を入力してください',
         amountInput: (value) => {
           const pattern = /^[0-9.]+$/
           return (pattern.test(value) && !isNaN(Number(value))) || '入力が不正です'
@@ -217,7 +218,7 @@
     methods: {
       ...mapActions('Nem', ['doUpdateNemBalance', 'doUpdateMosaicsBalance', 'doObserveTransaction', 'doTransactionStatus']),
       submit () {
-        if (this.$refs.form.validate() && this.$refs.formNem.validate()) {
+        if (this.$refs.form.validate() && this.$refs.formNem.validate() && (this.amount > 0)) {
           console.log('submit')
           this.transactionType = 'nem'
           this.senderAddr = this.senderAddr.replace(/-/g, '')
@@ -226,10 +227,12 @@
           let n = 6 // 下6桁まで残す.
           total = Math.floor(total * Math.pow(10, n)) / Math.pow(10, n)
           if (Number(this.nemBalance) < total) {
+            this.isError = true
             this.dialogTitle = '送金エラー'
             this.dialogMessage = 'NEMの残高が足りません。'
             this.isShowDialogConfirm = true
           } else {
+            this.isError = false
             this.dialogPositiveNegativeMessage = '送金しますか？<br><br>' +
               '送金量:<br>' + this.amount + ' xem' + '<br>' +
               '手数量:<br>' + this.fee + ' xem' + '<br>' +
@@ -238,6 +241,11 @@
               'メッセージ:<br>' + this.message
             this.isShowDialogPositiveNegative = true
           }
+        } else {
+          this.isError = true
+          this.dialogTitle = '送金エラー'
+          this.dialogMessage = '記入欄を確認してください。'
+          this.isShowDialogConfirm = true
         }
       },
       clear () {
@@ -246,9 +254,18 @@
         this.amount = 0
         this.fee = 0
       },
+      clearMosaic () {
+        this.senderAddr = ''
+        this.message = ''
+        this.fee = 0
+        this.senderMosaics.forEach((element) => {
+          element.sendAmount = 0
+        })
+      },
       submitMosaic () {
-        if (this.$refs.form.validate()) {
+        if (this.$refs.form.validate() && (this.senderAddr !== '')) {
           if (Number(this.nemBalance) === 0) {
+            this.isError = true
             this.dialogTitle = '送金エラー'
             this.dialogMessage = 'NEMの残高が足りません。モザイク送信時はNEMの手数料が必要です。'
             this.isShowDialogConfirm = true
@@ -280,32 +297,34 @@
             mlist.forEach((element) => {
               console.log(element)
               if (!('errLimit' in element) && !('errInput' in element) && !('errOver' in element)) {
-                let item = {
-                  namespaceId: element.namespaceId,
-                  name: element.name,
-                  quantity: element.quantity
+                if (element.quantity !== 0) {
+                  let item = {
+                    namespaceId: element.namespaceId,
+                    name: element.name,
+                    quantity: element.quantity
+                  }
+                  this.trMosaics.item.push(item)
                 }
-                this.trMosaics.item.push(item)
               }
             })
             console.log(this.trMosaics)
             if (this.trMosaics.item.length !== 0) {
+              this.isError = false
               this.showFeeMosaics(true)
             } else {
               console.log('error')
-              this.dialogPositiveNegativeMessage = 'ERROR:モザイクの入力欄を確認してください。'
-              this.isShowDialogPositiveNegative = true
+              this.isError = true
+              this.dialogTitle = '送金エラー'
+              this.dialogMessage = 'モザイクの入力欄を確認してください。'
+              this.isShowDialogConfirm = true
             }
           }
+        } else {
+          this.isError = true
+          this.dialogTitle = '送金エラー'
+          this.dialogMessage = '記入欄を確認してください。'
+          this.isShowDialogConfirm = true
         }
-      },
-      clearMosaic () {
-        this.senderAddr = ''
-        this.message = ''
-        this.fee = 0
-        this.senderMosaics.forEach((element) => {
-          element.sendAmount = 0
-        })
       },
       reloadItem () {
         this.senderMosaics = []
@@ -366,7 +385,12 @@
         }
       },
       tapConfirm (message) {
+        console.log(message)
         if (this.isShowDialogConfirm === true) {
+          if (this.isError === false) {
+            this.clear()
+            this.clearMosaic()
+          }
           this.isShowDialogConfirm = false
         }
       },
@@ -435,6 +459,7 @@
               this.isShowDialogConfirm = true
             }).catch((err) => {
               let error = err.error.message
+              this.isError = true
               this.dialogTitle = '送金エラー'
               this.dialogMessage = error
               this.isShowProgress = false
@@ -456,6 +481,7 @@
               this.isShowProgress = false
               this.isShowDialogConfirm = true
             }).catch((err) => {
+              this.isError = true
               this.dialogTitle = '送金エラー'
               let error = err.error.message
               this.dialogMessage = error
