@@ -87,6 +87,7 @@
     mounted () {
       this.getRate()
       this.reloadItem()
+      // this.$toast('aaa')
     },
     methods: {
       reloadItem () {
