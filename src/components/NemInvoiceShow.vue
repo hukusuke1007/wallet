@@ -10,6 +10,7 @@
         <v-btn icon @click.native="close()" dark>
           <v-icon>close</v-icon>
         </v-btn>
+        <v-toolbar-title class="white--text">請求書</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-toolbar-side-icon @click="download"><v-icon>get_app</v-icon></v-toolbar-side-icon>
         <!-- <v-toolbar-side-icon @click="print"><v-icon>print</v-icon></v-toolbar-side-icon> -->
@@ -25,14 +26,18 @@
             <v-flex>
             <v-card>
             <div ref="invoiceData">
-              <div v-if="invoice" class="center">
-                <div class="itemNum">個数: {{ num }}</div>
-                <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
-                <v-card flat><qriously v-model="qrValue" :size="300" ></qriously></v-card>
-                <v-subheader>通貨: {{ invoice.currencyItem.text }}</v-subheader>
-                <v-card-text><h2 class="font-color-shamrock">{{ amount }} {{ unitName }}</h2></v-card-text>
-                <v-subheader>メッセージ</v-subheader>
-                <v-card-text><h3>{{ invoice.message }}</h3></v-card-text>
+              <div v-if="invoice">
+                <v-flex>
+                  <div class="itemNum">個数: {{ num }}</div>
+                </v-flex>
+                <v-flex>
+                  <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
+                  <v-card flat><qriously v-model="qrValue" :size="300" ></qriously></v-card>
+                  <v-subheader>通貨: {{ invoice.currencyItem.text }}</v-subheader>
+                  <v-card-text><h2 class="font-color-shamrock">{{ amount }} {{ unitName }}</h2></v-card-text>
+                  <v-subheader>メッセージ</v-subheader>
+                  <v-card-text><h3>{{ invoice.message }}</h3></v-card-text>
+                </v-flex>
               </div>
              <div v-else>
                <v-card-text>請求書データがありません。</v-card-text>
@@ -43,7 +48,7 @@
            <v-flex>
             <v-card>
               <!-- <img :src="image_src"> -->
-              <v-btn color="light-blue lighten-3" large block @click="download">請求書のPDFをダウンロード</v-btn>
+              <v-btn color="light-blue lighten-3" large block @click="download">ダウンロード</v-btn>
             </v-card>
           </v-flex>
           </v-layout>
@@ -205,6 +210,7 @@
 <style scoped>
 .itemNum {
   float: right;
+  margin-right: 10px;
 }
 .center {
   display: inline-block;

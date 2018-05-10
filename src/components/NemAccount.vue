@@ -41,17 +41,19 @@
               required
             ></v-text-field>
           </v-form>
+          <v-subheader>アカウントのQRコード</v-subheader><v-btn color="pink" class="white--text" @click="showNemAccount">表示</v-btn>
           <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ walletItem.account.address.value }}</v-card-text>
           <v-subheader>公開鍵</v-subheader><v-card-text>{{ pairKey.publicKey }}</v-card-text>
-          <v-subheader>秘密鍵</v-subheader><v-btn color="pink" class="white--text" @click="showPrivateKey">表示</v-btn>
-          <v-subheader>アカウントのQRコード</v-subheader>
-          <qriously v-model="qrValue" :size="200"></qriously>
+          <v-subheader>秘密鍵</v-subheader><v-btn color="grey" class="black--text" @click="showPrivateKey">表示</v-btn>
           <v-flex>
             <v-btn icon @click.native="showDeleteWallet()">
               <v-icon color="primary">delete</v-icon>
             </v-btn>
           </v-flex>
-
+          <!-- ダイアログ -->
+          <NemAccountShow v-bind:dialogVal="isShowNemAccount"
+                          v-bind:name="name"
+                          v-on:dialog-nem-account-show-event-close="tapNemAccountClose"></NemAccountShow>
           <!-- 確認ダイアログ -->
           <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
                          titleVal="ウォレットの削除"
@@ -73,6 +75,7 @@
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
+  import NemAccountShow from '@/components/NemAccountShow'
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
   import { mapGetters } from 'vuex'
@@ -82,6 +85,7 @@
       valid: true,
       selectMosaic: null,
       qrValue: '',
+      isShowNemAccount: false,
       isShowDialog: false,
       isShowDialogPositiveNegative: false,
       dialogPositiveNegativeMessage: 'ウォレットを削除しますか？',
@@ -100,6 +104,7 @@
       ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transactionStatus', 'isLoading'])
     },
     components: {
+      NemAccountShow,
       'dialogPositiveNegative': DialogPositiveNegative,
       'dialogConfirm': DialogConfirm
     },
@@ -165,6 +170,12 @@
           this.deleteWallet()
           this.isShowDialog = true
         }
+      },
+      showNemAccount () {
+        this.isShowNemAccount = true
+      },
+      tapNemAccountClose () {
+        this.isShowNemAccount = false
       }
     }
   }
