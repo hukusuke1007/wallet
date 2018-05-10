@@ -63,7 +63,7 @@
             </v-flex>
             <v-btn color="info" @click="submit" :disabled="!valid">完了</v-btn>
             <v-btn @click="clear">クリア</v-btn>
-            <v-flex>
+            <v-flex v-if="isExistPass">
              <v-btn color="grey" class="white--text" @click="close">閉じる</v-btn>
             </v-flex>
 
