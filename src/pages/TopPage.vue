@@ -61,22 +61,45 @@
       </v-layout>
      </v-flex>
     </div>
+
+    <DialogAuthWallet v-bind:dialogVal="isShowAuthWallet"
+                 v-on:dialog-auth-wallet-close="tapAuthWalletClose"
+                 v-on:dialog-auth-wallet-notify="tapAuthWalletNotify"></DialogAuthWallet>
+
   </v-container>
 </template>
 <script>
+  import dbWrapper from '@/js/local_database_wrapper'
   import exWrapper from '@/js/exchange_wrapper'
+  import DialogAuthWallet from '@/components/DialogAuthWallet'
   export default {
     name: 'topPage',
     data: () => ({
       imageLogo: require('@/assets/headerLogo_pink.png'),
+      isShowAuthWallet: false,
       rateJpyXem: 0,
       rateDate: '',
       isLoadinRateJpyXem: false
     }),
+    components: {
+      DialogAuthWallet
+    },
     mounted () {
       this.getRate()
+      this.reloadItem()
     },
     methods: {
+      reloadItem () {
+        dbWrapper.getItem(dbWrapper.KEY_AUTH_PASSWORD)
+          .then((result) => {
+            if (result) {
+            } else {
+              this.isShowAuthWallet = true
+            }
+          }).catch((err) => {
+            console.log(err)
+          })
+      },
       getRate () {
         this.isLoadinRateJpyXem = true
         exWrapper.getRateJpyXem()
@@ -93,6 +116,12 @@
       getNowDate () {
         let date = new Date()
         this.rateDate = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('/') + ' ' + date.toLocaleTimeString()
+      },
+      tapAuthWalletClose () {
+        this.isShowAuthWallet = false
+      },
+      tapAuthWalletNotify () {
+        this.isShowAuthWallet = false
       }
     }
   }

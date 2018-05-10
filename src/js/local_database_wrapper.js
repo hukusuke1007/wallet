@@ -4,6 +4,7 @@ localForage.setDriver(localForage.INDEXEDDB)
 // データーベースのkey.
 const KEY_WALLET_INFO = 'key_wallet_info'
 const KEY_INVOICE = 'key_invoice'
+const KEY_AUTH_PASSWORD = 'key_auth_password'
 
 // 値のkey.
 const VALUE_PRIMARY_ID = 'id'
@@ -22,6 +23,7 @@ const MESSAGE_ERROR = 'error'
 // 外部公開.
 exports.KEY_WALLET_INFO = KEY_WALLET_INFO
 exports.KEY_INVOICE = KEY_INVOICE
+exports.KEY_AUTH_PASSWORD = KEY_AUTH_PASSWORD
 exports.VALUE_PRIMARY_ID = VALUE_PRIMARY_ID
 exports.VALUE_ALL = VALUE_ALL
 exports.VALUE_NAME = VALUE_NAME

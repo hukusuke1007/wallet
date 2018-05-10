@@ -55,17 +55,21 @@
                           v-bind:name="name"
                           v-on:dialog-nem-account-show-event-close="tapNemAccountClose"></NemAccountShow>
           <!-- 確認ダイアログ -->
-          <dialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
+          <DialogPositiveNegative v-bind:dialogVal="isShowDialogPositiveNegative"
                          titleVal="ウォレットの削除"
                          v-bind:messageVal="dialogPositiveNegativeMessage"
                          positiveVal="削除する"
                          negativeVal="いいえ"
-                         v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></dialogPositiveNegative>
+                         v-on:dialog-positive-negative-event-tap="tapSendPositiveNegative"></DialogPositiveNegative>
           <!-- ダイアログ -->
-          <dialogConfirm v-bind:dialogVal="isShowDialog"
+          <DialogConfirm v-bind:dialogVal="isShowDialog"
                          v-bind:titleVal="dialogTitle"
                          v-bind:messageVal="dialogMessage"
-                         v-on:dialog-confirm-event-tap-positive="tapPositive"></dialogConfirm>
+                         v-on:dialog-confirm-event-tap-positive="tapPositive"></DialogConfirm>
+          <!-- パスワード -->
+          <DialogAuthWallet v-bind:dialogVal="isShowAuthWallet"
+                       v-on:dialog-auth-wallet-close="tapAuthWalletClose"
+                       v-on:dialog-auth-wallet-notify="tapAuthWalletNotify"></DialogAuthWallet>
         </v-flex>
         </div>
       </v-container>
@@ -78,6 +82,7 @@
   import NemAccountShow from '@/components/NemAccountShow'
   import DialogPositiveNegative from '@/components/DialogPositiveNegative'
   import DialogConfirm from '@/components/DialogConfirm'
+  import DialogAuthWallet from '@/components/DialogAuthWallet'
   import { mapGetters } from 'vuex'
 
   export default {
@@ -88,6 +93,7 @@
       isShowNemAccount: false,
       isShowDialog: false,
       isShowDialogPositiveNegative: false,
+      isShowAuthWallet: false,
       dialogPositiveNegativeMessage: 'ウォレットを削除しますか？',
       dialogTitle: '',
       dialogMessage: '削除しました。',
@@ -105,8 +111,9 @@
     },
     components: {
       NemAccountShow,
-      'dialogPositiveNegative': DialogPositiveNegative,
-      'dialogConfirm': DialogConfirm
+      DialogPositiveNegative,
+      DialogConfirm,
+      DialogAuthWallet
     },
     mounted () {
       this.reloadItem()
@@ -136,10 +143,12 @@
         this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 1, this.name, this.walletItem.account.address.value, 0, '')
       },
       showPrivateKey () {
-        this.dialogTitle = '秘密鍵'
-        this.dialogMessage = this.pairKey.privateKey
         this.selectDialog = 'private_key'
-        this.isShowDialog = true
+        this.isShowAuthWallet = true
+      },
+      showDeleteWallet () {
+        this.selectDialog = 'delete_wallet'
+        this.isShowAuthWallet = true
       },
       tapPositive (message) {
         if (this.isShowDialog === true) {
@@ -159,11 +168,6 @@
             this.dialogMessage = 'ERROR：削除に失敗しました'
           })
       },
-      showDeleteWallet () {
-        console.log('delete')
-        this.selectDialog = 'delete_wallet'
-        this.isShowDialogPositiveNegative = true
-      },
       tapSendPositiveNegative (isPositive, message) {
         this.isShowDialogPositiveNegative = false
         if (isPositive) {
@@ -176,6 +180,21 @@
       },
       tapNemAccountClose () {
         this.isShowNemAccount = false
+      },
+      tapAuthWalletClose () {
+        this.isShowAuthWallet = false
+      },
+      tapAuthWalletNotify (status) {
+        this.isShowAuthWallet = false
+        if (status === 'auth_success') {
+          if (this.selectDialog === 'delete_wallet') {
+            this.isShowDialogPositiveNegative = true
+          } else if (this.selectDialog === 'private_key') {
+            this.dialogTitle = '秘密鍵'
+            this.dialogMessage = this.pairKey.privateKey
+            this.isShowDialog = true
+          }
+        }
       }
     }
   }
