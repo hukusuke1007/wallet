@@ -60,6 +60,7 @@
                     :label="amountLabel"
                     v-model="amount"
                     :rules="[rules.amountLimit, rules.amountInput]"
+                    type="number"
                     required
                   ></v-text-field>
                 </v-form>
@@ -72,9 +73,9 @@
                      <v-subheader>残高 ({{ item.namespaceId }})</v-subheader>
                      <v-card-text><h3 class="font-color-shamrock">{{ item.amount }} {{ item.name }}</h3></v-card-text>
                      <v-text-field
-                     box
                       :label="`送金量 (${item.name})`"
                       v-model="item.sendAmount"
+                      type="number"
                       :rules="[rules.amountLimit, rules.amountInput]"
                      ></v-text-field>
                   </div>

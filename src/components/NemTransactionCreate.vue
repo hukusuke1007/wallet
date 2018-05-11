@@ -48,6 +48,7 @@
                   :label="amountLabel"
                   v-model="amount"
                   :rules="[rules.amountLimit, rules.amountInput]"
+                  type="number"
                   required
                 ></v-text-field>
               </v-form>
@@ -76,6 +77,7 @@
                     :label="`送金量 (${item.name})`"
                     v-model="item.sendAmount"
                     :rules="[rules.amountLimit, rules.amountInput]"
+                    type="number"
                    ></v-text-field>
                 </div>
               </v-form>
