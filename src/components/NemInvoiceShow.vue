@@ -123,6 +123,9 @@
       },
       dialogVal (val) {
         this.dialog = val
+      },
+      num (val) {
+        this.setDetail()
       }
     },
     methods: {

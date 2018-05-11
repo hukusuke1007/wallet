@@ -70,6 +70,7 @@
 
     <nemInvoiceShow v-bind:dialogVal="isShowNemInvoice"
                    v-bind:id="selectItem.id"
+                   v-bind:num="num"
                    v-on:dialog-nem-invoice-show-event-close="tapCloseInvoiceShow"></nemInvoiceShow>
     </v-layout>
 </template>
@@ -85,6 +86,7 @@
     data: () => ({
       items: [],
       selectItem: {},
+      num: 1,
       isDelete: false,
       isShowDialogConfirm: false,
       dialogTitle: '請求書の削除',
@@ -234,6 +236,7 @@
       tapDialogOperate (num, operate) {
         console.log('num: ' + num + ' operate: ' + operate)
         this.selectOperate = operate
+        this.num = num
         let id = this.selectItem.id
         if (operate === 'open') {
           this.isShowNemInvoice = true
