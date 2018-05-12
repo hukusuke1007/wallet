@@ -186,16 +186,20 @@ export default {
   mounted () {
   },
   watch: {
-    address (val) {
-      console.log('App_address', val)
+    address (newVal, oldVal) {
+      console.log('App_address', newVal, oldVal)
       this.doObserveTransaction()
     },
     transactionStatus (val) {
       console.log('transactionStatus', val)
       if (val === 'unconfirmed') {
-        this.$toast('トランザクション承認中...')
+        let message = 'トランザクション承認中...'
+        // this.$toast(message')
+        this.$toasted.show(message)
       } else if (val === 'confirmed') {
-        this.$toast('トランザクションが承認されました。反映されない場合は更新ボタンを押してください。')
+        let message = 'トランザクションが承認されました。<br>反映されない場合は更新ボタンを押してください。'
+        // this.$toast(message')
+        this.$toasted.show(message)
         this.doTransactionStatus('none')
       }
     }
@@ -271,7 +275,17 @@ export default {
   /* font-weight: bold; */
   font-size: 1.2em;
 }
+
+.toast {
+  width: 95%;
+}
+
+.toastlabel {
+  margin: 0 auto;
+}
  /*
+}
+}
 }
 }
 a {

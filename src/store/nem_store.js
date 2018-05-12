@@ -16,6 +16,7 @@ export default {
     mosaics: [],
     transaction: [],
     transactionStatus: 'none',
+    observingAddress: [],
     // targetMosaicNamespace: MOSAIC_FEST,
     isLoading: false
   },
@@ -27,6 +28,7 @@ export default {
     mosaics: state => state.mosaics,
     transaction: state => state.transaction,
     transactionStatus: state => state.transactionStatus,
+    observingAddress: state => state.observingAddress,
     // targetMosaicNamespace: state => state.targetMosaicNamespace,
     isLoading: state => state.isLoading
   },
@@ -64,6 +66,10 @@ export default {
     setTransactionStatus (state, value) {
       console.log('setTransactionStatus', value)
       state.transactionStatus = value
+    },
+    setObservingAddress (state, value) {
+      console.log('setObservingAddress', value)
+      state.observingAddress = value
     },
     /*
     setTargetMosaicNamespace (state, value) {
@@ -142,13 +148,24 @@ export default {
         })
     },
     doObserveTransaction ({ dispatch, commit, getters }) {
-      if (getters.address.length !== 0) {
+      // すでに登録されているものは再登録しない.
+      let isObserve = true
+      getters.observingAddress.forEach((element) => {
+        if (getters.address === element) { isObserve = false }
+      })
+      // オブザーブする.
+      if ((getters.address.length !== 0) && (isObserve === true)) {
         let address = getters.address
         console.log('doObserveTransaction', address, NODE)
         let endpoint = nemSDK.model.objects.create('endpoint')(NODE.node, NODE.port)
         let connector = nemSDK.com.websockets.connector.create(endpoint, address)
         connector.connect().then(() => {
           console.log('Websocket connected')
+
+          let observingAddress = getters.observingAddress
+          observingAddress.push(address)
+          commit('setObservingAddress', observingAddress)
+
           // ソケット受信.
           nemSDK.com.websockets.subscribe.account.data(connector, res => {
             console.log('data', res)
@@ -188,18 +205,16 @@ export default {
         })
       }
     },
-    doCloseObserveTransaction ({ dispatch, commit, getters }) {
-      if (getters.address.length !== 0) {
-        let address = getters.address
-        console.log('doCloseObserveTransaction', address, NODE)
-        let endpoint = nemSDK.model.objects.create('endpoint')(NODE.node, NODE.port)
-        let connector = nemSDK.com.websockets.connector.create(endpoint, address)
-        connector.close().then((result) => {
-          console.log('Websocket close', result, address)
-        }).catch((err) => {
-          console.error('Websocket close', err)
-        })
-      }
+    doCloseObserveTransaction ({ dispatch, commit, getters }, value) {
+      let address = value
+      console.log('doCloseObserveTransaction', address, NODE)
+      let endpoint = nemSDK.model.objects.create('endpoint')(NODE.node, NODE.port)
+      let connector = nemSDK.com.websockets.connector.create(endpoint, address)
+      connector.close().then((result) => {
+        console.log('Websocket close', result, address)
+      }).catch((err) => {
+        console.error('Websocket close', err)
+      })
     },
     doTransactionStatus ({ commit, getters }, value) {
       commit('setTransactionStatus', value)

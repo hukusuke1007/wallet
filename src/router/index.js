@@ -9,6 +9,7 @@ import Vuetify from 'vuetify'
 import colors from 'vuetify/es5/util/colors'
 import VueQriously from 'vue-qriously'
 import Toast from 'vue2-toast'
+import Toasted from 'vue-toasted'
 import 'vue2-toast/lib/toast.css'
 // CreatePage
 import TopPage from '@/pages/TopPage'
@@ -46,6 +47,14 @@ Vue.use(Toast, {
   wordWrap: true,
   width: '280px'
 })
+Vue.use(Toasted, {
+  theme: 'outline',
+  position: 'bottom-center',
+  className: 'toastlabel',
+  containerClass: 'toast',
+  duration: 2500
+})
+
 export default new Router({
   routes: [
     {
