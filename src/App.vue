@@ -276,6 +276,13 @@ export default {
   font-size: 1.2em;
 }
 
+.qrlayout {
+  text-align: center;
+  max-width: 340px; /* 最大幅 */
+  min-width: 200px; /* 最小幅 */
+  margin: 0 auto;
+}
+
 .toast {
   width: 95%;
 }

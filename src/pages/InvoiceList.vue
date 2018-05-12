@@ -239,6 +239,7 @@
         this.num = num
         let id = this.selectItem.id
         if (operate === 'open') {
+          this.isShowDialogSelectInvoice = false
           this.isShowNemInvoice = true
           // this.$router.push({ name: 'InvoiceShow', params: {id: id, num: Number(num)} })
         } else if (operate === 'edit') {

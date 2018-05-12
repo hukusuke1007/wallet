@@ -6,7 +6,7 @@
         <v-card-title class="headline"><font color="black">{{ titleVal }}</font></v-card-title>
         <template v-for="(item, index) in operateItems">
          <!--<v-subheader>{{ item.title }}</v-subheader>-->
-         <v-btn color="gray" block @click.native="tapOperate(item.operate)"><h3>{{ item.title }}</h3></v-btn>
+         <v-btn color="select" class="white--text" block @click.native="tapOperate(item.operate)"><h3>{{ item.title }}</h3></v-btn>
          <v-select :items="showItems" label="個数" v-model="selectShowItem" v-if="item.id===0"></v-select>
          <v-divider></v-divider>
        </template>

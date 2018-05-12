@@ -5,7 +5,7 @@
    transition="dialog-bottom-transition"
    scrollable
   >
-  <v-card flat>
+  <v-card flat class="background">
       <v-toolbar card color="pink accent-1" dark tabs>
         <v-btn icon @click.native="close()" dark>
           <v-icon>close</v-icon>
@@ -31,12 +31,12 @@
                   <div class="itemNum">個数: {{ num }}</div>
                 </v-flex>
                 <v-flex>
-                  <v-card-text><h2>{{ invoice.name }}</h2></v-card-text>
-                  <v-card flat><qriously v-model="qrValue" :size="300" ></qriously></v-card>
-                  <v-subheader>通貨: {{ invoice.currencyItem.text }}</v-subheader>
-                  <v-card-text><h2 class="font-color-shamrock">{{ amount }} {{ unitName }}</h2></v-card-text>
-                  <v-subheader>メッセージ</v-subheader>
-                  <v-card-text><h3>{{ invoice.message }}</h3></v-card-text>
+                  <div style="margin-bottom: 10px;"><h3>{{ invoice.name }}</h3></div>
+                  <div class="qrlayout"><qriously v-model="qrValue" :size="qrSize"></qriously></div>
+                  <div class="sub">通貨: {{ invoice.currencyItem.text }}</div>
+                  <div class="amount">{{ amount }} {{ unitName }}</h3></div>
+                  <div class="sub">メッセージ</div>
+                  <span style="text-align: center;">{{ invoice.message }}</span>
                 </v-flex>
               </div>
              <div v-else>
@@ -47,7 +47,6 @@
            </v-flex>
            <v-flex>
             <v-card>
-              <!-- <img :src="image_src"> -->
               <v-btn color="light-blue lighten-3" large block @click="download">ダウンロード</v-btn>
             </v-card>
           </v-flex>
@@ -79,6 +78,7 @@
         { id: 2, text: 'Mosaics' }
       ],
       isError: false,
+      qrSize: 250,
       qrValue: 'test'
     }),
     components: {
@@ -180,7 +180,7 @@
             let pageHeight = 295
             let imgHeight = canvas.height * imgWidth / canvas.width
             let heightLeft = imgHeight
-            let position = 10
+            let position = 2
             console.log('canvasSize', canvas.height, canvas.width)
             let pdf = new Jspdf('p', 'mm')
             pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight) // x, yの座標
@@ -212,11 +212,25 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .itemNum {
-  float: right;
+  text-align: right;
   margin-right: 10px;
 }
 .center {
   display: inline-block;
   text-align: center;
+}
+.sub {
+  text-align: left;
+  font-size: 1.0em;
+  color: #636e72;
+  margin-left: 20px;
+  margin-bottom: 1px;
+}
+.amount {
+  font-weight: bold;
+  font-size: 1.3em;
+  text-align: center;
+  color: #2FCDB4;
+  margin-bottom: 5px;
 }
 </style>

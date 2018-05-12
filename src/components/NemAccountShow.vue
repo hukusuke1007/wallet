@@ -5,7 +5,7 @@
    transition="dialog-bottom-transition"
    scrollable
   >
-  <v-card flat>
+  <v-card flat class="background">
       <v-toolbar card color="pink accent-1" dark tabs>
         <v-btn icon @click.native="close()" dark>
           <v-icon>close</v-icon>
@@ -30,9 +30,9 @@
                 <div class="appName">Office NEM wallet</div>
               </v-flex>
               <v-flex>
-                  <v-card-text><h2>{{ name }}</h2></v-card-text>
-                  <v-card flat><qriously v-model="qrValue" :size="300" ></qriously></v-card>
-                  <v-card-text><h3>{{ walletItem.account.address.value }}</h3></v-card-text>
+                  <v-card-text><h3>{{ name }}</h3></v-card-text>
+                  <v-card flat><qriously v-model="qrValue" :size="qrSize" ></qriously></v-card>
+                  <v-card-text>{{ walletItem.account.address.value }}</v-card-text>
               </v-flex>
            </div>
            </v-card>
@@ -61,6 +61,7 @@
   export default {
     data: () => ({
       dialog: false,
+      qrSize: 200,
       qrValue: 'test'
     }),
     computed: {
