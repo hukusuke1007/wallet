@@ -171,6 +171,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'app',
   data () {
@@ -179,13 +180,31 @@ export default {
       naviBar: false
     }
   },
-  mounted: function () {
-
+  computed: {
+    ...mapGetters('Nem', ['address', 'transactionStatus', 'isLoading'])
   },
-  destroyed: function () {
+  mounted () {
+  },
+  watch: {
+    address (val) {
+      console.log('App_address', val)
+      this.doObserveTransaction()
+    },
+    transactionStatus (val) {
+      console.log('transactionStatus', val)
+      if (val === 'unconfirmed') {
+        this.$toast('トランザクション承認中...')
+      } else if (val === 'confirmed') {
+        this.$toast('トランザクションが承認されました。反映されない場合は更新ボタンを押してください。')
+        this.doTransactionStatus('none')
+      }
+    }
+  },
+  destroyed () {
 
   },
   methods: {
+    ...mapActions('Nem', ['doUpdateNemBalance', 'doUpdateMosaicsBalance', 'doObserveTransaction', 'doCloseObserveTransaction', 'doTransactionStatus']),
     goTop () {
       this.$router.push({name: 'TopPage'})
     },

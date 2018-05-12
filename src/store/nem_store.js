@@ -3,6 +3,7 @@ import nemSDK from 'nem-sdk'
 
 // テスト用にLCNEMを採用
 // const MOSAIC_FEST = { namespaceId: 'nems', name: 'festcoin' }
+const NODE = { node: 'https://aqualife1.supernode.me', port: '7779' }
 
 export default {
   namespaced: true,
@@ -143,10 +144,8 @@ export default {
     doObserveTransaction ({ dispatch, commit, getters }) {
       if (getters.address.length !== 0) {
         let address = getters.address
-        console.log('doObserveTransaction', address)
-        let node = 'https://aqualife1.supernode.me'
-        let port = '7779'
-        let endpoint = nemSDK.model.objects.create('endpoint')(node, port)
+        console.log('doObserveTransaction', address, NODE)
+        let endpoint = nemSDK.model.objects.create('endpoint')(NODE.node, NODE.port)
         let connector = nemSDK.com.websockets.connector.create(endpoint, address)
         connector.connect().then(() => {
           console.log('Websocket connected')
@@ -186,6 +185,19 @@ export default {
           nemSDK.com.websockets.requests.account.namespaces.owned(connector)
         }).catch((err) => {
           console.error('doObserveTransaction', err)
+        })
+      }
+    },
+    doCloseObserveTransaction ({ dispatch, commit, getters }) {
+      if (getters.address.length !== 0) {
+        let address = getters.address
+        console.log('doCloseObserveTransaction', address, NODE)
+        let endpoint = nemSDK.model.objects.create('endpoint')(NODE.node, NODE.port)
+        let connector = nemSDK.com.websockets.connector.create(endpoint, address)
+        connector.close().then((result) => {
+          console.log('Websocket close', result, address)
+        }).catch((err) => {
+          console.error('Websocket close', err)
         })
       }
     },
