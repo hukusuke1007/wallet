@@ -45,7 +45,7 @@
         <div class="subTitle">メッセージ</div>
         <div style="margin-top: 5px"><v-card-text>{{ item.message }}</v-card-text></div>
         <div class="subTitle">ハッシュ</div>
-        <div style="margin-top: 5px"><v-card-text>{{ item.hash }}</v-card-text></div>
+        <div style="margin-top: 5px"><v-card-text><a :href="blockchainUrl" target="_blank">{{ item.hash }}</a></v-card-text></div>
         <v-flex>
           <v-btn color="select" class="white--text" @click="close">戻る</v-btn>
         </v-flex>
@@ -64,6 +64,7 @@
   export default {
     data: () => ({
       dialog: false,
+      blockchainUrl: 'http://chain.nem.ninja/#/transfer/',
       mosaics: []
     }),
     components: {
@@ -89,6 +90,7 @@
       dialogVal (val) {
         this.dialog = val
         if (val === true) {
+          this.blockchainUrl = 'http://chain.nem.ninja/#/transfer/' + this.item.hash
           this.reloadItem()
         }
       }

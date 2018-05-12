@@ -47,7 +47,7 @@
       selectItem: {}
     }),
     computed: {
-      ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transaction', 'transactionStatus', 'isLoading'])
+      ...mapGetters('Nem', ['walletItem', 'pairKey', 'nemBalance', 'mosaics', 'transaction', 'transactionStatus', 'isLoading', 'address'])
     },
     components: {
       DialogHistoryDetail

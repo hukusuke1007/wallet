@@ -131,8 +131,14 @@
       app
      >
        <v-toolbar-side-icon @click.stop="naviBar = !naviBar"></v-toolbar-side-icon>
-       <v-toolbar-title class="white--text">Office NEM wallet</v-toolbar-title>
+       <v-toolbar-title class="white--text">Office NEM</v-toolbar-title>
        <v-spacer></v-spacer>
+       <v-menu bottom offset-y>
+         <v-btn slot="activator" icon dark>
+           <v-icon>info</v-icon>
+         </v-btn>
+         <Infomation></Infomation>
+       </v-menu>
        <v-toolbar-side-icon @click="goTop"><v-icon>home</v-icon></v-toolbar-side-icon>
      </v-toolbar>
      <v-content>
@@ -171,6 +177,7 @@
 </template>
 
 <script>
+import Infomation from '@/components/Infomation'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'app',
@@ -179,6 +186,9 @@ export default {
       links: ['Home', 'About Us', 'Services', 'Github', 'Contact Us'],
       naviBar: false
     }
+  },
+  components: {
+    Infomation
   },
   computed: {
     ...mapGetters('Nem', ['address', 'transactionStatus', 'isLoading'])
