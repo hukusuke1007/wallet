@@ -2,7 +2,7 @@
   <v-layout row>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
-      <v-toolbar card color="primary" dark tabs>
+      <v-toolbar card dark tabs color="view">
         <v-btn icon @click.native="back()" dark>
           <v-icon>keyboard_arrow_left</v-icon>
         </v-btn>
@@ -11,8 +11,8 @@
       </v-card>
       <v-card>
         <v-card-text>ウォレットの作成方法を選択してください</v-card-text>
-        <v-btn color="light-blue lighten-3" large @click="goCreate">新規作成</v-btn>
-        <v-btn color="light-blue lighten-3" large @click="goImport">秘密鍵をインポート</v-btn>
+        <v-btn color="select" class="buttonFont white--text" large @click="goCreate">新規作成</v-btn>
+        <v-btn color="select" class="buttonFont white--text" large @click="goImport">秘密鍵をインポート</v-btn>
       </v-card>
     </v-flex>
    </v-layout>

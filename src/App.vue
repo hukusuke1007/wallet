@@ -6,81 +6,104 @@
        fixed
        clipped
        app
+       class="theme"
        v-model="naviBar"
       >
+      <v-container
+        fluid
+        style="min-height: 0;"
+        grid-list-lg
+        >
       <v-list dense class="pt-0">
-
         <!--  DASHBOARD -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">dashboard</v-icon>
-          </v-list-tile-action>
-          <router-link to="/">
-          <v-list-tile-content>
-            <v-list-tile-title>ダッシュボード</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
+        <v-layout wrap column>
+        <v-flex>
+          <v-card>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon>dashboard</v-icon>
+            </v-list-tile-action>
+            <router-link to="/">
+            <v-list-tile-content>
+              <v-list-tile-title class="">ダッシュボード</v-list-tile-title>
+            </v-list-tile-content>
+            </router-link>
+          </v-list-tile>
+          </v-card>
+        </v-flex>
 
         <!--  SEND -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">send</v-icon>
-          </v-list-tile-action>
-          <router-link to="/walletTransfer">
-          <v-list-tile-content>
-            <v-list-tile-title>送金</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
+        <v-flex>
+          <v-card>
+          <v-list-tile>
+            <v-list-tile-action>
+              <v-icon>send</v-icon>
+            </v-list-tile-action>
+            <router-link to="/walletTransfer">
+            <v-list-tile-content>
+              <v-list-tile-title class="">送金</v-list-tile-title>
+            </v-list-tile-content>
+            </router-link>
+          </v-list-tile>
+          </v-card>
+        </v-flex>
 
         <!--  Wallet list -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">credit_card</v-icon>
-          </v-list-tile-action>
-          <router-link to="/walletlist">
-          <v-list-tile-content>
-            <v-list-tile-title>ウォレット一覧</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
+        <v-flex>
+          <v-card>
+            <v-card-title>ウォレット</v-card-title>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>credit_card</v-icon>
+              </v-list-tile-action>
+              <router-link to="/walletlist">
+              <v-list-tile-content>
+                <v-list-tile-title class="">ウォレット一覧</v-list-tile-title>
+              </v-list-tile-content>
+              </router-link>
+            </v-list-tile>
 
-        <!--  CREATE -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">add_circle</v-icon>
-          </v-list-tile-action>
-          <router-link to="/create">
-          <v-list-tile-content>
-            <v-list-tile-title>ウォレット作成</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
-
+            <!--  CREATE -->
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>add_circle</v-icon>
+              </v-list-tile-action>
+              <router-link to="/create">
+              <v-list-tile-content>
+                <v-list-tile-title class="">ウォレット作成</v-list-tile-title>
+              </v-list-tile-content>
+              </router-link>
+            </v-list-tile>
+          </v-card>
+        </v-flex>
         <!--  Wallet list -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">receipt</v-icon>
-          </v-list-tile-action>
-          <router-link to="/invoiceList">
-          <v-list-tile-content>
-            <v-list-tile-title>請求書一覧</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
+        <v-flex>
+          <v-card>
+            <v-card-title>請求書</v-card-title>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>receipt</v-icon>
+              </v-list-tile-action>
+              <router-link to="/invoiceList">
+              <v-list-tile-content>
+                <v-list-tile-title class="">請求書一覧</v-list-tile-title>
+              </v-list-tile-content>
+              </router-link>
+            </v-list-tile>
 
-        <!--  CREATE -->
-        <v-list-tile>
-          <v-list-tile-action>
-            <v-icon color="black">note_add</v-icon>
-          </v-list-tile-action>
-          <router-link to="/invoiceCreate">
-          <v-list-tile-content>
-            <v-list-tile-title>請求書作成</v-list-tile-title>
-          </v-list-tile-content>
-          </router-link>
-        </v-list-tile>
+            <!--  CREATE -->
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>note_add</v-icon>
+              </v-list-tile-action>
+              <router-link to="/invoiceCreate">
+              <v-list-tile-content>
+                <v-list-tile-title class="">請求書作成</v-list-tile-title>
+              </v-list-tile-content>
+              </router-link>
+            </v-list-tile>
+          </v-card>
+        </v-flex>
         <!--  SETTING -->
         <!--
         <v-list-tile>
@@ -94,7 +117,9 @@
           </router-link>
         </v-list-tile>
         -->
+      </v-layout>
       </v-list>
+     </v-container>
      </v-navigation-drawer>
 
      <!-- 上のツールバー -->
@@ -195,12 +220,13 @@ export default {
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Verdana', 'ヒラギノ角ゴ', 'Avenir', Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  background-color: #fffaf0;
+  margin-top: 0px;
 }
 
 .w-break {
@@ -220,7 +246,15 @@ export default {
  color: #b2bec3;
  left: 20px;
 }
+
+.buttonFont {
+  font-family: 'Verdana', 'ヒラギノ角ゴ', 'Avenir', Arial, sans-serif;
+  /* font-weight: bold; */
+  font-size: 1.2em;
+}
  /*
+}
+}
 a {
   text-decoration: none;
 }

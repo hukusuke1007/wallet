@@ -8,7 +8,9 @@
        <v-layout column wrap>
         <!-- 時価レート -->
         <v-flex>
-          <img :src="require('@/assets/headerLogo_pink.png')"></img>
+          <p class="resizeImage">
+            <img :src="require('@/assets/headerLogo_pink.png')"></img>
+          </p>
         </v-flex>
         <v-flex>
           <v-card>
@@ -30,7 +32,7 @@
           <v-card>
             <v-card-title>送金</v-card-title>
             <v-flex>
-              <v-btn color="light-blue lighten-3" large block :to="{name: 'WalletTransfer'}">
+              <v-btn color="select" class="white--text" large block :to="{name: 'WalletTransfer'}">
                   <v-icon>send</v-icon><span class="label">送金する</span>
               </v-btn>
             </v-flex>
@@ -41,7 +43,7 @@
           <v-card>
             <v-card-title>ウォレット</v-card-title>
             <v-flex>
-              <v-btn color="light-blue lighten-3" large block :to="{name: 'WalletList'}">
+              <v-btn color="select" class="white--text" large block :to="{name: 'WalletList'}">
                   <v-icon>credit_card</v-icon><span class="label">ウォレットを表示する</span>
               </v-btn>
             </v-flex>
@@ -52,7 +54,7 @@
           <v-card>
             <v-card-title>請求書</v-card-title>
             <v-flex>
-              <v-btn color="light-blue lighten-3" large block :to="{name: 'InvoiceList'}">
+              <v-btn color="select" class="white--text" large block :to="{name: 'InvoiceList'}">
                   <v-icon>receipt</v-icon><span class="label">請求書を表示する</span>
               </v-btn>
             </v-flex>
@@ -131,6 +133,14 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .label {
+  font-weight: bold;
   margin-left: 10px;
 }
+p.resizeImage {
+   text-align: center;
+   max-width: 271px; /* 最大幅 */
+   min-width: 220px; /* 最小幅 */
+   margin: 0 auto;
+}
+p.resizeImage img { width: 100%; }
 </style>

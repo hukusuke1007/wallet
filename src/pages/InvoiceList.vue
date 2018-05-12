@@ -2,7 +2,7 @@
     <v-layout row>
       <v-flex xs12 sm6 offset-sm3>
         <v-card>
-          <v-toolbar card color="primary" dark tabs>
+          <v-toolbar card dark tabs color="view">
             <v-btn icon @click.native="back()" dark>
               <v-icon>keyboard_arrow_left</v-icon>
             </v-btn>
@@ -41,7 +41,7 @@
               fab
               bottom
               right
-              color="pink"
+              color="button"
               @click="tapAdd()"
             >
               <v-icon>add</v-icon>

@@ -35,12 +35,12 @@
       </v-flex>
       
       <v-flex>
-      <v-btn color="light-blue lighten-3" @click="submit" :disabled="!valid">作成</v-btn>
-      <v-btn @click="clear">クリア</v-btn>
+      <v-btn color="select" class="buttonFont white--text" @click="submit" :disabled="!valid">作成</v-btn>
+      <v-btn class="buttonFont" @click="clear">クリア</v-btn>
       </v-flex>
       <br>
       <v-flex>
-      <v-btn color="grey" class="white--text" @click="back">戻る</v-btn>
+      <v-btn color="grey" class="buttonFont white--text" @click="back">戻る</v-btn>
       </v-flex>
     </v-form>
     <!-- ダイアログ -->

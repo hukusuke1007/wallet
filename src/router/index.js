@@ -26,7 +26,12 @@ import Setting from '@/pages/Setting'
 Vue.use(Router)
 Vue.use(Vuetify, {
   theme: {
-    original: colors.purple.base
+    original: colors.purple.base,
+    theme: '#FFDEEA',
+    background: '#FFF6EA',
+    view: '#ffa07a',
+    select: '#FF7F78',
+    button: '#5FACEF'
   },
   options: {
     themeVariations: ['original', 'secondary']

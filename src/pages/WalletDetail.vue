@@ -1,7 +1,7 @@
 <template>
   <v-flex xs12 sm6 offset-sm3>
     <v-card>
-      <v-toolbar card color="primary" dark tabs>
+      <v-toolbar card dark tabs color="view">
         <v-btn icon @click.native="back()" dark>
           <v-icon>keyboard_arrow_left</v-icon>
         </v-btn>
@@ -9,8 +9,8 @@
         <v-spacer></v-spacer>
         <v-btn icon @click="updateAccount" :loading="isLoading"><v-icon>cached</v-icon></v-btn>
         <!-- タブツールバー -->
-        <v-tabs color="primary" slot="extension" v-model="tab" centered>
-          <v-tabs-slider color="yellow"></v-tabs-slider>
+        <v-tabs color="select" slot="extension" v-model="tab" centered>
+          <v-tabs-slider color="white"></v-tabs-slider>
             <v-tab v-for="tabItem in tabItems" :key="`tab-${tabItem.id}`" :href="`#tab-${tabItem.id}`">
               {{ tabItem.data }}
             </v-tab>

@@ -2,7 +2,7 @@
   <div class="w-break">
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
-        <v-toolbar card color="primary" dark tabs>
+        <v-toolbar card color="view" dark tabs>
           <v-btn icon @click.native="back()" dark>
             <v-icon>keyboard_arrow_left</v-icon>
           </v-btn>

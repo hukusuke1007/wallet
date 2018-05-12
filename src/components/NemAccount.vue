@@ -41,10 +41,10 @@
               required
             ></v-text-field>
           </v-form>
-          <v-subheader>アカウントのQRコード</v-subheader><v-btn color="pink" class="white--text" @click="showNemAccount">表示</v-btn>
+          <v-subheader>アカウントのQRコード</v-subheader><v-btn color="select" class="buttonFont white--text" @click="showNemAccount">表示</v-btn>
           <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ walletItem.account.address.value }}</v-card-text>
           <v-subheader>公開鍵</v-subheader><v-card-text>{{ pairKey.publicKey }}</v-card-text>
-          <v-subheader>秘密鍵</v-subheader><v-btn color="grey" class="white--text" @click="showPrivateKey">表示</v-btn>
+          <v-subheader>秘密鍵</v-subheader><v-btn color="grey" class="buttonFont white--text" @click="showPrivateKey">表示</v-btn>
           <v-flex>
             <v-btn icon @click.native="showDeleteWallet()">
               <v-icon color="primary">delete</v-icon>

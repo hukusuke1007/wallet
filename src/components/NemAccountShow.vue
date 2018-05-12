@@ -40,7 +40,7 @@
            <v-flex>
             <v-card>
               <!-- <img :src="image_src"> -->
-              <v-btn color="light-blue lighten-3" large block @click="download">ダウンロード</v-btn>
+              <v-btn color="select" class="buttonFont white--text" large block @click="download">ダウンロード</v-btn>
             </v-card>
           </v-flex>
           </v-layout>

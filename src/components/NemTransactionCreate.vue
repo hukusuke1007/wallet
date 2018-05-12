@@ -56,8 +56,8 @@
                <div class="grey--text" style="font-size: 1.2em;">手数料 {{ fee }} xem</div>
               </v-flex>
               <v-btn color="orange darken-1" class="white--text" @click.stop="showQRreader" block>QRコード読み取り</v-btn>
-              <v-btn color="info" @click="submit" :disabled="!valid">送金</v-btn>
-              <v-btn @click="clear">クリア</v-btn>
+              <v-btn color="select" class="buttonFont white--text" @click="submit" :disabled="!valid">送金</v-btn>
+              <v-btn class="buttonFont" @click="clear">クリア</v-btn>
             </div>
             </v-card>
           </v-flex>
@@ -85,8 +85,8 @@
                 <v-flex>
                  <div class="grey--text" style="font-size: 1.2em;">手数料 {{ feeMosaics }} xem</div>
                 </v-flex>
-                <v-btn color="info" @click="submitMosaic" :disabled="!valid">送金</v-btn>
-                <v-btn @click="clearMosaic">クリア</v-btn>
+                <v-btn color="select" class="buttonFont white--text" @click="submitMosaic" :disabled="!valid">送金</v-btn>
+                <v-btn class="buttonFont" @click="clearMosaic">クリア</v-btn>
               </div>
             </div>
             </v-card>
