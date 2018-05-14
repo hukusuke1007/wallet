@@ -57,6 +57,6 @@
   "start_url": "../?utm_source=homescreen",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#000000",
+  "background_color": "#FFFFFF",
   "theme_color": "#fd79a8"
 }
