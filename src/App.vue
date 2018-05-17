@@ -23,7 +23,7 @@
             <v-list-tile-action>
               <v-icon>dashboard</v-icon>
             </v-list-tile-action>
-            <router-link to="/">
+            <router-link to="/" class="routerLink">
             <v-list-tile-content>
               <v-list-tile-title class="">ダッシュボード</v-list-tile-title>
             </v-list-tile-content>
@@ -39,7 +39,7 @@
             <v-list-tile-action>
               <v-icon>send</v-icon>
             </v-list-tile-action>
-            <router-link to="/walletTransfer">
+            <router-link to="/walletTransfer" class="routerLink">
             <v-list-tile-content>
               <v-list-tile-title class="">送金</v-list-tile-title>
             </v-list-tile-content>
@@ -56,7 +56,7 @@
               <v-list-tile-action>
                 <v-icon>credit_card</v-icon>
               </v-list-tile-action>
-              <router-link to="/walletlist">
+              <router-link to="/walletlist" class="routerLink">
               <v-list-tile-content>
                 <v-list-tile-title class="">ウォレット一覧</v-list-tile-title>
               </v-list-tile-content>
@@ -68,7 +68,7 @@
               <v-list-tile-action>
                 <v-icon>add_circle</v-icon>
               </v-list-tile-action>
-              <router-link to="/create">
+              <router-link to="/create" class="routerLink">
               <v-list-tile-content>
                 <v-list-tile-title class="">ウォレット作成</v-list-tile-title>
               </v-list-tile-content>
@@ -84,7 +84,7 @@
               <v-list-tile-action>
                 <v-icon>receipt</v-icon>
               </v-list-tile-action>
-              <router-link to="/invoiceList">
+              <router-link to="/invoiceList" class="routerLink">
               <v-list-tile-content>
                 <v-list-tile-title class="">請求書一覧</v-list-tile-title>
               </v-list-tile-content>
@@ -96,7 +96,7 @@
               <v-list-tile-action>
                 <v-icon>note_add</v-icon>
               </v-list-tile-action>
-              <router-link to="/invoiceCreate">
+              <router-link to="/invoiceCreate" class="routerLink">
               <v-list-tile-content>
                 <v-list-tile-title class="">請求書作成</v-list-tile-title>
               </v-list-tile-content>
@@ -300,7 +300,14 @@ export default {
 .toastlabel {
   margin: 0 auto;
 }
+
+.routerLink {
+  color: #5FACEF;
+  font-weight: bold;
+  text-decoration: none;
+}
  /*
+}
 }
 }
 }

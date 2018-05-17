@@ -33,10 +33,9 @@
         required
       ></v-text-field>
       </v-flex>
-      
       <v-flex>
       <v-btn color="select" class="buttonFont white--text" @click="submit" :disabled="!valid">作成</v-btn>
-      <v-btn class="buttonFont" @click="clear">クリア</v-btn>
+      <!-- <v-btn class="buttonFont" @click="clear">クリア</v-btn> -->
       </v-flex>
       <br>
       <v-flex>

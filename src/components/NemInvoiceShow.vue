@@ -69,6 +69,7 @@
     data: () => ({
       // image_src: null,
       dialog: false,
+      amount: 0,
       amountLabel: '',
       invoice: null,
       unitName: 'XEM',
@@ -101,12 +102,6 @@
       }
     },
     watch: {
-      senderAddr (val) {
-      },
-      amount (val) {
-      },
-      message (val) {
-      },
       mosaics (after, before) {
         console.log(after)
         console.log(before)
@@ -145,16 +140,17 @@
       },
       setDetail () {
         let result = this.invoice
-        this.amount = Number(result.amount) * this.num
+        let amount = Number(result.amount) * this.num
+        this.amount = amount
+        this.amount = this.amount.toLocaleString()
         if (result.currencyItem.text === 'NEM') {
           // NEM
           this.unitName = 'XEM'
-          // this.qrValue = JSON.stringify(nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, this.amount, result.message))
-          this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, this.amount, result.message)
+          this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, amount, result.message)
         } else if (result.currencyItem.text === 'JPY') {
           // JPY
           this.unitName = '円'
-          this.qrValue = nemWrapper.getJSONInvoiceForQRcodeJPY(2, 2, result.name, result.senderAddr, this.amount, result.message)
+          this.qrValue = nemWrapper.getJSONInvoiceForQRcodeJPY(2, 2, result.name, result.senderAddr, amount, result.message)
           console.log(this.qrValue)
         }
       },
