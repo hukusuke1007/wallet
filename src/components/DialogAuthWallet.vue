@@ -25,7 +25,7 @@
                       min="4"
                       :append-icon ="hiddenPass ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (hiddenPass = !hiddenPass)"
-                      :type="hiddenPass ? 'number' : 'password'"
+                      :type="hiddenPass ? 'text' : 'password'"
                       required
                       placeholder=""
                       pattern="[0-9]*"
@@ -37,7 +37,7 @@
                       min="4"
                       :append-icon="hiddenCheckPass ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (hiddenCheckPass = !hiddenCheckPass)"
-                      :type="hiddenCheckPass ? 'number' : 'password'"
+                      :type="hiddenCheckPass ? 'text' : 'password'"
                       required
                       placeholder=""
                       pattern="[0-9]*"
@@ -54,7 +54,7 @@
                       min="4"
                       :append-icon="hiddenPass ? 'visibility' : 'visibility_off'"
                       :append-icon-cb="() => (hiddenPass = !hiddenPass)"
-                      :type="hiddenPass ? 'number' : 'password'"
+                      :type="hiddenPass ? 'text' : 'password'"
                       required
                       placeholder=""
                       pattern="[0-9]*"
@@ -62,7 +62,7 @@
               </v-form>
             </v-flex>
             <v-btn color="info" @click="submit" :disabled="!valid">完了</v-btn>
-            <v-btn @click="clear">クリア</v-btn>
+            <!-- <v-btn @click="clear">クリア</v-btn> -->
             <v-flex v-if="isExistPass">
              <v-btn color="grey" class="white--text" @click="close">閉じる</v-btn>
             </v-flex>

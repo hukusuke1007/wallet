@@ -444,6 +444,7 @@
       },
       sendTransaction () {
         let successMsg = '送金しました。<br>反映されるまで数分かかることがあります。' + '<br><br>'
+        let errorMsg = 'ERROR:入力欄を確認してください。'
         this.isShowProgress = true
         if (this.transactionType === 'nem') {
           // NEM送金
@@ -460,13 +461,12 @@
               this.isShowProgress = false
               this.isShowDialogConfirm = true
             }).catch((err) => {
-              let error = err.error.message
               this.isError = true
               this.dialogTitle = '送金エラー'
-              this.dialogMessage = error
+              this.dialogMessage = errorMsg
               this.isShowProgress = false
               this.isShowDialogConfirm = true
-              console.error(error)
+              console.error(err.error.message)
             })
         } else if (this.transactionType === 'mosaics') {
           // モザイク送金
@@ -485,11 +485,10 @@
             }).catch((err) => {
               this.isError = true
               this.dialogTitle = '送金エラー'
-              let error = err.error.message
-              this.dialogMessage = error
+              this.dialogMessage = errorMsg
               this.isShowProgress = false
               this.isShowDialogConfirm = true
-              console.error(error)
+              console.error(err.error.message)
             })
         } else {
           console.log(this.transactionType)
