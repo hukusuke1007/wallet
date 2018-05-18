@@ -16,7 +16,7 @@
         <div class="w-break sideOffset">
           <v-layout row wrap column>
             <v-flex v-if="!isExistPass">
-              <v-card-text><h3>パスワードを設定してください</h3></v-card-text>
+              <v-card-text><h3>4ケタ以上の数字のパスワードを作成してください</h3></v-card-text>
               <v-form v-model="valid" ref="form" lazy-validation>
                     <v-text-field
                       label="新規パスワードを入力"
@@ -45,7 +45,7 @@
               </v-form>
             </v-flex>
             <v-flex v-else>
-              <v-card-text><h3>パスワードを入力してください</h3></v-card-text>
+              <v-card-text><h3>ご自身で決めた4ケタ以上の数字の<br>パスワードを入力してください</h3></v-card-text>
               <v-form v-model="valid" ref="form" lazy-validation>
                     <v-text-field
                       label="パスワードを入力"
@@ -98,7 +98,7 @@
       hiddenPass: true,
       hiddenCheckPass: true,
       rules: {
-        passwordLimit: (value) => (value && value.length >= 4) || 'パスワードは4文字以上です',
+        passwordLimit: (value) => (value && value.length >= 4) || 'パスワードは4ケタ以上です',
         passwordInput: (value) => {
           const pattern = /^[0-9]+$/
           return pattern.test(value) || '数字を入力してください'
