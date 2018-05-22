@@ -9,7 +9,7 @@
         <!-- 時価レート -->
         <v-flex>
           <p class="resizeImage">
-            <img :src="require('@/assets/headerLogo_pink.png')"></img>
+            <img :src="require('@/assets/headerLogo_pink.png')"/>
           </p>
         </v-flex>
         <v-flex>
@@ -30,10 +30,13 @@
        <!-- 送金 -->
         <v-flex>
           <v-card>
-            <v-card-title>送金</v-card-title>
+            <v-card-actions>
+              <v-icon style="margin-left: 8px;">send</v-icon>
+              <v-card-title>送金</v-card-title>
+            </v-card-actions>
             <v-flex>
               <v-btn color="select" class="white--text" large block :to="{name: 'WalletTransfer'}">
-                  <v-icon>send</v-icon><span class="label">送金する</span>
+                  <span class="label">送金する</span>
               </v-btn>
             </v-flex>
           </v-card>
@@ -41,10 +44,13 @@
         <!-- ウォレット -->
         <v-flex>
           <v-card>
-            <v-card-title>ウォレット</v-card-title>
+            <v-card-actions>
+              <v-icon style="margin-left: 8px;">credit_card</v-icon>
+              <v-card-title>ウォレット</v-card-title>
+            </v-card-actions>
             <v-flex>
               <v-btn color="select" class="white--text" large block :to="{name: 'WalletList'}">
-                  <v-icon>credit_card</v-icon><span class="label">ウォレットを表示する</span>
+                  <span class="label">ウォレットを表示する</span>
               </v-btn>
             </v-flex>
           </v-card>
@@ -52,10 +58,16 @@
         <!-- 請求書 -->
         <v-flex>
           <v-card>
-            <v-card-title>請求書</v-card-title>
+            <v-card-actions>
+              <v-icon style="margin-left: 8px;">receipt</v-icon>
+              <v-card-title>請求書</v-card-title>
+            </v-card-actions>
             <v-flex>
+              <v-btn color="select" class="white--text" large block :to="{name: 'InvoiceCreate', params: {kind: 'show_only'}}">
+                  <span class="label">急ぎで!<br>請求書を作成</span>
+              </v-btn>
               <v-btn color="select" class="white--text" large block :to="{name: 'InvoiceList'}">
-                  <v-icon>receipt</v-icon><span class="label">請求書を表示する</span>
+                  <span class="label">請求書を表示</span>
               </v-btn>
             </v-flex>
           </v-card>
@@ -134,7 +146,7 @@
 <style scoped>
 .label {
   font-weight: bold;
-  margin-left: 10px;
+  /* margin-left: 10px; */
 }
 p.resizeImage {
    text-align: center;
@@ -143,4 +155,5 @@ p.resizeImage {
    margin: 0 auto;
 }
 p.resizeImage img { width: 100%; }
+
 </style>

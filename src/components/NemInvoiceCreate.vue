@@ -105,19 +105,24 @@
           </v-flex>
         </v-layout>
           <!-- プログレス -->
-          <progressCircular v-bind:isShowVal="isShowProgress"></progressCircular>
+          <ProgressCircular v-bind:isShowVal="isShowProgress"></ProgressCircular>
 
           <!-- 完了ダイアログ -->
-          <dialogConfirm v-bind:dialogVal="isShowDialogConfirm"
+          <DialogConfirm v-bind:dialogVal="isShowDialogConfirm"
                          titleVal="請求書"
                          v-bind:messageVal="dialogMessage"
-                         v-on:dialog-confirm-event-tap-positive="tapConfirm"></dialogConfirm>
+                         v-on:dialog-confirm-event-tap-positive="tapConfirm"></DialogConfirm>
           <!-- QRコードダイアログ -->
-          <dialogQRreader v-bind:dialogVal="isShowDialogQRreader"
+          <DialogQRreader v-bind:dialogVal="isShowDialogQRreader"
                           v-bind:pauseVal="paused"
                           typeVal="invoice"
                           v-on:qr-reader-event-scan-success="getQRContent"
-                          v-on:qr-reader-event-tap-close="tapQRClose"></dialogQRreader>
+                          v-on:qr-reader-event-tap-close="tapQRClose"></DialogQRreader>
+          <!-- 請求書表示 -->
+          <NemInvoiceShow v-bind:dialogVal="isShowNemInvoice"
+                        v-bind:id="selectItem.id"
+                        v-bind:num="num"
+                        v-on:dialog-nem-invoice-show-event-close="tapCloseInvoiceShow"></NemInvoiceShow>
       </div>
     </v-container>
   </v-card>
@@ -130,6 +135,7 @@
   import DialogQRreader from '@/components/QRreader'
   import ProgressCircular from '@/components/ProgressCircular'
   import ModelInvoice from '@/js/model/model_invoice'
+  import NemInvoiceShow from '@/components/NemInvoiceShow'
 
   export default {
     data: () => ({
@@ -164,6 +170,9 @@
       content: '',
       isShowProgress: false,
       isError: false,
+      isShowNemInvoice: false,
+      selectItem: [],
+      num: 1,
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -180,9 +189,10 @@
     }),
     components: {
       // 'dialogPositiveNegative': DialogPositiveNegative,
-      'dialogConfirm': DialogConfirm,
-      'dialogQRreader': DialogQRreader,
-      'progressCircular': ProgressCircular
+      DialogConfirm,
+      DialogQRreader,
+      ProgressCircular,
+      NemInvoiceShow
     },
     mounted () {
       this.reloadItem()
@@ -191,6 +201,10 @@
       id: {
         type: Number,
         default: -1
+      },
+      kind: {
+        type: String,
+        default: ''
       }
     },
     watch: {
@@ -247,22 +261,26 @@
                 storeData.updateDate = new Date()
               }
               console.log('NemInvoiceCreate:setItemArray' + id)
-              dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, id)
-                .then((result) => {
-                  console.log(result)
-                  this.isError = false
-                  this.isShowDialogConfirm = true
-                  if (this.id !== -1) {
-                    this.dialogMessage = '請求書を変更しました。'
-                  } else {
-                    this.dialogMessage = '請求書を作成しました。'
-                  }
-                }).catch((err) => {
-                  console.log(err)
-                  this.isError = true
-                  this.isShowDialogConfirm = true
-                  this.dialogMessage = 'ERROR:データ保存に失敗しました。'
-                })
+              if (this.kind === 'show_only') {
+                this.isShowNemInvoice = true
+              } else {
+                dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, id)
+                  .then((result) => {
+                    console.log(result)
+                    this.isError = false
+                    this.isShowDialogConfirm = true
+                    if (this.id !== -1) {
+                      this.dialogMessage = '請求書を変更しました。'
+                    } else {
+                      this.dialogMessage = '請求書を作成しました。'
+                    }
+                  }).catch((err) => {
+                    console.log(err)
+                    this.isError = true
+                    this.isShowDialogConfirm = true
+                    this.dialogMessage = 'ERROR:データ保存に失敗しました。'
+                  })
+              }
             }).catch((err) => {
               console.log(err)
               this.isError = true
@@ -368,6 +386,9 @@
           this.paused = true
           this.isShowDialogQRreader = false
         }
+      },
+      tapCloseInvoiceShow () {
+        this.isShowNemInvoice = false
       }
     }
   }

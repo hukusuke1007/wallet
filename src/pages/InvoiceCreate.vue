@@ -13,7 +13,7 @@
     <br>
     <v-flex xs12 sm6 offset-sm3>
       <v-card>
-        <nemInvoiceCreate v-bind:id="id"></nemInvoiceCreate>
+        <NemInvoiceCreate v-bind:id="id" v-bind:kind="kind"></NemInvoiceCreate>
       </v-card>
     </v-flex>
   </div>
@@ -25,16 +25,20 @@
     data: () => ({
     }),
     components: {
-      'nemInvoiceCreate': NemInvoiceCreate
+      NemInvoiceCreate
     },
     props: {
       id: {
         type: Number,
         default: -1
+      },
+      kind: {
+        type: String,
+        default: ''
       }
     },
     mounted () {
-      console.log('InvoiceCreate:' + this.id)
+      console.log('InvoiceCreate:', this.id, this.kind)
     },
     methods: {
       back () {

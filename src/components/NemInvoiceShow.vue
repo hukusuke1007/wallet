@@ -228,6 +228,7 @@
           this.imageDownload(dataURI, canvas, 'image')
           let toAddr = ''
           let subject = this.invoice.name + 'の請求書'
+          let remark = '※【PCのみ】請求書の画像をダウンロードしました。手動で添付してください（モバイル対応中...)。'
           if (this.invoice.currencyItem.text === 'NEM') {
             let amount = this.amount
             let body = '送金先: ' + this.invoice.senderAddr + '\n' +
@@ -235,7 +236,7 @@
                       '通貨: ' + this.invoice.currencyItem.text + '\n' +
                       '数量: ' + amount + ' ' + this.unitName + '\n' +
                       'メッセージ: ' + this.invoice.message + '\n\n' +
-                      '※請求書の画像をダウンロードしました。手動で添付してください。'
+                      remark
             location.href = 'mailto:?to=' + encodeURIComponent(toAddr) +
             '&subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
           } else if (this.invoice.currencyItem.text === 'JPY') {
@@ -249,7 +250,7 @@
                           '通貨: ' + this.invoice.currencyItem.text + '\n' +
                           '数量: ' + this.amount + ' ' + this.unitName + ' (' + xemAmount + ' XEM' + '  ※' + rateDate + ')' + '\n' +
                           'メッセージ: ' + this.invoice.message + '\n\n' +
-                          '※請求書の画像をダウンロードしました。手動で添付してください。'
+                          remark
                 location.href = 'mailto:?to=' + encodeURIComponent(toAddr) +
                 '&subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
               }).catch((err) => {
