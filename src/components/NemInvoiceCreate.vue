@@ -148,8 +148,8 @@
       ],
       currencyItems: [
         { id: 0, text: 'NEM' },
-        { id: 1, text: 'JPY' },
-        { id: 2, text: 'Mosaics' }
+        { id: 1, text: 'JPY' }
+        // { id: 2, text: 'Mosaics' }
       ],
       selectMyAccount: {},
       selectCurrency: {},
@@ -160,7 +160,7 @@
       isShowDialogConfirm: false,
       dialogMessage: '作成しました。',
       isShowDialogQRreader: false,
-      paused: false,
+      paused: true,
       content: '',
       isShowProgress: false,
       isError: false,
@@ -347,10 +347,15 @@
         if ((content !== null) && ('data' in content)) {
           this.name = content.data.name
           this.senderAddr = content.data.addr
-          if ('amount' in content.data) {
+          if ('office_nem' in content.data) {
+            this.amount = content.data.office_nem.amount
+            this.selectCurrency = this.currencyItems[1]
+          } else if ('amount' in content.data) {
             this.amount = Number(content.data.amount) / Math.pow(10, 6)
+            this.selectCurrency = this.currencyItems[0]
           } else {
             this.amount = 0
+            this.selectCurrency = this.currencyItems[0]
           }
           this.message = content.data.msg
           this.paused = true

@@ -34,7 +34,7 @@
                   <div style="margin-bottom: 10px;"><h3>{{ invoice.name }}</h3></div>
                   <div class="qrlayout"><qriously v-model="qrValue" :size="qrSize"></qriously></div>
                   <div class="sub">通貨: {{ invoice.currencyItem.text }}</div>
-                  <div class="amount">{{ amount }} {{ unitName }}</h3></div>
+                  <div class="amount">{{ amountDisplay }} {{ unitName }}</div>
                   <div class="sub">メッセージ</div>
                   <span style="text-align: center;">{{ invoice.message }}</span>
                 </v-flex>
@@ -47,7 +47,12 @@
            </v-flex>
            <v-flex>
             <v-card>
-              <v-btn color="light-blue lighten-3" large block @click="download">ダウンロード</v-btn>
+              <v-btn color="view white--text" large block @click="share">共有</v-btn>
+            </v-card>
+          </v-flex>
+           <v-flex>
+            <v-card>
+              <v-btn color="button white--text" large block @click="download">ダウンロード</v-btn>
             </v-card>
           </v-flex>
           </v-layout>
@@ -61,6 +66,7 @@
 <script>
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
+  import exWrapper from '@/js/exchange_wrapper'
   import html2canvas from 'html2canvas'
   import Jspdf from 'jspdf'
   // import PrintJS from 'print-js'
@@ -70,6 +76,7 @@
       // image_src: null,
       dialog: false,
       amount: 0,
+      amountDisplay: 0,
       amountLabel: '',
       invoice: null,
       unitName: 'XEM',
@@ -140,60 +147,116 @@
       },
       setDetail () {
         let result = this.invoice
-        let amount = Number(result.amount) * this.num
-        this.amount = amount
-        this.amount = this.amount.toLocaleString()
+        this.amount = Number(result.amount) * this.num
+        this.amountDisplay = this.amount.toLocaleString()
         if (result.currencyItem.text === 'NEM') {
           // NEM
           this.unitName = 'XEM'
-          this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, amount, result.message)
+          this.qrValue = nemWrapper.getJSONInvoiceForQRcode(2, 2, result.name, result.senderAddr, this.amount, result.message)
         } else if (result.currencyItem.text === 'JPY') {
           // JPY
           this.unitName = '円'
-          this.qrValue = nemWrapper.getJSONInvoiceForQRcodeJPY(2, 2, result.name, result.senderAddr, amount, result.message)
+          this.qrValue = nemWrapper.getJSONInvoiceForQRcodeJPY(2, 2, result.name, result.senderAddr, this.amount, result.message)
           console.log(this.qrValue)
         }
       },
+      share () {
+        this.imageProcess('share', 'mail')
+      },
       download () {
-        // document.getElementById('invoiceData')
+        this.imageProcess('download', 'pdf')
+      },
+      imageProcess (operate, type) {
         html2canvas(this.$refs.invoiceData)
           .then((canvas) => {
             let dataURI = canvas.toDataURL('image/png')
-            // 画像のサイズを取得.
-            /*
-            let image = new Image()
-            let width = 0
-            let height = 0
-            image.onload = function () {
-              width = image.width
-              height = image.height
-              console.log('imageSize', width, height)
+            if (operate === 'download') {
+              this.imageDownload(dataURI, canvas, type)
+            } else if (operate === 'share') {
+              this.imageShare(dataURI, canvas, type)
             }
-            image.src = dataURI
-            */
-            // this.image_src = dataURI
-            let imgWidth = 210
-            let pageHeight = 295
-            let imgHeight = canvas.height * imgWidth / canvas.width
-            let heightLeft = imgHeight
-            let position = 2
-            console.log('canvasSize', canvas.height, canvas.width)
-            let pdf = new Jspdf('p', 'mm')
-            pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight) // x, yの座標
-            heightLeft -= pageHeight
-            while (heightLeft >= 0) {
-              position = heightLeft - imgHeight
-              pdf.addPage()
-              pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight)
-              heightLeft -= pageHeight
-            }
-            let date = new Date()
-            let pdfName = 'office_nem_invoice_' + this.id + '_' + date.getTime() + '.pdf'
-            console.log(pdfName)
-            pdf.save(pdfName)
-            // let renderString = pdf.output('datauristring')
-            // PrintJS(printUrl)
           })
+      },
+      imageDownload (dataURI, canvas, type) {
+        // 画像のサイズを取得.
+        /*
+        let image = new Image()
+        let width = 0
+        let height = 0
+        image.onload = function () {
+          width = image.width
+          height = image.height
+          console.log('imageSize', width, height)
+        }
+        image.src = dataURI
+        */
+        // this.image_src = dataURI
+        console.log('canvasSize', canvas.height, canvas.width)
+        let date = new Date()
+        let imageName = 'office_nem_invoice_' + this.id + '_' + date.getTime()
+        if (type === 'pdf') {
+          let imgWidth = 210
+          let pageHeight = 295
+          let imgHeight = canvas.height * imgWidth / canvas.width
+          let heightLeft = imgHeight
+          let position = 2
+          let pdf = new Jspdf('p', 'mm')
+          pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight) // x, yの座標
+          heightLeft -= pageHeight
+          while (heightLeft >= 0) {
+            position = heightLeft - imgHeight
+            pdf.addPage()
+            pdf.addImage(dataURI, 'PNG', 0, position, imgWidth, imgHeight)
+            heightLeft -= pageHeight
+          }
+          let fileName = imageName + '.pdf'
+          console.log(fileName)
+          pdf.save(fileName)
+          // let renderString = pdf.output('datauristring')
+          // PrintJS(printUrl)
+        } else if (type === 'image') {
+          let event = document.createEvent('MouseEvents')
+          event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+          let a = document.createElement('a')
+          a.href = dataURI
+          a.download = imageName
+          a.dispatchEvent(event)
+        }
+      },
+      imageShare (dataURI, canvas, type) {
+        if (type === 'mail') {
+          this.imageDownload(dataURI, canvas, 'image')
+          let toAddr = ''
+          let subject = this.invoice.name + 'の請求書'
+          if (this.invoice.currencyItem.text === 'NEM') {
+            let amount = this.amount
+            let body = '送金先: ' + this.invoice.senderAddr + '\n' +
+                      '請求書名: ' + this.invoice.name + '\n' +
+                      '通貨: ' + this.invoice.currencyItem.text + '\n' +
+                      '数量: ' + amount + ' ' + this.unitName + '\n' +
+                      'メッセージ: ' + this.invoice.message + '\n\n' +
+                      '※請求書の画像をダウンロードしました。手動で添付してください。'
+            location.href = 'mailto:?to=' + encodeURIComponent(toAddr) +
+            '&subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
+          } else if (this.invoice.currencyItem.text === 'JPY') {
+            exWrapper.getRateJpyXem()
+              .then((result) => {
+                let date = new Date()
+                let rateDate = [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('/') + ' ' + date.toLocaleTimeString()
+                let xemAmount = nemWrapper.getTotalAmountXemJpy(this.amount, result, 6)
+                let body = '送金先: ' + this.invoice.senderAddr + '\n' +
+                          '請求書名: ' + this.invoice.name + '\n' +
+                          '通貨: ' + this.invoice.currencyItem.text + '\n' +
+                          '数量: ' + this.amount + ' ' + this.unitName + ' (' + xemAmount + ' XEM' + '  ※' + rateDate + ')' + '\n' +
+                          'メッセージ: ' + this.invoice.message + '\n\n' +
+                          '※請求書の画像をダウンロードしました。手動で添付してください。'
+                location.href = 'mailto:?to=' + encodeURIComponent(toAddr) +
+                '&subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
+              }).catch((err) => {
+                console.error(err)
+              })
+          }
+        }
       },
       print () {
       },

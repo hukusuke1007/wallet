@@ -68,7 +68,7 @@
             <div class="sideOffset">
               <v-card-title primary-title><h2 style="color: blue">モザイク</h2></v-card-title>
               <v-form v-model="validMosaic" ref="formMosaic" lazy-validation>
-                <div v-for="item in senderMosaics">
+                <div v-for="item in senderMosaics" :key="item.id">
                    <div class="subTitle">残高 ({{ item.namespaceId }})</div>
                    <v-card-text>
                     <h2 class="font-color-shamrock">{{ item.quantity }} {{ item.name }}</h2>
@@ -148,7 +148,7 @@
       dialogMessage: '送金しました。',
       transactionType: 'nem',
       isShowDialogQRreader: false,
-      paused: false,
+      paused: true,
       content: '',
       isShowProgress: false,
       totalJpyXem: 0,

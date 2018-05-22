@@ -24,6 +24,7 @@
     "fs": "0.0.1-security",
     "html2canvas": "^1.0.0-alpha.12",
     "jspdf": "^1.3.5",
+    "jsqr": "^1.0.4",
     "nem-library": "^1.0.2",
     "nem-sdk": "^1.6.4",
     "net": "^1.0.2",
