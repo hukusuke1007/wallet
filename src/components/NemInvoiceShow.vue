@@ -12,8 +12,14 @@
         </v-btn>
         <v-toolbar-title class="white--text">請求書</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-toolbar-side-icon @click="download"><v-icon>get_app</v-icon></v-toolbar-side-icon>
-        <!-- <v-toolbar-side-icon @click="print"><v-icon>print</v-icon></v-toolbar-side-icon> -->
+        <v-menu bottom offset-y>
+          <v-btn slot="activator" icon dark>
+            <v-icon>get_app</v-icon>
+          </v-btn>
+          <MenuList v-bind:title="`ダウンロード`"
+                    v-bind:items="downloadItems"
+                    v-on:menu-list-item-tap="tapDownloadMenu"></MenuList>
+        </v-menu>
       </v-toolbar>
       <v-container
         fluid
@@ -45,15 +51,26 @@
            </div>
            </v-card>
            </v-flex>
-           <v-flex>
-            <v-card>
-              <v-btn color="view white--text" large block @click="share">共有</v-btn>
-            </v-card>
+          <v-flex>
+            <!-- <v-card> -->
+              <v-menu bottom offset-y>
+                <v-btn color="button white--text" style="width: 200px;" large slot="activator">ダウンロード</v-btn>
+                <MenuList v-bind:title="`ダウンロード`"
+                          v-bind:items="downloadItems"
+                          v-on:menu-list-item-tap="tapDownloadMenu"></MenuList>
+              </v-menu>
+              <!-- <v-btn color="button white--text" large block @click="download">ダウンロード</v-btn> -->
+            <!-- </v-card> -->
           </v-flex>
            <v-flex>
-            <v-card>
-              <v-btn color="button white--text" large block @click="download">ダウンロード</v-btn>
-            </v-card>
+            <!-- <v-card> -->
+              <v-menu bottom offset-y>
+                <v-btn color="view white--text" style="width: 200px;" large slot="activator">共有</v-btn>
+                <MenuList v-bind:title="`共有`"
+                          v-bind:items="shareItems"
+                          v-on:menu-list-item-tap="tapShareMenu"></MenuList>
+              </v-menu>
+            <!-- </v-card> -->
           </v-flex>
           </v-layout>
         </div>
@@ -67,8 +84,10 @@
   import dbWrapper from '@/js/local_database_wrapper'
   import nemWrapper from '@/js/nem_wrapper'
   import exWrapper from '@/js/exchange_wrapper'
+  import utility from '@/js/utility'
   import html2canvas from 'html2canvas'
   import Jspdf from 'jspdf'
+  import MenuList from '@/components/MenuList'
   // import PrintJS from 'print-js'
 
   export default {
@@ -87,9 +106,29 @@
       ],
       isError: false,
       qrSize: 250,
-      qrValue: 'test'
+      qrValue: 'test',
+      downloadItems: [
+        {
+          id: 0,
+          title: 'Image',
+          type: 'image'
+        },
+        {
+          id: 1,
+          title: 'PDF',
+          type: 'pdf'
+        }
+      ],
+      shareItems: [
+        {
+          id: 0,
+          title: 'メール',
+          type: 'mail'
+        }
+      ]
     }),
     components: {
+      MenuList
     },
     mounted () {
       this.reloadItem()
@@ -160,11 +199,11 @@
           console.log(this.qrValue)
         }
       },
-      share () {
-        this.imageProcess('share', 'mail')
+      tapDownloadMenu (item) {
+        this.imageProcess('download', item.type)
       },
-      download () {
-        this.imageProcess('download', 'pdf')
+      tapShareMenu (item) {
+        this.imageProcess('share', item.type)
       },
       imageProcess (operate, type) {
         html2canvas(this.$refs.invoiceData)
@@ -178,23 +217,27 @@
           })
       },
       imageDownload (dataURI, canvas, type) {
-        // 画像のサイズを取得.
-        /*
-        let image = new Image()
-        let width = 0
-        let height = 0
-        image.onload = function () {
-          width = image.width
-          height = image.height
-          console.log('imageSize', width, height)
-        }
-        image.src = dataURI
-        */
-        // this.image_src = dataURI
         console.log('canvasSize', canvas.height, canvas.width)
         let date = new Date()
         let imageName = 'office_nem_invoice_' + this.id + '_' + date.getTime()
-        if (type === 'pdf') {
+        if (type === 'image') {
+          console.log('utility.getBrowser', utility.getBrowser())
+          if (utility.getBrowser() === 'chrome') {
+            let event = document.createEvent('MouseEvents')
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
+            let a = document.createElement('a')
+            a.href = dataURI
+            a.download = imageName
+            a.dispatchEvent(event)
+          } else {
+            let image = new Image()
+            image.src = dataURI
+            image.onload = function () {
+              location.href = image.src
+              location.download = imageName
+            }
+          }
+        } else if (type === 'pdf') {
           let imgWidth = 210
           let pageHeight = 295
           let imgHeight = canvas.height * imgWidth / canvas.width
@@ -214,21 +257,14 @@
           pdf.save(fileName)
           // let renderString = pdf.output('datauristring')
           // PrintJS(printUrl)
-        } else if (type === 'image') {
-          let event = document.createEvent('MouseEvents')
-          event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null)
-          let a = document.createElement('a')
-          a.href = dataURI
-          a.download = imageName
-          a.dispatchEvent(event)
         }
       },
       imageShare (dataURI, canvas, type) {
+        this.imageDownload(dataURI, canvas, 'image')
         if (type === 'mail') {
-          this.imageDownload(dataURI, canvas, 'image')
           let toAddr = ''
           let subject = this.invoice.name + 'の請求書'
-          let remark = '※【PCのみ】請求書の画像をダウンロードしました。手動で添付してください（モバイル対応中...)。'
+          let remark = '※請求書の画像は手動で添付してください。'
           if (this.invoice.currencyItem.text === 'NEM') {
             let amount = this.amount
             let body = '送金先: ' + this.invoice.senderAddr + '\n' +
