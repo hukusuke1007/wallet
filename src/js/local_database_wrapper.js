@@ -3,18 +3,13 @@ localForage.setDriver(localForage.INDEXEDDB)
 
 // データーベースのkey.
 const KEY_WALLET_INFO = 'key_wallet_info'
+const KEY_SELECTED_WALLET = 'key_selected_wallet'
 const KEY_INVOICE = 'key_invoice'
 const KEY_AUTH_PASSWORD = 'key_auth_password'
 
 // 値のkey.
 const VALUE_PRIMARY_ID = 'id'
 const VALUE_ALL = 'all'
-const VALUE_NAME = 'name'
-const VALUE_DESCRIPTION = 'description'
-const VALUE_WALLET_ACCOUNT = 'account'
-const VALUE_CRYPTO_KIND = 'cryptoKind'
-const VALUE_ADDRESS = 'address'
-const VALUE_CREATION_DATE = 'creationDate'
 
 // メッセージ.
 const MESSAGE_SUCCESS = 'success'
@@ -22,16 +17,11 @@ const MESSAGE_ERROR = 'error'
 
 // 外部公開.
 exports.KEY_WALLET_INFO = KEY_WALLET_INFO
+exports.KEY_SELECTED_WALLET = KEY_SELECTED_WALLET
 exports.KEY_INVOICE = KEY_INVOICE
 exports.KEY_AUTH_PASSWORD = KEY_AUTH_PASSWORD
 exports.VALUE_PRIMARY_ID = VALUE_PRIMARY_ID
 exports.VALUE_ALL = VALUE_ALL
-exports.VALUE_NAME = VALUE_NAME
-exports.VALUE_DESCRIPTION = VALUE_DESCRIPTION
-exports.VALUE_WALLET_ACCOUNT = VALUE_WALLET_ACCOUNT
-exports.VALUE_CRYPTO_KIND = VALUE_CRYPTO_KIND
-exports.VALUE_ADDRESS = VALUE_ADDRESS
-exports.VALUE_CREATION_DATE = VALUE_CREATION_DATE
 
 // KeyNameの最大値を取得.
 var getKeyMaxNumber = (dataList, keyName) => {

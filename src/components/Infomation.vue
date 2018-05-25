@@ -28,15 +28,22 @@
       </v-list>
       <v-divider></v-divider>
       <v-list subheader>
-        <v-subheader>Version 1.0.1</v-subheader>
+        <v-subheader>Version 1.0.2</v-subheader>
+        <v-list-tile @click="tapUpdateHistory">
+          <v-list-tile-title>Update history</v-list-tile-title>
+        </v-list-tile>
       </v-list>
    </v-card>
+    <DialogUpdateHistory v-bind:dialogVal="isShowDialogUpdateHistory"
+                         v-on:dialog-infomation-event-tap-close="dialogUpdateHistoryClose"></DialogUpdateHistory>
  </v-layout>
 </template>
 
 <script>
+  import DialogUpdateHistory from '@/components/DialogUpdateHistory'
   export default {
     data: () => ({
+      isShowDialogUpdateHistory: false,
       items: [
         {
           action: 'mood',
@@ -63,6 +70,7 @@
     computed: {
     },
     components: {
+      DialogUpdateHistory
     },
     mounted () {
     },
@@ -75,6 +83,12 @@
         if (item.type === 'link') {
           open(item.url, '_blank')
         }
+      },
+      tapUpdateHistory () {
+        this.isShowDialogUpdateHistory = true
+      },
+      dialogUpdateHistoryClose () {
+        this.isShowDialogUpdateHistory = false
       }
     }
   }

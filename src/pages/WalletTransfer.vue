@@ -55,6 +55,12 @@
     watch: {
       'selectItem.id' (val) {
         this.selectWallet(val)
+        dbWrapper.setItem(dbWrapper.KEY_SELECTED_WALLET, val)
+          .then((result) => {
+            console.log('KEY_SELECTED_WALLET setItem', result)
+          }).catch((err) => {
+            console.error('KEY_SELECTED_WALLET setItem', err)
+          })
       }
     },
     methods: {
@@ -80,7 +86,24 @@
               if (a.id < b.id) return 1
               return 0
             })
-            this.selectItem = this.items[0]
+
+            // 初期ウォレットを選択.
+            dbWrapper.getItem(dbWrapper.KEY_SELECTED_WALLET)
+              .then((result) => {
+                console.log('KEY_SELECTED_WALLET getItem', result)
+                if (result !== null) {
+                  this.items.forEach((element) => {
+                    if (element.id === result) {
+                      this.selectItem = element
+                    }
+                  })
+                } else {
+                  this.selectItem = this.items[0]
+                }
+              }).catch((err) => {
+                console.error('KEY_SELECTED_WALLET getItem', err)
+                this.selectItem = this.items[0]
+              })
           }).catch((err) => {
             console.log(err)
           })
