@@ -19,7 +19,7 @@
               ></v-checkbox>
               <v-checkbox
                 label="徴収要求"
-                :input-value="selectMosaic.supplyMutable"
+                :input-value="selectMosaic.levy"
                 color="success"
               ></v-checkbox>
             </v-card-actions>
@@ -41,13 +41,37 @@
               required
             ></v-text-field>
           </v-form>
-          <v-subheader>アカウントのQRコード</v-subheader><v-btn color="select" class="buttonFont white--text" @click="showNemAccount">表示</v-btn>
-          <v-subheader>送金先アドレス</v-subheader><v-card-text>{{ walletItem.account.address.value }}</v-card-text>
-          <v-subheader>公開鍵</v-subheader><v-card-text>{{ pairKey.publicKey }}</v-card-text>
-          <v-subheader>秘密鍵</v-subheader><v-btn color="grey" class="buttonFont white--text" @click="showPrivateKey">表示</v-btn>
+          <v-card-actions>
+            <v-card-title class="subTitle">アカウントのQRコード</v-card-title>
+          </v-card-actions>
+          <v-btn color="select" class="buttonFont white--text" @click="showNemAccount">表示</v-btn>
+          <v-card-actions>
+            <v-card-title class="subTitle">送金先アドレス</v-card-title>
+            <v-spacer></v-spacer>
+            <v-btn icon
+                  v-clipboard:copy="walletItem.account.address.value"
+                  v-clipboard:success="onCopy"
+                  v-clipboard:error="onError"
+            ><v-icon color="primary">assignment</v-icon></v-btn>
+          </v-card-actions>
+          <v-card-text>{{ walletItem.account.address.value }}</v-card-text>
+          <v-card-actions>
+            <v-card-title class="subTitle">公開鍵</v-card-title>
+            <v-spacer></v-spacer>
+            <v-btn icon
+                  v-clipboard:copy="pairKey.publicKey"
+                  v-clipboard:success="onCopy"
+                  v-clipboard:error="onError"
+            ><v-icon color="primary">assignment</v-icon></v-btn>
+          </v-card-actions>
+          <v-card-text>{{ pairKey.publicKey }}</v-card-text>
+          <v-card-actions>
+            <v-card-title class="subTitle">秘密鍵</v-card-title>
+          </v-card-actions>
+          <v-btn color="grey" class="buttonFont white--text" @click="showPrivateKey">表示</v-btn>
           <v-flex>
             <v-btn icon @click.native="showDeleteWallet()">
-              <v-icon color="primary">delete</v-icon>
+              <v-icon color="grey">delete</v-icon>
             </v-btn>
           </v-flex>
           <!-- ダイアログ -->
@@ -70,7 +94,6 @@
           <DialogAuthWallet v-bind:dialogVal="isShowAuthWallet"
                        v-on:dialog-auth-wallet-close="tapAuthWalletClose"
                        v-on:dialog-auth-wallet-notify="tapAuthWalletNotify"></DialogAuthWallet>
-        </v-flex>
         </div>
       </v-container>
     </v-card>
@@ -195,6 +218,14 @@
             this.isShowDialog = true
           }
         }
+      },
+      onCopy () {
+        let msg = 'コピーしました。'
+        this.$toast(msg)
+      },
+      onError () {
+        let msg = 'コピーに失敗しました。'
+        this.$toast(msg)
       }
     }
   }

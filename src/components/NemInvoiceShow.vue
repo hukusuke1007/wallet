@@ -142,6 +142,10 @@
         type: Number,
         default: -1
       },
+      invoiceData: {
+        type: Object,
+        default: null
+      },
       num: {
         type: Number,
         default: 1
@@ -167,6 +171,13 @@
       },
       num (val) {
         this.setDetail()
+      },
+      invoiceData (val) {
+        // 急ぎで作成の時だけ使用
+        if (val !== null) {
+          this.invoice = this.invoiceData
+          this.setDetail()
+        }
       }
     },
     methods: {
@@ -219,7 +230,7 @@
       imageDownload (dataURI, canvas, type) {
         console.log('canvasSize', canvas.height, canvas.width)
         let date = new Date()
-        let imageName = 'office_nem_invoice_' + this.id + '_' + date.getTime()
+        let imageName = 'office_nem_invoice' + '_' + date.getTime()
         if (type === 'image') {
           console.log('utility.getBrowser', utility.getBrowser())
           if (utility.getBrowser() === 'chrome') {

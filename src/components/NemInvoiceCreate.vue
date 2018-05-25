@@ -121,6 +121,7 @@
           <!-- 請求書表示 -->
           <NemInvoiceShow v-bind:dialogVal="isShowNemInvoice"
                         v-bind:id="selectItem.id"
+                        v-bind:invoiceData="invoiceData"
                         v-bind:num="num"
                         v-on:dialog-nem-invoice-show-event-close="tapCloseInvoiceShow"></NemInvoiceShow>
       </div>
@@ -173,6 +174,7 @@
       isShowNemInvoice: false,
       selectItem: [],
       num: 1,
+      invoiceData: {},
       rules: {
         senderAddrLimit: (value) => (value && (value.length === 46 || value.length === 40)) || '送金先アドレス(-除く)は40文字です。',
         senderAddrInput: (value) => {
@@ -262,6 +264,7 @@
               }
               console.log('NemInvoiceCreate:setItemArray' + id)
               if (this.kind === 'show_only') {
+                this.invoiceData = storeData
                 this.isShowNemInvoice = true
               } else {
                 dbWrapper.setItemArray(dbWrapper.KEY_INVOICE, storeData, id)

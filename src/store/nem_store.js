@@ -117,6 +117,7 @@ export default {
               mosaic.initialSupply = element.properties.initialSupply
               mosaic.supplyMutable = element.properties.supplyMutable
               mosaic.transferable = element.properties.transferable
+              mosaic.levy = element.levy
               mosaics.push(mosaic)
             })
             commit('setMosaics', mosaics)

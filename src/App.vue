@@ -35,16 +35,27 @@
         <!--  SEND -->
         <v-flex>
           <v-card>
-          <v-list-tile>
-            <v-list-tile-action>
-              <v-icon>send</v-icon>
-            </v-list-tile-action>
-            <router-link to="/walletTransfer" class="routerLink">
-            <v-list-tile-content>
-              <v-list-tile-title class="">送金</v-list-tile-title>
-            </v-list-tile-content>
-            </router-link>
-          </v-list-tile>
+            <v-card-title>急ぎモード！</v-card-title>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>directions_run</v-icon>
+              </v-list-tile-action>
+              <router-link to="/walletTransfer" class="routerLink">
+              <v-list-tile-content>
+                <v-list-tile-title class="">すぐに送金する</v-list-tile-title>
+              </v-list-tile-content>
+              </router-link>
+            </v-list-tile>
+            <v-list-tile>
+              <v-list-tile-action>
+                <v-icon>directions_run</v-icon>
+              </v-list-tile-action>
+              <router-link :to="{ name: 'InvoiceCreate', params: { kind: 'show_only' } }" class="routerLink">
+              <v-list-tile-content>
+                <v-list-tile-title class="">すぐに請求書を表示</v-list-tile-title>
+              </v-list-tile-content>
+              </router-link>
+            </v-list-tile>
           </v-card>
         </v-flex>
 

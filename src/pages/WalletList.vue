@@ -30,7 +30,14 @@
           </v-list>
         </v-card>
         <v-card>
-        <v-card-text style="height: 20px; position: relative">
+          <div v-if="items.length===0">
+          <router-link to="/create">
+            <v-card-text>ウォレットを作成してください</v-card-text>
+          </router-link>
+          </div>
+        </v-card>
+        <v-card>
+          <v-card-text style="height: 20px; position: relative">
             <v-btn
               absolute
               dark
@@ -42,8 +49,8 @@
             >
               <v-icon>add</v-icon>
             </v-btn>
-            </v-card-text>
-          </v-card>
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
 </template>

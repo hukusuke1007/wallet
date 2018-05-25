@@ -34,6 +34,7 @@
     "stylus": "^0.54.5",
     "tls": "0.0.1",
     "vue": "^2.5.2",
+    "vue-clipboard2": "^0.1.1",
     "vue-localforage": "^0.2.5",
     "vue-qrcode-reader": "^0.7.3",
     "vue-qriously": "^1.1.1",

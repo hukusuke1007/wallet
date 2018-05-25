@@ -18,13 +18,17 @@
              <v-icon >{{ item.action }}</v-icon>
            </div>
            <div v-else>
-            <img :src="item.img" class="iconResize"></img>
+            <img :src="item.img" class="iconResize"/>
            </div>
           </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title v-html="item.title"></v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
+      </v-list>
+      <v-divider></v-divider>
+      <v-list subheader>
+        <v-subheader>Version 1.0.1</v-subheader>
       </v-list>
    </v-card>
  </v-layout>

@@ -31,12 +31,15 @@
         <v-flex>
           <v-card>
             <v-card-actions>
-              <v-icon style="margin-left: 8px;">send</v-icon>
-              <v-card-title>送金</v-card-title>
+              <v-icon style="margin-left: 8px;">directions_run</v-icon>
+              <v-card-title>急ぎモード！</v-card-title>
             </v-card-actions>
             <v-flex>
-              <v-btn color="select" class="white--text" large block :to="{name: 'WalletTransfer'}">
-                  <span class="label">送金する</span>
+              <v-btn color="button" class="white--text" large block :to="{name: 'WalletTransfer'}">
+                  <span class="label">すぐに送金する</span>
+              </v-btn>
+              <v-btn color="button" class="white--text" large block :to="{name: 'InvoiceCreate', params: {kind: 'show_only'}}">
+                  <span class="label">すぐに請求書を表示</span>
               </v-btn>
             </v-flex>
           </v-card>
@@ -63,9 +66,6 @@
               <v-card-title>請求書</v-card-title>
             </v-card-actions>
             <v-flex>
-              <v-btn color="select" class="white--text" large block :to="{name: 'InvoiceCreate', params: {kind: 'show_only'}}">
-                  <span class="label">急ぎで!<br>請求書を作成</span>
-              </v-btn>
               <v-btn color="select" class="white--text" large block :to="{name: 'InvoiceList'}">
                   <span class="label">請求書を表示</span>
               </v-btn>

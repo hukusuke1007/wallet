@@ -11,6 +11,7 @@ import VueQriously from 'vue-qriously'
 import Toast from 'vue2-toast'
 import Toasted from 'vue-toasted'
 import 'vue2-toast/lib/toast.css'
+import VueClipboard from 'vue-clipboard2'
 // CreatePage
 import TopPage from '@/pages/TopPage'
 import Create from '@/pages/Create'
@@ -54,6 +55,7 @@ Vue.use(Toasted, {
   containerClass: 'toast',
   duration: 2500
 })
+Vue.use(VueClipboard)
 
 export default new Router({
   routes: [

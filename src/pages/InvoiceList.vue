@@ -34,6 +34,13 @@
           </v-list>
         </v-card>
         <v-card>
+          <div v-if="items.length===0">
+          <router-link to="/InvoiceCreate">
+            <v-card-text>請求書を作成してください</v-card-text>
+          </router-link>
+          </div>
+        </v-card>
+        <v-card>
         <v-card-text style="height: 20px; position: relative">
             <v-btn
               absolute
