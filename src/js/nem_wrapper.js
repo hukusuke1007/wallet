@@ -4,6 +4,7 @@ import {/* UnconfirmedTransactionListener, ConfirmedTransactionListener, */
   TransactionHttp, TransferTransaction, AccountOwnedMosaicsService, MosaicId} from 'nem-library'
 import {Observable} from 'rxjs/Observable'
 import encoding from 'encoding-japanese'
+import nem from 'nem-sdk'
 
 NEMLibrary.bootstrap(NetworkTypes.MAIN_NET)
 
@@ -415,3 +416,159 @@ exports.getTotalAmountXemJpy = (jpy, jpyXem, precision) => {
   let factor = Math.pow(10, precision)
   return Math.round(total * factor) / factor
 }
+
+/* use NEM-sdk */
+exports.createMosaic = (namespace, name, description, privateKey, properties) => {
+  /*
+    ネームスペースのレンタル契約は、ネームスペーストランザクションの準備(ProvisionNamespaceTransaction)を介して行われます。
+    通常のトランザクション手数料に加えて、賃貸料があります。
+    この手数料はアドレスを持つ特別なアカウントである、レンタルフィーシンク(rental fee sink)に支払われます。
+
+    NAMESPACEWH4MKFMBCVFERDPOOP4FK7MTBXDPZZA (メインネット内)
+    TAMESPACEWH4MKFMBCVFERDPOOP4FK7MTDJEYP35 (テストネット内
+    1年間のネームスペースレンタル料は以下の通りです。
+
+    5000 XEM (ルートネームスペース)
+    200 XEM (サブネームスペース)
+    1年後、ルートネームスペースの有効期限が切れます。これが起こらないようにするには、
+    有効期限が切れる1か月以内にルートネームスペースのネームスペーストランザクションのプロビジョニング(provision namespace transaction)を
+    送信する必要があります。アナウンス準備のリクエスト(RequestPrepareAnnounce)オブジェクトは初めてネームスペースをレンタルする場合と同じです。
+    ルートネームスペースの更新はアカウントが既に所有しているルートネームスペースのサブネームスペースも自動的に更新します。
+  */
+  // https://github.com/QuantumMechanics/NEM-sdk/blob/master/examples/nodejs/createMosaic.js
+  let promise = new Promise((resolve, reject) => {
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    let common = nem.model.objects.create('common')('', privateKey)
+    let tx = nem.model.objects.get('mosaicDefinitionTransaction')
+    tx.mosaicName = namespace
+    tx.namespaceParent = {
+      'fqn': name
+    }
+    tx.mosaicDescription = description
+    // Set properties (see https://nemproject.github.io/#mosaicProperties)
+    tx.properties = properties
+    /*
+    let properties = {
+      initialSupply: initialSupply,
+      divisibility: divisibility,
+      transferable: transferable,
+      supplyMutable: supplyMutable
+    }
+    tx.properties.initialSupply = initialSupply
+    tx.properties.divisibility = divisibility
+    tx.properties.transferable = transferable
+    tx.properties.supplyMutable = supplyMutable
+    */
+    /*
+    tx.levy.mosaic = null
+    tx.levy.address = ''
+    tx.levy.feeType = 1
+    tx.levy.fee = 5
+    */
+    // Prepare the transaction object
+    let net = nem.model.network.data.testnet.id
+    let transactionEntity = nem.model.transactions.prepare('mosaicDefinitionTransaction')(common, tx, net)
+    nem.model.transactions.send(common, transactionEntity, endpoint)
+      .then((result) => {
+        console.log(result)
+        resolve(result)
+      }).catch((error) => {
+        console.error(error)
+        reject(error)
+      })
+  })
+  return promise
+}
+
+exports.sendMosaic = (mosaics, addr, message, privateKey) => {
+  let promise = new Promise((resolve, reject) => {
+    console.log('sendMosaicController')
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    let common = nem.model.objects.create('common')('', privateKey)
+    let transferTransaction = nem.model.objects.create('transferTransaction')(addr, 1, message)
+    getMosaicDefinitionMetaDataPair(mosaics)
+      .then((mosaicDefinitionMetaDataPair) => {
+        console.log('mosaicDefinitionMetaDataPair', mosaicDefinitionMetaDataPair)
+        // モザイクの情報を設定しtransactionを作成
+        mosaics.forEach((mosaic) => {
+          let fullMosaicName = mosaic.namespace + ':' + mosaic.name
+          if ((mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition.id.namespaceId === mosaic.namespace) &&
+              (mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition.id.name === mosaic.name)) {
+            let divisibility = 0
+            mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition.properties.forEach((prop) => {
+              if (prop.name === 'divisibility') { divisibility = prop.value }
+            })
+            let quantity = mosaic.amount * Math.pow(10, divisibility)
+            console.log('[divisibility quantity]', divisibility, quantity)
+            let mosaicAttachment = nem.model.objects.create('mosaicAttachment')(mosaic.namespace, mosaic.name, quantity)
+            transferTransaction.mosaics.push(mosaicAttachment)
+          }
+        })
+        console.log('transferTransaction', transferTransaction)
+        // 送信
+        let NET = nem.model.network.data.mainnet.id
+        let transactionEntity = nem.model.transactions.prepare('mosaicTransferTransaction')(common, transferTransaction, mosaicDefinitionMetaDataPair, NET)
+        console.log('transactionEntity', transactionEntity)
+        nem.model.transactions.send(common, transactionEntity, endpoint)
+          .then((result) => {
+            resolve(result)
+          }).catch((error) => {
+            reject(error)
+          })
+      }).catch((error) => {
+        console.error(error)
+      })
+  })
+  return promise
+}
+
+/* モザイクの定義を取得(複数) */
+const getMosaicDefinitionMetaDataPair = (mosaics) => {
+  console.log('getMosaicDefinitionMetaDataPair')
+  let promise = new Promise((resolve, reject) => {
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    let mosaicDefinitionMetaDataPair = nem.model.objects.get('mosaicDefinitionMetaDataPair')
+    let mosaicCount = 0
+    mosaics.forEach((mosaic) => {
+      let mosaicAttachment = nem.model.objects.create('mosaicAttachment')(mosaic.namespace, mosaic.name, mosaic.amount)
+      nem.com.requests.namespace.mosaicDefinitions(endpoint, mosaicAttachment.mosaicId.namespaceId)
+        .then((result) => {
+          mosaicCount = mosaicCount + 1
+          console.log('mosaicDefinitions', result, mosaicCount)
+          // リクエスト応答からモザイクのメタデータを検索
+          let neededDefinition = nem.utils.helpers.searchMosaicDefinitionArray(result.data, [mosaic.name])
+          let fullMosaicName = nem.utils.format.mosaicIdToName(mosaicAttachment.mosaicId)
+          if (undefined === neededDefinition[fullMosaicName]) {
+            console.error('Mosaic not found !')
+            return
+          }
+          // モザイクのメタデータをmosaicDefinitionMetaDataPairに設定
+          mosaicDefinitionMetaDataPair[fullMosaicName] = {}
+          mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition = neededDefinition[fullMosaicName]
+          // supplyを設定しないと送金時のfeeがNULLになるため設定
+          let supply = 0
+          result.data.some((obj) => {
+            if ((obj.mosaic.id.namespaceId === mosaic.namespace) &&
+                (obj.mosaic.id.name === mosaic.name)) {
+              obj.mosaic.properties.some((prop) => {
+                if (prop.name === 'initialSupply') {
+                  supply = prop.value
+                  return true
+                }
+              })
+            }
+          })
+          mosaicDefinitionMetaDataPair[fullMosaicName].supply = supply
+          if (mosaicCount >= mosaics.length) { resolve(mosaicDefinitionMetaDataPair) }
+        }).catch((error) => {
+          console.error(error)
+          reject(error)
+        })
+    })
+  })
+  return promise
+}
+exports.getMosaicDefinitionMetaDataPair = getMosaicDefinitionMetaDataPair
