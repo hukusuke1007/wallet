@@ -418,56 +418,42 @@ exports.getTotalAmountXemJpy = (jpy, jpyXem, precision) => {
 }
 
 /* use NEM-sdk */
+exports.createNamespace = (namespace, name, description, privateKey, properties) => {
+  let promise = new Promise((resolve, reject) => {
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    let common = nem.model.objects.create('common')('', privateKey)
+    let tx = nem.model.objects.get('namespaceProvisionTransaction')
+    tx.namespaceName = name
+    tx.mosaicDescription = description
+    tx.properties = properties
+    let net = nem.model.network.data.mainnet.id
+    let transactionEntity = nem.model.transactions.prepare('namespaceProvisionTransaction')(common, tx, net)
+    nem.model.transactions.send(common, transactionEntity, endpoint)
+      .then((result) => {
+        console.log(result)
+        resolve(result)
+      }).catch((error) => {
+        console.error(error)
+        reject(error)
+      })
+  })
+  return promise
+}
+
 exports.createMosaic = (namespace, name, description, privateKey, properties) => {
-  /*
-    ネームスペースのレンタル契約は、ネームスペーストランザクションの準備(ProvisionNamespaceTransaction)を介して行われます。
-    通常のトランザクション手数料に加えて、賃貸料があります。
-    この手数料はアドレスを持つ特別なアカウントである、レンタルフィーシンク(rental fee sink)に支払われます。
-
-    NAMESPACEWH4MKFMBCVFERDPOOP4FK7MTBXDPZZA (メインネット内)
-    TAMESPACEWH4MKFMBCVFERDPOOP4FK7MTDJEYP35 (テストネット内
-    1年間のネームスペースレンタル料は以下の通りです。
-
-    5000 XEM (ルートネームスペース)
-    200 XEM (サブネームスペース)
-    1年後、ルートネームスペースの有効期限が切れます。これが起こらないようにするには、
-    有効期限が切れる1か月以内にルートネームスペースのネームスペーストランザクションのプロビジョニング(provision namespace transaction)を
-    送信する必要があります。アナウンス準備のリクエスト(RequestPrepareAnnounce)オブジェクトは初めてネームスペースをレンタルする場合と同じです。
-    ルートネームスペースの更新はアカウントが既に所有しているルートネームスペースのサブネームスペースも自動的に更新します。
-  */
-  // https://github.com/QuantumMechanics/NEM-sdk/blob/master/examples/nodejs/createMosaic.js
   let promise = new Promise((resolve, reject) => {
     const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
     let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
     let common = nem.model.objects.create('common')('', privateKey)
     let tx = nem.model.objects.get('mosaicDefinitionTransaction')
-    tx.mosaicName = namespace
+    tx.mosaicName = name
     tx.namespaceParent = {
-      'fqn': name
+      'fqn': namespace
     }
     tx.mosaicDescription = description
-    // Set properties (see https://nemproject.github.io/#mosaicProperties)
     tx.properties = properties
-    /*
-    let properties = {
-      initialSupply: initialSupply,
-      divisibility: divisibility,
-      transferable: transferable,
-      supplyMutable: supplyMutable
-    }
-    tx.properties.initialSupply = initialSupply
-    tx.properties.divisibility = divisibility
-    tx.properties.transferable = transferable
-    tx.properties.supplyMutable = supplyMutable
-    */
-    /*
-    tx.levy.mosaic = null
-    tx.levy.address = ''
-    tx.levy.feeType = 1
-    tx.levy.fee = 5
-    */
-    // Prepare the transaction object
-    let net = nem.model.network.data.testnet.id
+    let net = nem.model.network.data.mainnet.id
     let transactionEntity = nem.model.transactions.prepare('mosaicDefinitionTransaction')(common, tx, net)
     nem.model.transactions.send(common, transactionEntity, endpoint)
       .then((result) => {
