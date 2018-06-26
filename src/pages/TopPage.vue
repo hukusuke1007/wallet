@@ -110,6 +110,14 @@
     methods: {
       testMosaic () {
         console.log('testMosaic')
+        let addr = 'NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC'
+        nemWrapper.getTransactionHistoryEndpoint(addr)
+          .then((result) => {
+            console.log(result)
+          }).catch((error) => {
+            console.error(error)
+          })
+        /*
         let mosaic1 = {
           namespace: 'mikun',
           name: 'thanks',
@@ -127,6 +135,7 @@
           }).catch((error) => {
             console.error(error)
           })
+        */
         /*
         let addr = 'NCVQMBRARF32HRPLVWA5D7P4ZST7FEDQVPAZL6CE'
         let message = 'テストだよ'

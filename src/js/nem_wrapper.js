@@ -418,7 +418,292 @@ exports.getTotalAmountXemJpy = (jpy, jpyXem, precision) => {
 }
 
 /* use NEM-sdk */
-exports.createNamespace = (namespace, name, description, privateKey, properties) => {
+const MOSAIC_NAMESPACE = 'mikun'
+const MOSAIC_NAME = 'thanks'
+const MOSAIC_DIVISIBILITY = 0
+const divisibility = () => {
+  return Math.pow(10, MOSAIC_DIVISIBILITY)
+}
+
+exports.getMosaicBalance = (address) => {
+  return new Promise((resolve, reject) => {
+    getOwnMosaicBalance(address)
+      .then((res) => {
+        let balance = 0
+        res.some((obj) => {
+          if ((obj.namespace === MOSAIC_NAMESPACE) &&
+              (obj.name === MOSAIC_NAME)) {
+            balance = obj.amount
+            return true
+          }
+        })
+        resolve(balance)
+      }).catch((e) => {
+        console.error('getMosaicBalance', e)
+        reject(e)
+      })
+  })
+}
+
+const getOwnMosaicBalance = (address) => {
+  return new Promise((resolve, reject) => {
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    let methods = [
+      nem.com.requests.account.mosaics.owned(endpoint, address),
+      nem.com.requests.account.mosaics.allDefinitions(endpoint, address)
+    ]
+    Promise.all(methods)
+      .then((res) => {
+        console.log(res)
+        let dataList = []
+        let ownList = res[0].data
+        let defineList = res[1].data
+        ownList.forEach((ownObj) => {
+          defineList.forEach((defineObj) => {
+            if ((ownObj.mosaicId.namespaceId === defineObj.id.namespaceId) &&
+                (ownObj.mosaicId.name === defineObj.id.name)) {
+              let divisibility = 0
+              defineObj.properties.some((prop) => {
+                if (prop.name === 'divisibility') {
+                  divisibility = prop.value
+                  return true
+                }
+              })
+              let amount = ownObj.quantity / Math.pow(10, divisibility)
+              let data = {
+                namespace: ownObj.mosaicId.namespaceId,
+                name: ownObj.mosaicId.name,
+                amount: amount
+              }
+              dataList.push(data)
+            }
+          })
+        })
+        resolve(dataList)
+      }).catch((e) => {
+        console.error('getOwnMosaicBalance', e)
+        reject(e)
+      })
+  })
+}
+exports.getOwnMosaicBalance = getOwnMosaicBalance
+
+exports.getTransactionHistoryEndpoint = (address) => {
+  return new Promise((resolve, reject) => {
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    getMosaicHistory(endpoint, address)
+      .then((res) => resolve(res)).catch((e) => reject(e))
+  })
+}
+
+const getMosaicHistory = (endpoint, address) => {
+  return new Promise((resolve, reject) => {
+    nem.com.requests.account.transactions.all(endpoint, address)
+      .then((res) => {
+        let txs = getMosaicTxData(res.data, address)
+        console.log('txs', txs.data, txs.lastHash)
+        if (txs.lastHash) {
+          getAllMosaicHistoryData(endpoint, txs.lastHash, address).then((txs) => {
+            resolve(txs.data)
+          }).catch((e) => {
+            reject(e)
+          })
+        } else {
+          resolve(txs.data)
+        }
+        // resolve(txs)
+        /*
+          address: "NCVQMBRARF32HRPLVWA5D7P4ZST7FEDQVPAZL6CE"
+          amount: 1
+          from: "NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC"
+          hash: "91c66a4d09346ab7ff41fdf6cd536b7c5480cdef537d1374f1e09d27bde8ce38"
+          message: "test"
+          mosaic:
+            amount: 100
+            name: "thanks"
+            namespace: "mikun"
+          time: "2018/6/25 14:41:16"
+          to: "NCVQMBRARF32HRPLVWA5D7P4ZST7FEDQVPAZL6CE"
+          type: "out"
+        */
+      }).catch((e) => {
+        console.error('getTransactionHistory', e)
+        reject(e)
+      })
+  })
+}
+
+const getMosaicTxData = (history, address) => {
+  let txs = {
+    data: [],
+    lastHash: ''
+  }
+  history.forEach((obj) => {
+    let tx = obj
+    let data = getTxData(tx, address)
+    txs.lastHash = data.hash
+    data.mosaic = undefined
+    if ('mosaics' in obj.transaction) {
+      obj.transaction.mosaics.some((mosaic) => {
+        if ((mosaic.mosaicId.namespaceId === MOSAIC_NAMESPACE) &&
+            (mosaic.mosaicId.name === MOSAIC_NAME)) {
+          data.mosaic = {
+            namespace: mosaic.mosaicId.namespaceId,
+            name: mosaic.mosaicId.name,
+            amount: mosaic.quantity / divisibility()
+          }
+          return true
+        }
+      })
+    } else {
+      console.log('This is NEM')
+    }
+    txs.data.push(data)
+  })
+  return txs
+}
+
+/*
+exports.getTransactionHistory = (address) => {
+  return new Promise((resolve, reject) => {
+    const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
+    let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
+    nem.com.requests.account.transactions.all(endpoint, address)
+      .then((res) => {
+        var mosaics = []
+        res.data.forEach((obj) => {
+          console.log('obj', obj)
+          if ('mosaics' in obj.transaction) {
+            obj.transaction.mosaics.forEach((mosaic) => {
+              var data = {
+                namespace: mosaic.mosaicId.namespaceId,
+                name: mosaic.mosaicId.name,
+                amount: mosaic.quantity
+              }
+              mosaics.push(data)
+            })
+          } else {
+            console.log('This is NEM', obj)
+          }
+        })
+        getMosaicDefinitionMetaDataPair(mosaics)
+          .then((mosaicDefinitionMetaDataPair) => {
+            mosaics = mosaics.filter((mosaic) => {
+              let fullMosaicName = mosaic.namespace + ':' + mosaic.name
+              if ((mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition.id.namespaceId === mosaic.namespace) &&
+                  (mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition.id.name === mosaic.name)) {
+                let divisibility = 0
+                mosaicDefinitionMetaDataPair[fullMosaicName].mosaicDefinition.properties.forEach((prop) => {
+                  if (prop.name === 'divisibility') { divisibility = prop.value }
+                })
+                mosaic.amount = mosaic.amount / Math.pow(10, divisibility)
+                console.log('[divisibility quantity]', divisibility, mosaic.amount)
+              }
+              return mosaic
+            })
+            let txs = []
+            res.data.forEach((obj) => {
+              let tx = obj
+              let data = getTxData(tx, address)
+              let mosaic = {
+                namespace: MOSAIC_NAMESPACE,
+                name: MOSAIC_NAME,
+                amount: 0
+              }
+              data.mosaics = []
+              data.mosaics.push(mosaic)
+              txs.push(data)
+            })
+            console.log('txs', txs)
+            resolve(mosaics)
+          }).catch((e) => {
+            console.error('getTransactionHistory', e)
+            reject(e)
+          })
+        if (lastHash) {
+          getAllHistoryData(endpoint, txs, lastHash, address).then((txs) => {
+            resolve(txs)
+          })
+        } else {
+          resolve(txs)
+        }
+      }).catch((e) => {
+        console.error('getTransactionHistory', e)
+        reject(e)
+      })
+  })
+}
+*/
+
+const getAllMosaicHistoryData = (endpoint, hash, address) => {
+  return new Promise((resolve, reject) => {
+    nem.com.requests.account.transactions.all(endpoint, address, hash).then((res) => {
+      let txs = getMosaicTxData(res.data, address)
+      console.log('txs', txs.data, txs.lastHash)
+      if (txs.lastHash) {
+        getAllMosaicHistoryData(endpoint, txs.lastHash, address).then((txs) => {
+          resolve(txs.data)
+        })
+      } else {
+        resolve(txs.data)
+      }
+    }).catch((e) => {
+      console.dir(e)
+      reject(e)
+    })
+  })
+}
+
+const getTxData = (tx, myAddress) => {
+  var date = ''
+  var amount = 0
+  var message = ''
+  if (tx.transaction.otherTrans) {
+    date = nemDateFormat(tx.transaction.otherTrans.timeStamp)
+    amount = tx.transaction.otherTrans.amount
+    message = nem.utils.format.hexMessage(tx.transaction.otherTrans.message)
+  } else {
+    date = nemDateFormat(tx.transaction.timeStamp)
+    amount = tx.transaction.amount
+    message = nem.utils.format.hexMessage(tx.transaction.message)
+  }
+  if (amount) {
+    amount = amount / Math.pow(10, 6)
+  }
+  var from = nem.utils.format.pubToAddress(tx.transaction.signer, nem.model.network.data.mainnet.id)
+  var to = tx.transaction.recipient
+  var type = ''
+  var address = ''
+  if (to === myAddress) {
+    type = 'in'
+    address = from
+  } else {
+    type = 'out'
+    address = to
+  }
+  var data = {
+    type: type,
+    time: date,
+    amount: amount,
+    message: message,
+    hash: tx.meta.hash.data,
+    from: from,
+    to: to,
+    address: address
+  }
+  return data
+}
+
+const TIMEZONEOFFSET = -9
+const nemDateFormat = (timestamp) => {
+  let dt = new Date(nem.utils.format.nemDate(timestamp))
+  let dtJs = new Date(dt.getTime() - (TIMEZONEOFFSET * 60 - dt.getTimezoneOffset()) * 60000)
+  return dtJs.toLocaleString()
+}
+
+exports.createNamespace = (name, description, privateKey, properties) => {
   let promise = new Promise((resolve, reject) => {
     const NODE = { node: 'https://aqualife1.supernode.me', port: '7891' }
     let endpoint = nem.model.objects.create('endpoint')(NODE.node, NODE.port)
@@ -528,7 +813,7 @@ const getMosaicDefinitionMetaDataPair = (mosaics) => {
           let neededDefinition = nem.utils.helpers.searchMosaicDefinitionArray(result.data, [mosaic.name])
           let fullMosaicName = nem.utils.format.mosaicIdToName(mosaicAttachment.mosaicId)
           if (undefined === neededDefinition[fullMosaicName]) {
-            console.error('Mosaic not found !')
+            console.error('Mosaic not found !', fullMosaicName)
             return
           }
           // モザイクのメタデータをmosaicDefinitionMetaDataPairに設定
