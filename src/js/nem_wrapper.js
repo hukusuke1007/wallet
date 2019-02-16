@@ -24,12 +24,10 @@ const nodes = [
   {protocol: 'https', domain: 'aqualife2.supernode.me', port: 7891},
   {protocol: 'https', domain: 'aqualife3.supernode.me', port: 7891},
   {protocol: 'https', domain: 'mnbhsgwbeta.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'nsm.supernode.me', port: 7891},
   {protocol: 'https', domain: 'kohkei.supernode.me', port: 7891},
   {protocol: 'https', domain: 'mttsukuba.supernode.me', port: 7891},
   {protocol: 'https', domain: 'strategic-trader-1.supernode.me', port: 7891},
   {protocol: 'https', domain: 'strategic-trader-2.supernode.me', port: 7891},
-  {protocol: 'https', domain: 'qora01.supernode.me', port: 7891},
   {protocol: 'https', domain: 'pegatennnag.supernode.me', port: 7891}
 ]
 /*
