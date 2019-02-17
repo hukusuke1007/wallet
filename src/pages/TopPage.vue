@@ -27,10 +27,6 @@
             </v-card-text>
           </v-card>
         </v-flex>
-       <!-- 送金 -->
-       <v-flex>
-         <v-btn color="button" class="white--text" @click="testMosaic()">モザイク送金テスト</v-btn>
-       </v-flex>
         <v-flex>
           <v-card>
             <v-card-actions>
@@ -89,7 +85,6 @@
   import dbWrapper from '@/js/local_database_wrapper'
   import exWrapper from '@/js/exchange_wrapper'
   import DialogAuthWallet from '@/components/DialogAuthWallet'
-  import nemWrapper from '@/js/nem_wrapper'
   export default {
     name: 'topPage',
     data: () => ({
@@ -108,46 +103,6 @@
       // this.$toast('aaa')
     },
     methods: {
-      testMosaic () {
-        console.log('testMosaic')
-        let addr = 'NBHWRG6STRXL2FGLEEB2UOUCBAQ27OSGDTO44UFC'
-        nemWrapper.getTransactionHistoryEndpoint(addr)
-          .then((result) => {
-            console.log(result)
-          }).catch((error) => {
-            console.error(error)
-          })
-        /*
-        let mosaic1 = {
-          namespace: 'mikun',
-          name: 'thanks',
-          amount: 1
-        }
-        let mosaic2 = {
-          namespace: 'haikara',
-          name: 'mametubu',
-          amount: 1
-        }
-        let mosaics = [mosaic1, mosaic2]
-        nemWrapper.getMosaicDefinitionMetaDataPair(mosaics)
-          .then((result) => {
-            console.log(result)
-          }).catch((error) => {
-            console.error(error)
-          })
-        */
-        /*
-        let addr = 'NCVQMBRARF32HRPLVWA5D7P4ZST7FEDQVPAZL6CE'
-        let message = 'テストだよ'
-        let privateKey = ''
-        nemWrapper.sendMosaic(mosaics, addr, message, privateKey)
-          .then((result) => {
-            console.log(result)
-          }).catch((error) => {
-            console.error(error)
-          })
-        */
-      },
       reloadItem () {
         dbWrapper.getItem(dbWrapper.KEY_AUTH_PASSWORD)
           .then((result) => {
